@@ -1,3 +1,4 @@
 [submodule "segmentation_models/backbones/classification_models"]
 	path = segmentation_models/backbones/classification_models
 	url = git://github.com/qubvel/classification_models.git
+	branch = segmentation_models
