@@ -1,2 +1,2 @@
-# segmentation_models
-Segmentation models with pretrained backbone
+# Segmentation models Zoo
+Segmentation models with pretrained backbones
