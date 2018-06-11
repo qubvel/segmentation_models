@@ -1,5 +1,3 @@
-
-
 def get_layer_number(model, layer_name):
     for i, l in enumerate(model.layers):
         if l.name == layer_name:
