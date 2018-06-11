@@ -3,3 +3,8 @@ from .models import UResNet34
 from .models import UResNet50
 from .models import UResNet101
 from .models import UResNet152
+from .models import UDenseNet121
+from .models import UDenseNet169
+from .models import UDenseNet201
+from .models import UInceptionV3
+from .models import UInceptionResNetV2
