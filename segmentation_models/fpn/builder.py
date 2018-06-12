@@ -2,14 +2,18 @@ from keras.layers import Conv2D
 from keras.layers import UpSampling2D
 from keras.layers import Concatenate
 from keras.layers import Activation
+from keras.layers import SpatialDropout2D
 from keras.models import Model
 
 from .blocks import pyramid_block
+from .blocks import Conv
+from .layers import BilinearUpsampling
 from ..utils import extract_outputs
 
 
 def build_fpn(backbone, layers, classes=21, activation='softmax', upsample_rates=(2,2,2),
-              pyramid_filters=256, segmentation_filters=128, last_upsample=4):
+              pyramid_filters=256, segmentation_filters=128, last_upsample=4,
+              use_batchnorm=False, dropout=None, last_upsampling_type='nn'):
     """
     Implementation of FPN head for segmentation models according to:
         http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
@@ -24,6 +28,10 @@ def build_fpn(backbone, layers, classes=21, activation='softmax', upsample_rates
         segmentation_filters: int, number of filters in `P` blocks of FPN
         last_upsample: rate for upsumpling concatenated pyramid predictions to
             match spatial resolution of input data
+        last_upsampling_type: 'nn' or 'bilinear'
+        dropout: float [0, 1), dropout rate
+        use_batchnorm: bool, include batch normalization to FPN between `conv`
+            and `relu` layers
 
     Returns:
         model: Keras `Model`
@@ -45,7 +53,8 @@ def build_fpn(backbone, layers, classes=21, activation='softmax', upsample_rates
     for i, c in enumerate(outputs):
         m, p = pyramid_block(pyramid_filters=pyramid_filters,
                             segmentation_filters=segmentation_filters,
-                            upsample_rate=upsample_rates[i])(c, m)
+                            upsample_rate=upsample_rates[i],
+                            use_batchnorm=use_batchnorm)(c, m)
         pyramid.append(p)
 
 
@@ -62,11 +71,19 @@ def build_fpn(backbone, layers, classes=21, activation='softmax', upsample_rates
     x = Concatenate()(upsampled_pyramid)
 
     # final convolution
+    n_filters = segmentation_filters * len(pyramid)
+    x = Conv(n_filters, (3, 3), batchnorm=use_batchnorm, padding='same')(x)
+    if dropout is not None:
+        x = SpatialDropout2D(dropout)(x)
+
     x = Conv2D(classes, (3, 3), padding='same')(x)
     x = Activation(activation)(x)
 
-    if last_upsample > 1:
+    # upsampling to original spatial resolution
+    if last_upsample > 1 and last_upsampling_type == 'nn':
         x = UpSampling2D(size=(last_upsample,last_upsample))(x)
+    elif last_upsample > 1 and last_upsampling_type == 'bilinear':
+        x = BilinearUpsampling(upsampling=(last_upsample,last_upsample))(x)
 
     model = Model(backbone.input, x)
     return model
