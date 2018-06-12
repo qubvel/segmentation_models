@@ -6,11 +6,11 @@ Segmentation models with pretrained backbones
 |---------------------|:------------:|:------:|:------:| 
 | VGG16/bn            | `imagenet` | -    | -    | 
 | VGG19/bn            | `imagenet` | -    | -    | 
-| ResNet18            | `imagenet` | +    | -    | 
-| ResNet34            | `imagenet` | +    | -    | 
-| ResNet50            | `imagenet`<br>`imagenet11k-place365ch` | +    | -    | 
-| ResNet101           | `imagenet` | +    | -    | 
-| ResNet152           | `imagenet`<br>`imagenet11k`<br>`imagenet11k-place365ch` | +    | -    | 
+| ResNet18            | `imagenet` | +    | +    | 
+| ResNet34            | `imagenet` | +    | +    | 
+| ResNet50            | `imagenet`<br>`imagenet11k-place365ch` | +    | +    | 
+| ResNet101           | `imagenet` | +    | +    | 
+| ResNet152           | `imagenet`<br>`imagenet11k`<br>`imagenet11k-place365ch` | +    | +    | 
 | ResNeXt50            | `imagenet` | -    | -    | 
 | ResNeXt101            | `imagenet` | -    | -    | 
 | DenseNet121         | `imagenet` | +    | -    | 
