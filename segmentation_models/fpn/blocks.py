@@ -9,7 +9,8 @@ def Conv(n_filters, kernel_size, activation='relu', batchnorm=False, **kwargs):
     """Extension of Conv2D layer with batchnorm"""
     def layer(input_tensor):
 
-        x = Conv2D(n_filters, kernel_size, **kwargs)(input_tensor)
+        use_bias = False if batchnorm else True
+        x = Conv2D(n_filters, kernel_size, use_bias=use_bias, **kwargs)(input_tensor)
         if batchnorm:
             x = BatchNormalization()(x)
         x = Activation(activation)(x)
