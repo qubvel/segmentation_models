@@ -1,5 +1,5 @@
 """ Utility functions for segmentation models """
-
+from functools import wraps
 
 def get_layer_number(model, layer_name):
     """
@@ -39,3 +39,21 @@ def extract_outputs(model, layers, include_top=False):
         outputs.insert(0, model.output)
 
     return outputs
+
+def reverse(l):
+    """Reverse list"""
+    return list(reversed(l))
+
+# decorator for models aliases, to add doc string
+def add_docstring(doc_string=None):
+    def decorator(fn):
+        if fn.__doc__:
+            fn.__doc__ += doc_string
+        else:
+            fn.__doc__ = doc_string
+
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
