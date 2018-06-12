@@ -11,11 +11,11 @@ Segmentation models with pretrained backbones
 | ResNet50            | `imagenet`<br>`imagenet11k-place365ch` | +    | +    | 
 | ResNet101           | `imagenet` | +    | +    | 
 | ResNet152           | `imagenet`<br>`imagenet11k`<br>`imagenet11k-place365ch` | +    | +    | 
-| ResNeXt50            | `imagenet` | -    | -    | 
-| ResNeXt101            | `imagenet` | -    | -    | 
-| DenseNet121         | `imagenet` | +    | -    | 
-| DenseNet169         | `imagenet` | +    | -    | 
-| DenseNet201         | `imagenet` | +    | -    | 
-| Inception V3        | `imagenet` | +    | -    | 
-| Inception ResNet V2 | `imagenet` | +    | -    | 
+| ResNeXt50            | `imagenet` | -    | +    | 
+| ResNeXt101            | `imagenet` | -    | +    | 
+| DenseNet121         | `imagenet` | +    | +    | 
+| DenseNet169         | `imagenet` | +    | +    | 
+| DenseNet201         | `imagenet` | +    | +    | 
+| Inception V3        | `imagenet` | +    | +    | 
+| Inception ResNet V2 | `imagenet` | +    | +    | 
 
