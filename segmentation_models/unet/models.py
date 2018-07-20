@@ -11,7 +11,8 @@ from keras.applications import DenseNet169
 from keras.applications import DenseNet201
 
 
-resnet_skips = list(reversed(['bn_data', 'relu0', 'stage2_unit1_relu1', 'stage3_unit1_relu1', 'stage4_unit1_relu1']))
+# resnet_skips = list(reversed(['bn_data', 'relu0', 'stage2_unit1_relu1', 'stage3_unit1_relu1', 'stage4_unit1_relu1']))
+resnet_skips = list(reversed(['relu0', 'stage2_unit1_relu1', 'stage3_unit1_relu1', 'stage4_unit1_relu1']))
 
 
 def UResNet18(input_shape=(None, None, 3), classes=1, decoder_filters=16, decoder_block_type='upsampling',
