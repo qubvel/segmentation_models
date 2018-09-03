@@ -30,7 +30,7 @@ x, y = ...
 
 # prepare model
 model = Unet(backbone_name='resnet34`, encoder_weigths='imagenet')
-model.compile('Adam', 'binary_crossentropy', 'binary_accuracy')
+model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
 
 # train model
 model.fit(x, y)
