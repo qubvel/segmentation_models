@@ -10,7 +10,7 @@ from ..utils import get_layer_number
 def build_unet(backbone, classes, last_block_filters, skip_layers,
                n_upsample_blocks=5, upsample_rates=(2,2,2,2,2),
                block_type='upsampling', activation='sigmoid',
-               **kwargs):
+               use_batchnorm=False):
 
     input = backbone.input
     x = backbone.output
@@ -35,7 +35,7 @@ def build_unet(backbone, classes, last_block_filters, skip_layers,
         up_size = (upsample_rates[i], upsample_rates[i])
         filters = last_block_filters * 2**(n_upsample_blocks-(i+1))
 
-        x = up_block(filters, i, upsample_rate=up_size, skip=skip, **kwargs)(x)
+        x = up_block(filters, i, upsample_rate=up_size, skip=skip, use_batchnorm=use_batchnorm)(x)
 
     if classes < 2:
         activation = 'sigmoid'

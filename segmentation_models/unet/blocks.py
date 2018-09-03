@@ -14,8 +14,18 @@ def handle_block_names(stage):
     return conv_name, bn_name, relu_name, up_name
 
 
+def ConvRelu(filters, kernel_size, use_batchnorm=False, conv_name='conv', bn_name='bn', relu_name='relu'):
+    def layer(x):
+        x = Conv2D(filters, kernel_size, padding="same", name=conv_name, use_bias=not(use_batchnorm))(x)
+        if use_batchnorm:
+            x = BatchNormalization(name=bn_name)(x)
+        x = Activation('relu', name=relu_name)(x)
+        return x
+    return layer
+
+
 def Upsample2D_block(filters, stage, kernel_size=(3,3), upsample_rate=(2,2),
-                     batchnorm=False, skip=None):
+                     use_batchnorm=False, skip=None):
 
     def layer(input_tensor):
 
@@ -26,40 +36,34 @@ def Upsample2D_block(filters, stage, kernel_size=(3,3), upsample_rate=(2,2),
         if skip is not None:
             x = Concatenate()([x, skip])
 
-        x = Conv2D(filters, kernel_size, padding='same', name=conv_name+'1')(x)
-        if batchnorm:
-            x = BatchNormalization(name=bn_name+'1')(x)
-        x = Activation('relu', name=relu_name+'1')(x)
+        x = ConvRelu(filters, kernel_size, use_batchnorm=use_batchnorm,
+                     conv_name=conv_name + '1', bn_name=bn_name + '1', relu_name=relu_name + '1')(x)
 
-        x = Conv2D(filters, kernel_size, padding='same', name=conv_name+'2')(x)
-        if batchnorm:
-            x = BatchNormalization(name=bn_name+'2')(x)
-        x = Activation('relu', name=relu_name+'2')(x)
+        x = ConvRelu(filters, kernel_size, use_batchnorm=use_batchnorm,
+                     conv_name=conv_name + '2', bn_name=bn_name + '2', relu_name=relu_name + '2')(x)
 
         return x
     return layer
 
 
 def Transpose2D_block(filters, stage, kernel_size=(3,3), upsample_rate=(2,2),
-                      transpose_kernel_size=(4,4), batchnorm=False, skip=None):
+                      transpose_kernel_size=(4,4), use_batchnorm=False, skip=None):
 
     def layer(input_tensor):
 
         conv_name, bn_name, relu_name, up_name = handle_block_names(stage)
 
         x = Conv2DTranspose(filters, transpose_kernel_size, strides=upsample_rate,
-                            padding='same', name=up_name)(input_tensor)
-        if batchnorm:
+                            padding='same', name=up_name, use_bias=not(use_batchnorm))(input_tensor)
+        if use_batchnorm:
             x = BatchNormalization(name=bn_name+'1')(x)
         x = Activation('relu', name=relu_name+'1')(x)
 
         if skip is not None:
             x = Concatenate()([x, skip])
 
-        x = Conv2D(filters, kernel_size, padding='same', name=conv_name+'2')(x)
-        if batchnorm:
-            x = BatchNormalization(name=bn_name+'2')(x)
-        x = Activation('relu', name=relu_name+'2')(x)
+        x = ConvRelu(filters, kernel_size, use_batchnorm=use_batchnorm,
+                     conv_name=conv_name + '2', bn_name=bn_name + '2', relu_name=relu_name + '2')(x)
 
         return x
     return layer
