@@ -1,16 +1,6 @@
 from .builder import build_unet
 from ..utils import freeze_model
 from ..backbones import get_backbone
-from ..backbones import ResNet18
-from ..backbones import ResNet34
-from ..backbones import ResNet50
-from ..backbones import ResNet101
-from ..backbones import ResNet152
-from ..backbones import InceptionV3
-from ..backbones import InceptionResNetV2
-from keras.applications import DenseNet121
-from keras.applications import DenseNet169
-from keras.applications import DenseNet201
 
 
 DEFAULT_SKIP_CONNECTIONS = {
@@ -39,10 +29,33 @@ def Unet(backbone_name='vgg16',
          skip_connections='default',
          decoder_block_type='upsampling',
          decoder_filters=16,
+         decoder_use_batchnorm=False,
          n_upsample_blocks=5,
          upsample_rates=(2,2,2,2,2),
          classes=1,
          activation='sigmoid'):
+    """
+
+    Args:
+        backbone_name: (str) look at list of available backbones.
+        input_shape:  (tuple) dimensions of input data (H, W, C)
+        input_tensor: keras tensor
+        encoder_weights: one of `None` (random initialization), 'imagenet' (pre-training on ImageNet)
+        freeze_encoder: (bool) Set encoder layers weights as non-trainable. Useful for fine-tuning
+        skip_connections: if 'default' is used take default skip connections,
+            else provide a list of layer numbers or names starting from top of model
+        decoder_block_type: (str) one of 'upsampling' and 'transpose' (look at blocks.py)
+        decoder_filters: (int) number of convolution filters in last upsample block
+        decoder_use_batchnorm: (bool) if True add batch normalisation layer between `Conv2D` ad `Activation` layers
+        n_upsample_blocks: (int) a number of upsampling blocks
+        upsample_rates: (tuple of int) upsampling rates decoder blocks
+        classes: (int) a number of classes for output
+        activation: (str) one of keras activations
+
+    Returns:
+        keras.models.Model instance
+
+    """
 
 
 
@@ -62,7 +75,8 @@ def Unet(backbone_name='vgg16',
                        block_type=decoder_block_type,
                        activation=activation,
                        n_upsample_blocks=n_upsample_blocks,
-                       upsample_rates=upsample_rates)
+                       upsample_rates=upsample_rates,
+                       use_batchnorm=decoder_use_batchnorm)
 
     # lock encoder weights for fine-tuning
     if freeze_encoder:
