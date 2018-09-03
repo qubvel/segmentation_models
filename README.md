@@ -29,7 +29,7 @@ from segmentation_models import Unet
 x, y = ...
 
 # prepare model
-model = Unet(backbone_name='resnet34`, encoder_weigths='imagenet')
+model = Unet(backbone_name='resnet34', encoder_weigths='imagenet')
 model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
 
 # train model
