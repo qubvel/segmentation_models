@@ -40,9 +40,11 @@ def extract_outputs(model, layers, include_top=False):
 
     return outputs
 
+
 def reverse(l):
     """Reverse list"""
     return list(reversed(l))
+
 
 # decorator for models aliases, to add doc string
 def add_docstring(doc_string=None):
@@ -57,3 +59,9 @@ def add_docstring(doc_string=None):
             return fn(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def freeze_model(model):
+    for layer in model.layers:
+        layer.trainable = False
+    return
