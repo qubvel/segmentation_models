@@ -19,9 +19,21 @@ Segmentation models with pretrained backbones
 | Inception V3        |`inceptionv3`| `imagenet` | +    | +    | 
 | Inception ResNet V2 |`inceptionresnetv2`| `imagenet` | +    | +    | 
 
+
+### Installation
+1) Clone repositoriy to your project  
+```bash
+$ git clone https://github.com/qubvel/segmentation_models.git
+```
+2) Update submodules  
+```bash
+$ cd segmentation_models
+$ git submodule update --init --recursive
+```
+
 ### Code examples
 
-Use Unet model:  
+Train Unet model:  
 ```python
 from segmentation_models import Unet
 
