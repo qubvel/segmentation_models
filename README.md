@@ -47,3 +47,9 @@ model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
 # train model
 model.fit(x, y)
 ```
+### TODO
+- [x] Update Unet API
+- [ ] Update FPN API
+- [ ] Add Linknet models
+- [ ] Add PSP models
+- [ ] Add DPN backbones
