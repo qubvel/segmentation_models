@@ -4,8 +4,8 @@ Segmentation models with pretrained backbones
 #### Unet and FPN like models
 | Backbone model      |Name| Weights    | UNet |  FPN | 
 |---------------------|:--:|:------------:|:------:|:------:| 
-| VGG16               |`vgg16`| `imagenet` | +    | -    | 
-| VGG19               |`vgg19`| `imagenet` | +    | -    | 
+| VGG16               |`vgg16`| `imagenet` | +    | +    | 
+| VGG19               |`vgg19`| `imagenet` | +    | +    | 
 | ResNet18            |`resnet18`| `imagenet` | +    | +    | 
 | ResNet34            |`resnet34`| `imagenet` | +    | +    | 
 | ResNet50            |`resnet50`| `imagenet`<br>`imagenet11k-place365ch` | +    | +    | 
@@ -52,6 +52,25 @@ Train FPN model:
 from segmentation_models import FPN
 
 model = FPN(backbone_name='resnet34', encoder_weigths='imagenet')
+```
+
+#### Usefull trick
+Freeze encoder weights for fine-tuning during first epochs of training:
+```python
+from segmentation_models import FPN
+from segmentation_models.utils import set_trainable
+
+model = FPN(backbone_name='resnet34', encoder_weigths='imagenet', freeze_encoder=True)
+model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
+
+# pretrain model decoder
+model.fit(x, y, n_epochs=2)
+
+# release all layers for training
+set_trainable(model) # set all layers trainable and recompile model
+
+# continue training
+model.fit(x, y, n_epochs=100)
 ```
 
 ### TODO
