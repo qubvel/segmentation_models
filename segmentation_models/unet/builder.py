@@ -37,9 +37,6 @@ def build_unet(backbone, classes, last_block_filters, skip_layers,
 
         x = up_block(filters, i, upsample_rate=up_size, skip=skip, use_batchnorm=use_batchnorm)(x)
 
-    if classes < 2:
-        activation = 'sigmoid'
-
     x = Conv2D(classes, (3,3), padding='same', name='final_conv')(x)
     x = Activation(activation, name=activation)(x)
 
