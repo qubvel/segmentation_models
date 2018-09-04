@@ -61,7 +61,17 @@ def add_docstring(doc_string=None):
     return decorator
 
 
+def recompile(model):
+    model.compile(model.optimizer, model.loss, model.metrics)    
+
+    
 def freeze_model(model):
     for layer in model.layers:
         layer.trainable = False
     return
+
+
+def set_trainable(model):
+    for layer in model.layers:
+        layer.trainable = True
+    recompile(model)
