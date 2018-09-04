@@ -49,7 +49,7 @@ model.fit(x, y)
 ```
 ### TODO
 - [x] Update Unet API
-- [ ] Update FPN API
+- [x] Update FPN API
 - [ ] Add Linknet models
 - [ ] Add PSP models
 - [ ] Add DPN backbones
