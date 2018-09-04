@@ -54,7 +54,7 @@ from segmentation_models import FPN
 model = FPN(backbone_name='resnet34', encoder_weigths='imagenet')
 ```
 
-#### Usefull trick
+#### Useful trick
 Freeze encoder weights for fine-tuning during first epochs of training:
 ```python
 from segmentation_models import FPN
