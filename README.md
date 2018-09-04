@@ -64,13 +64,13 @@ model = FPN(backbone_name='resnet34', encoder_weigths='imagenet', freeze_encoder
 model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
 
 # pretrain model decoder
-model.fit(x, y, n_epochs=2)
+model.fit(x, y, epochs=2)
 
 # release all layers for training
 set_trainable(model) # set all layers trainable and recompile model
 
 # continue training
-model.fit(x, y, n_epochs=100)
+model.fit(x, y, epochs=100)
 ```
 
 ### TODO
