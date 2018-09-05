@@ -1,5 +1,6 @@
 """ Utility functions for segmentation models """
 from functools import wraps
+import numpy as np
 
 def get_layer_number(model, layer_name):
     """
@@ -75,3 +76,13 @@ def set_trainable(model):
     for layer in model.layers:
         layer.trainable = True
     recompile(model)
+
+
+def to_tuple(x):
+    if isinstance(x, tuple):
+        if len(x) == 2:
+            return x
+    elif np.isscalar(x):
+        return (x, x)
+
+    raise ValueError('Value should be tuple of length 2 or int value, got "{}"'.format(x))
