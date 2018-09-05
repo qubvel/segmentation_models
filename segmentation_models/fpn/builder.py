@@ -6,7 +6,7 @@ from keras.models import Model
 
 from .blocks import pyramid_block
 from .blocks import Conv
-from ..utils import extract_outputs
+from ..utils import extract_outputs, to_tuple
 
 import numpy as np
 
@@ -77,8 +77,8 @@ def build_fpn(backbone,
 
     for i, p in enumerate(pyramid[::-1]):
         if upsample_rates[i] > 1:
-            usample_factor = np.prod(upsample_rates[:i+1])
-            p = UpSampling2D(size=(usample_factor, usample_factor), interpolation=interpolation)(p)
+            upsample_rate = to_tuple(np.prod(upsample_rates[:i+1]))
+            p = UpSampling2D(size=upsample_rate, interpolation=interpolation)(p)
         upsampled_pyramid.append(p)
 
     x = Concatenate()(upsampled_pyramid)
@@ -93,7 +93,7 @@ def build_fpn(backbone,
     x = Activation(activation)(x)
 
     # upsampling to original spatial resolution
-    x = UpSampling2D(size=(last_upsample,last_upsample), interpolation=interpolation)(x)
+    x = UpSampling2D(size=to_tuple(last_upsample), interpolation=interpolation)(x)
 
     model = Model(backbone.input, x)
     return model
