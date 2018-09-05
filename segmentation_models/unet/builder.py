@@ -32,7 +32,6 @@ def build_unet(backbone, classes, skip_connection_layers,
         # check if there is a skip connection
         skip_connection = None
         if i < len(skip_connection_idx):
-            print(skip_connection_idx)
             skip_connection = backbone.layers[skip_connection_idx[i]].output
 
         upsample_rate = to_tuple(upsample_rates[i])
