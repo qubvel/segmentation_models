@@ -20,13 +20,14 @@ Segmentation models with pretrained backbones
 | Inception ResNet V2 |`inceptionresnetv2`| `imagenet` | +    | +    | 
 
 
-### Installation
-1) Clone repositoriy to your project  
+### Installation  
+
+#### Installing via pip  
+`$ pip install segmentation_models`
+
+#### Using latest version in your project
 ```bash
 $ git clone https://github.com/qubvel/segmentation_models.git
-```
-2) Update submodules  
-```bash
 $ cd segmentation_models
 $ git submodule update --init --recursive
 ```
