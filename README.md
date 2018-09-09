@@ -77,6 +77,6 @@ model.fit(x, y, epochs=100)
 ### TODO
 - [x] Update Unet API
 - [x] Update FPN API
-- [ ] Add Linknet models
+- [x] Add Linknet models
 - [ ] Add PSP models
 - [ ] Add DPN backbones
