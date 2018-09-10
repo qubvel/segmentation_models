@@ -28,7 +28,7 @@ def build_fpn(backbone,
               segmentation_filters=128,
               use_batchnorm=False,
               dropout=None,
-              interpolation='nerarest'):
+              interpolation='nearest'):
     """
     Implementation of FPN head for segmentation models according to:
         http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
