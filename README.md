@@ -42,7 +42,7 @@ from segmentation_models import Unet
 x, y = ...
 
 # prepare model
-model = Unet(backbone_name='resnet34', encoder_weigths='imagenet')
+model = Unet(backbone_name='resnet34', encoder_weights='imagenet')
 model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
 
 # train model
@@ -52,7 +52,7 @@ Train FPN model:
 ```python
 from segmentation_models import FPN
 
-model = FPN(backbone_name='resnet34', encoder_weigths='imagenet')
+model = FPN(backbone_name='resnet34', encoder_weights='imagenet')
 ```
 
 #### Useful trick
@@ -61,7 +61,7 @@ Freeze encoder weights for fine-tuning during first epochs of training:
 from segmentation_models import FPN
 from segmentation_models.utils import set_trainable
 
-model = FPN(backbone_name='resnet34', encoder_weigths='imagenet', freeze_encoder=True)
+model = FPN(backbone_name='resnet34', encoder_weights='imagenet', freeze_encoder=True)
 model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
 
 # pretrain model decoder
