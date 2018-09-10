@@ -6,7 +6,7 @@ from keras.layers import BatchNormalization
 import keras
 from distutils.version import StrictVersion
 
-if  StrictVersion(keras.__version__) < StrictVersion('2.2.2'):
+if  StrictVersion(keras.__version__) < StrictVersion('2.2.3'):
     from .layers import UpSampling2D
 else:
     from keras.layers import UpSampling2D
