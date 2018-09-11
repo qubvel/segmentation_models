@@ -31,8 +31,16 @@ from keras.layers import MaxPooling2D
 from keras.utils.data_utils import get_file
 from keras.engine.topology import get_source_inputs
 from keras.applications import imagenet_utils
-from keras.applications.imagenet_utils import _obtain_input_shape
 from keras import backend as K
+
+
+import keras
+from distutils.version import StrictVersion
+
+if StrictVersion(keras.__version__) < StrictVersion('2.2.0'):
+    from keras.applications.imagenet_utils import _obtain_input_shape
+else:
+    from keras_applications.imagenet_utils import _obtain_input_shape
 
 
 BASE_WEIGHT_URL = 'https://github.com/fchollet/deep-learning-models/releases/download/v0.7/'
