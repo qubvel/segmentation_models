@@ -21,7 +21,7 @@ Segmentation models with pretrained backbones
 
 ### Requirements
 1) Python 3.6 or higher
-2) Keras >=2.1.0, <2.2.0
+2) Keras >=2.1.0
 3) Tensorflow >= 1.4
 
 ### Installation  
