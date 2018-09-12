@@ -1,8 +1,9 @@
+[![PyPI version](https://badge.fury.io/py/segmentation-models.svg)](https://badge.fury.io/py/segmentation-models)
 # Segmentation models Zoo
 Segmentation models with pretrained backbones
 
-#### Unet and FPN like models
-| Backbone model      |Name| Weights    | UNet |  FPN |   LinkNet | 
+#### Models
+| Backbone model      |Name| Weights    | Unet |  FPN |   Linknet | 
 |---------------------|:--:|:------------:|:------:|:------:|:------:| 
 | VGG16               |`vgg16`| `imagenet` | +    | +    | +    | 
 | VGG19               |`vgg19`| `imagenet` | +    | +    | +    | 
