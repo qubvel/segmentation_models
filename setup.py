@@ -22,7 +22,7 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    # 'requests', 'maya', 'records',
+    # 'keras>=2.1.0', 'tensorflow>=1.4.0'
 ]
 
 # What packages are optional?

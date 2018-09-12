@@ -84,3 +84,13 @@ model.fit(x, y, epochs=100)
 - [x] Add Linknet models
 - [ ] Add PSP models
 - [ ] Add DPN backbones
+
+### Change Log
+
+**Version 0.1.1**  
+ - Added `Linknet` model
+ - Keras 2.2+ compatibility (fixed import of `_obtain_input_shape`)
+ - Small code improvements and bug fixes
+
+**Version 0.1.0**  
+ - `Unet` and `FPN` models
