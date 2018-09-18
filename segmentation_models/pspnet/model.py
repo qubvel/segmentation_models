@@ -53,6 +53,7 @@ def PSPNet(backbone_name='vgg16',
          psp_conv_filters=512,
          psp_pooling_type='avg',
          psp_use_batchnorm=False,
+         dropout=None,
          final_interpolation='bilinear',
          classes=1,
          activation='sigmoid'):
@@ -78,6 +79,7 @@ def PSPNet(backbone_name='vgg16',
         psp_pooling_type: 'avg' or 'max', psp block pooling type (maximum or average)
         psp_use_batchnorm: (bool) if True add batch normalisation layer between
             `Conv2D` ad `Activation` layers
+        dropout: None or float in range 0-1, if specified add SpatialDropout after PSP module
         final_interpolation: 'duc' or 'bilinear' - interpolation type for final
             upsampling layer.
         classes: (int) a number of classes for output
