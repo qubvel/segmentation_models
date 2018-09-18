@@ -2,23 +2,29 @@
 # Segmentation models Zoo
 Segmentation models with pretrained backbones
 
-#### Models
-| Backbone model      |Name| Weights    | Unet |  FPN |   Linknet | 
-|---------------------|:--:|:------------:|:------:|:------:|:------:| 
-| VGG16               |`vgg16`| `imagenet` | +    | +    | +    | 
-| VGG19               |`vgg19`| `imagenet` | +    | +    | +    | 
-| ResNet18            |`resnet18`| `imagenet` | +    | +    | +    | 
-| ResNet34            |`resnet34`| `imagenet` | +    | +    | +    | 
-| ResNet50            |`resnet50`| `imagenet`<br>`imagenet11k-places365ch` | +    | +    |  +    |
-| ResNet101           |`resnet101`| `imagenet` | +    | +    |  +    |
-| ResNet152           |`resnet152`| `imagenet`<br>`imagenet11k` | +    | +    |  +    |
-| ResNeXt50           |`resnext50`| `imagenet` | +    | +    |  +    |
-| ResNeXt101          |`resnext101`| `imagenet` | +    | +    |  +    |
-| DenseNet121         |`densenet121`| `imagenet` | +    | +    |  +    |
-| DenseNet169         |`densenet169`| `imagenet` | +    | +    |  +    |
-| DenseNet201         |`densenet201`| `imagenet` | +    | +    |  +    |
-| Inception V3        |`inceptionv3`| `imagenet` | +    | +    |  +    |
-| Inception ResNet V2 |`inceptionresnetv2`| `imagenet` | +    | +    |  +    |
+### Avaliable models:
+ - Unet
+ - FPN
+ - Linknet
+
+### Avaliable backbones:
+| Backbone model      |Name| Weights    | Preprocessing |
+|---------------------|:--:|:------------:|:------:|
+| VGG16               |`vgg16`| `imagenet` | KA*|
+| VGG19               |`vgg19`| `imagenet` | KA*|
+| ResNet18            |`resnet18`| `imagenet` |BGR, [0, 255]|
+| ResNet34            |`resnet34`| `imagenet` |BGR, [0, 255]|
+| ResNet50            |`resnet50`| `imagenet`<br>`imagenet11k-places365ch` |BGR, [0, 255]|
+| ResNet101           |`resnet101`| `imagenet` |BGR, [0, 255]|
+| ResNet152           |`resnet152`| `imagenet`<br>`imagenet11k` |BGR, [0, 255]|
+| ResNeXt50           |`resnext50`| `imagenet` |[0, 255]|
+| ResNeXt101          |`resnext101`| `imagenet` |[0, 255]|
+| DenseNet121         |`densenet121`| `imagenet` | KA*|
+| DenseNet169         |`densenet169`| `imagenet` | KA*|
+| DenseNet201         |`densenet201`| `imagenet` | KA*|
+| Inception V3        |`inceptionv3`| `imagenet` | KA*|
+| Inception ResNet V2 |`inceptionresnetv2`| `imagenet` | KA*|
+ * KA - preprocessing function from keras.applications
 
 ### Requirements
 1) Python 3.6 or higher
