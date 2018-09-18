@@ -109,6 +109,7 @@ def PSPNet(backbone_name='vgg16',
                       pooling_type=psp_pooling_type,
                       activation=activation,
                       use_batchnorm=psp_use_batchnorm,
+                      dropout=dropout,
                       final_interpolation=final_interpolation)
 
     # lock encoder weights for fine-tuning
