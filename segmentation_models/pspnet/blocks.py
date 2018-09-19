@@ -2,11 +2,8 @@ import numpy as np
 from keras.layers import MaxPool2D
 from keras.layers import AveragePooling2D
 from keras.layers import Concatenate
-from keras.layers import BatchNormalization
-from keras.layers import Conv2D
 from keras.layers import Permute
 from keras.layers import Reshape
-from keras.layers import Activation
 from keras.backend import int_shape
 
 from ..common import Conv2DBlock

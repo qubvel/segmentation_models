@@ -45,18 +45,18 @@ def _shape_guard(factor, shape):
 
 
 def PSPNet(backbone_name='vgg16',
-         input_shape=(384, 384, 3),
-         input_tensor=None,
-         encoder_weights='imagenet',
-         freeze_encoder=False,
-         downsample_factor=8,
-         psp_conv_filters=512,
-         psp_pooling_type='avg',
-         psp_use_batchnorm=False,
-         dropout=None,
-         final_interpolation='bilinear',
-         classes=1,
-         activation='sigmoid'):
+           input_shape=(384, 384, 3),
+           input_tensor=None,
+           encoder_weights='imagenet',
+           freeze_encoder=False,
+           downsample_factor=8,
+           psp_conv_filters=512,
+           psp_pooling_type='avg',
+           use_batchnorm=False,
+           dropout=None,
+           final_interpolation='bilinear',
+           classes=21,
+           activation='softmax'):
     """
     Exploit the capability of global context information by different-regionbased
     context aggregation through pyramid pooling module together with the proposed
@@ -67,7 +67,7 @@ def PSPNet(backbone_name='vgg16',
     Args:
         backbone_name: (str) look at list of available backbones.
         input_shape: (tuple) dimensions of input data (H, W, C).
-            H and W should be not None and divisible by (6 * `downsample_factor`)
+            H and W should be divisible by (6 * `downsample_factor`) and **NOT** `None`!
         input_tensor: keras tensor
         encoder_weights: one of `None` (random initialization), 'imagenet' (pre-
             training on ImageNet)
@@ -77,7 +77,7 @@ def PSPNet(backbone_name='vgg16',
             backbone depth to construct PSP module on it.
         psp_conv_filters: (int), number of filters in `Conv2D` layer in each psp block
         psp_pooling_type: 'avg' or 'max', psp block pooling type (maximum or average)
-        psp_use_batchnorm: (bool) if True add batch normalisation layer between
+        use_batchnorm: (bool) if True add batch normalisation layer between
             `Conv2D` ad `Activation` layers
         dropout: None or float in range 0-1, if specified add SpatialDropout after PSP module
         final_interpolation: 'duc' or 'bilinear' - interpolation type for final
@@ -108,7 +108,7 @@ def PSPNet(backbone_name='vgg16',
                       conv_filters=psp_conv_filters,
                       pooling_type=psp_pooling_type,
                       activation=activation,
-                      use_batchnorm=psp_use_batchnorm,
+                      use_batchnorm=use_batchnorm,
                       dropout=dropout,
                       final_interpolation=final_interpolation)
 

@@ -14,6 +14,7 @@ from keras.layers import SpatialDropout2D
 from keras.models import Model
 
 from .blocks import PyramidPoolingModule, DUC
+from ..common import Conv2DBlock
 from ..common import ResizeImage
 from ..utils import extract_outputs
 from ..utils import to_tuple
@@ -22,13 +23,13 @@ from ..utils import to_tuple
 def build_psp(backbone,
               psp_layer,
               last_upsampling_factor,
-              classes=1,
+              classes=21,
+              activation='softmax',
               conv_filters=512,
-              activation='sigmoid',
               pooling_type='avg',
               dropout=None,
               final_interpolation='bilinear',
-              use_batchnorm=False):
+              use_batchnorm=True):
 
     input = backbone.input
 
@@ -38,6 +39,9 @@ def build_psp(backbone,
         conv_filters=conv_filters,
         pooling_type=pooling_type,
         use_batchnorm=use_batchnorm)(x)
+
+    x = Conv2DBlock(512, (1, 1), activation='relu', padding='same',
+                    use_batchnorm=use_batchnorm)(x)
 
     if dropout is not None:
         x = SpatialDropout2D(dropout)(x)
