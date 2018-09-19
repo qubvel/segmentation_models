@@ -3,9 +3,10 @@
 Segmentation models with pretrained backbones
 
 ### Avaliable models:
- - Unet
- - FPN
- - Linknet
+ - [Unet](https://arxiv.org/abs/1505.04597)
+ - [FPN](http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf)
+ - [Linknet](https://arxiv.org/abs/1707.03718)
+ - [PSPNet](https://arxiv.org/abs/1612.01105)
 
 ### Avaliable backbones:
 | Backbone model      |Name| Weights    | Preprocessing |
@@ -89,7 +90,7 @@ model.fit(x, y, epochs=100)
 - [x] Update Unet API
 - [x] Update FPN API
 - [x] Add Linknet models
-- [ ] Add PSP models
+- [x] Add PSP models
 - [ ] Add DPN backbones
 
 ### Change Log
