@@ -49,9 +49,13 @@ $ git submodule update --init --recursive
 Train Unet model:  
 ```python
 from segmentation_models import Unet
+from segmentation_models.backbones import get_preprocessing
 
 # prepare data
 x, y = ...
+
+preprocessing_fn = get_preprocessing('resnet34')
+x = preprocessing_fn(x)
 
 # prepare model
 model = Unet(backbone_name='resnet34', encoder_weights='imagenet')
