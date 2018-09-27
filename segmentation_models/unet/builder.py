@@ -13,7 +13,7 @@ def build_unet(backbone, classes, skip_connection_layers,
                n_upsample_blocks=5,
                block_type='upsampling',
                activation='sigmoid',
-               use_batchnorm=False):
+               use_batchnorm=True):
 
     input = backbone.input
     x = backbone.output

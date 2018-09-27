@@ -15,7 +15,7 @@ def build_linknet(backbone,
                   upsample_kernel_size=(3, 3),
                   upsample_layer='upsampling',
                   activation='sigmoid',
-                  use_batchnorm=False):
+                  use_batchnorm=True):
 
     input = backbone.input
     x = backbone.output
