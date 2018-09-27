@@ -34,7 +34,7 @@ def FPN(backbone_name='vgg16',
         interpolation='bilinear',
         use_batchnorm=True,
         classes=21,
-        activation='sigmoid',
+        activation='softmax',
         dropout=None):
     """
     Implementation of FPN head for segmentation models according to:
