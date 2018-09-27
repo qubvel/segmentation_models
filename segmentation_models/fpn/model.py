@@ -22,7 +22,6 @@ DEFAULT_FEATURE_PYRAMID_LAYERS = {
 
 
 def FPN(backbone_name='vgg16',
-        classes=1,
         input_shape=(None, None, 3),
         input_tensor=None,
         encoder_weights='imagenet',
@@ -32,9 +31,10 @@ def FPN(backbone_name='vgg16',
         segmentation_block_filters=128,
         upsample_rates=(2, 2, 2),
         last_upsample=4,
-        interpolation='nearest',
-        use_batchnorm=False,
-        activation='sigmoid',
+        interpolation='bilinear',
+        use_batchnorm=True,
+        classes=21,
+        activation='softmax',
         dropout=None):
     """
     Implementation of FPN head for segmentation models according to:
