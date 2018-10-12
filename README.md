@@ -98,6 +98,23 @@ model.fit(x, y, epochs=100)
 
 ### Change Log
 
+**Version 0.1.2**  
+
+###### Areas of improvement
+
+ - Added PSPModel
+ - Default param 'use_batchnorm=True` for all decoders
+ - Prepocessing functions for all backbones: 
+```python
+from segmentation_models import get_preprocessing
+
+preprocessing_fn = get_preprocessing('resnet34')
+X = preprocessing_fn(x)
+```
+###### Breaking changes
+ - FPN model `Upsample2D` layer renamed to `ResizeImage`
+
+
 **Version 0.1.1**  
  - Added `Linknet` model
  - Keras 2.2+ compatibility (fixed import of `_obtain_input_shape`)
