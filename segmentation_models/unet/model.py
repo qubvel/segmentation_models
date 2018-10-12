@@ -45,12 +45,12 @@ def Unet(backbone_name='vgg16',
         skip_connections: if 'default' is used take default skip connections,
             else provide a list of layer numbers or names starting from top of model
         decoder_block_type: (str) one of 'upsampling' and 'transpose' (look at blocks.py)
-        decoder_filters: (int) number of convolution filters in last upsample block
+        decoder_filters: (int) number of convolution layer filters in decoder blocks
         decoder_use_batchnorm: (bool) if True add batch normalisation layer between `Conv2D` ad `Activation` layers
         n_upsample_blocks: (int) a number of upsampling blocks
         upsample_rates: (tuple of int) upsampling rates decoder blocks
         classes: (int) a number of classes for output
-        activation: (str) one of keras activations
+        activation: (str) one of keras activations for last model layer
 
     Returns:
         keras.models.Model instance
