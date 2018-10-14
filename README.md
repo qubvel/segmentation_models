@@ -34,7 +34,7 @@ Segmentation models with pretrained backbones
 ### Installation  
 
 #### Installing via pip  
-`$ pip install segmentation_models`
+`$ pip install segmentation-models`
 
 #### Using latest version in your project
 ```bash
