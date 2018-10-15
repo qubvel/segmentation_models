@@ -111,7 +111,7 @@ preprocessing_fn = get_preprocessing('resnet34')
 X = preprocessing_fn(x)
 ```
 ###### API changes
-- Default param 'use_batchnorm=True` for all decoders
+- Default param `use_batchnorm=True` for all decoders
 - FPN model `Upsample2D` layer renamed to `ResizeImage`
 
 **Version 0.1.1**  
