@@ -105,7 +105,7 @@ model.fit(x, y, epochs=100)
  - Added PSPModel
  - Prepocessing functions for all backbones: 
 ```python
-from segmentation_models import get_preprocessing
+from segmentation_models.backbones import get_preprocessing
 
 preprocessing_fn = get_preprocessing('resnet34')
 X = preprocessing_fn(x)
