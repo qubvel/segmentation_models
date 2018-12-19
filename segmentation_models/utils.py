@@ -73,6 +73,17 @@ def freeze_model(model):
 
 
 def set_trainable(model):
+    """Set all layers of model trainable and recompile it
+
+    Note:
+        Model is recompiled using same optimizer, loss and metrics::
+
+            model.compile(model.optimizer, model.loss, model.metrics)
+
+    Args:
+        model (``keras.models.Model``): instance of keras model
+
+    """
     for layer in model.layers:
         layer.trainable = True
     recompile(model)

@@ -34,30 +34,42 @@ def Unet(backbone_name='vgg16',
          upsample_rates=(2,2,2,2,2),
          classes=1,
          activation='sigmoid'):
+    """ Unet_ is a fully convolution neural network for image semantic segmentation
+
+        Args:
+            backbone_name: name of classification model (without last dense layers) used as feature
+                extractor to build segmentation model.
+            input_shape: shape of input data/image ``(H, W, C)``, in general
+                case you do not need to set ``H`` and ``W`` shapes, just pass ``(None, None, C)`` to make your model be
+                able to process images af any size, but ``H`` and ``W`` of input images should be divisible by factor ``32``.
+            input_tensor: optional Keras tensor (i.e. output of `layers.Input()`) to use as image input for the model
+                (works only if ``encoder_weights`` is ``None``).
+            encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
+            freeze_encoder: if ``True`` set all layers of encoder (backbone model) as non-trainable.
+            skip_connections: a list of layer numbers or names starting from top of the model.
+                Each of these layers will be concatenated with corresponding decoder block. If ``default`` is used
+                layer names are taken from ``DEFAULT_SKIP_CONNECTIONS``.
+            decoder_block_type: one of blocks with following layers structure:
+
+                - `upsampling`:  ``Upsampling2D`` -> ``Conv2D`` -> ``Conv2D``
+                - `transpose`:   ``Transpose2D`` -> ``Conv2D``
+
+            decoder_filters: list of numbers of ``Conv2D`` layer filters in decoder blocks
+            decoder_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
+                is used.
+            n_upsample_blocks: a number of upsampling blocks.
+            upsample_rates: list of upsampling rates for decoder block.
+            classes: a number of classes for output (output shape - ``(h, w, classes)``).
+            activation: name of one of ``keras.activations`` for last model layer
+                (e.g. ``sigmoid``, ``softmax``, ``linear``).
+
+        Returns:
+            ``keras.models.Model``: **Unet**
+
+        .. _Unet:
+            https://arxiv.org/pdf/1505.04597
+
     """
-
-    Args:
-        backbone_name: (str) look at list of available backbones.
-        input_shape:  (tuple) dimensions of input data (H, W, C)
-        input_tensor: keras tensor
-        encoder_weights: one of `None` (random initialization), 'imagenet' (pre-training on ImageNet)
-        freeze_encoder: (bool) Set encoder layers weights as non-trainable. Useful for fine-tuning
-        skip_connections: if 'default' is used take default skip connections,
-            else provide a list of layer numbers or names starting from top of model
-        decoder_block_type: (str) one of 'upsampling' and 'transpose' (look at blocks.py)
-        decoder_filters: (int) number of convolution layer filters in decoder blocks
-        decoder_use_batchnorm: (bool) if True add batch normalisation layer between `Conv2D` ad `Activation` layers
-        n_upsample_blocks: (int) a number of upsampling blocks
-        upsample_rates: (tuple of int) upsampling rates decoder blocks
-        classes: (int) a number of classes for output
-        activation: (str) one of keras activations for last model layer
-
-    Returns:
-        keras.models.Model instance
-
-    """
-
-
 
     backbone = get_backbone(backbone_name,
                             input_shape=input_shape,

@@ -57,37 +57,36 @@ def PSPNet(backbone_name='vgg16',
            final_interpolation='bilinear',
            classes=21,
            activation='softmax'):
-    """
-    Exploit the capability of global context information by different-regionbased
-    context aggregation through pyramid pooling module together with the proposed
-    pyramid scene parsing network (PSPNet).
-
-    https://arxiv.org/pdf/1612.01105.pdf
+    """PSPNet_ is a fully convolution neural network for image semantic segmentation
 
     Args:
-        backbone_name: (str) look at list of available backbones.
-        input_shape: (tuple) dimensions of input data (H, W, C).
-            H and W should be divisible by (6 * `downsample_factor`) and **NOT** `None`!
-        input_tensor: keras tensor
-        encoder_weights: one of `None` (random initialization), 'imagenet' (pre-
-            training on ImageNet)
-        freeze_encoder: (bool) Set encoder layers weights as non-trainable. Use-
-            ful for fine-tuning
-        downsample_factor: int, one of 4, 8 and 16. Specify layer of backbone or
-            backbone depth to construct PSP module on it.
-        psp_conv_filters: (int), number of filters in `Conv2D` layer in each psp block
-        psp_pooling_type: 'avg' or 'max', psp block pooling type (maximum or average)
-        use_batchnorm: (bool) if True add batch normalisation layer between
-            `Conv2D` ad `Activation` layers
-        dropout: None or float in range 0-1, if specified add SpatialDropout after PSP module
-        final_interpolation: 'duc' or 'bilinear' - interpolation type for final
+        backbone_name: name of classification model used as feature
+                extractor to build segmentation model.
+        input_shape: shape of input data/image ``(H, W, C)``.
+            ``H`` and ``W`` should be divisible by ``6 * downsample_factor`` and **NOT** ``None``!
+        input_tensor: optional Keras tensor (i.e. output of `layers.Input()`) to use as image input for the model
+                (works only if ``encoder_weights`` is ``None``).
+        encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
+        freeze_encoder: if ``True`` set all layers of encoder (backbone model) as non-trainable.
+        downsample_factor: one of 4, 8 and 16. Downsampling rate or in other words backbone depth
+            to construct PSP module on it.
+        psp_conv_filters: number of filters in ``Conv2D`` layer in each PSP block.
+        psp_pooling_type: one of 'avg', 'max'. PSP block pooling type (maximum or average).
+        use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
+                is used.
+        dropout: dropout rate between 0 and 1.
+        final_interpolation: ``duc`` or ``bilinear`` - interpolation type for final
             upsampling layer.
-        classes: (int) a number of classes for output
-        activation: (str) one of keras activations
-
+        classes: a number of classes for output (output shape - ``(h, w, classes)``).
+        activation: name of one of ``keras.activations`` for last model layer
+                (e.g. ``sigmoid``, ``softmax``, ``linear``).
 
     Returns:
-        keras Model instance
+        ``keras.models.Model``: **PSPNet**
+
+    .. _PSPNet:
+        https://arxiv.org/pdf/1612.01105.pdf
+
     """
 
     # control image input shape

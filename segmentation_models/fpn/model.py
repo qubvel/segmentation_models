@@ -36,30 +36,38 @@ def FPN(backbone_name='vgg16',
         classes=21,
         activation='softmax',
         dropout=None):
-    """
-    Implementation of FPN head for segmentation models according to:
-        http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
+    """FPN_ is a fully convolution neural network for image semantic segmentation
 
     Args:
-        backbone_name: (str) see available backbones
-        classes: (int) a number of classes for output
-        input_shape: (tuple) dimensions of input data (H, W, C)
-        input_tensor: keras tensor
-        encoder_weights: one of `None` (random initialization), 'imagenet' (pre-training on ImageNet)
-        freeze_encoder: (bool) Set encoder layers weights as non-trainable. Useful for fine-tuning
-        fpn_layers: (list) of layer names or indexes, used for pyramid
-        pyramid_block_filters: (int) number of filters in `M` blocks of top-down FPN branch
-        segmentation_block_filters: (int) number of filters in `P` blocks of FPN
-        upsample_rates: (tuple) rates for upsampling pyramid blocks
-        last_upsample: (int) rate for upsumpling concatenated pyramid predictions to
-            match spatial resolution of input data
-        interpolation: (str) interpolation type for upsampling layers - 'nearest' or 'bilinear'
-        use_batchnorm: (bool) if True add batch normalisation layer between `Conv2D` ad `Activation` layers
-        activation: (str) one of keras activations
-        dropout: None or float [0, 1), dropout rate
+        backbone_name: name of classification model (without last dense layers) used as feature
+                extractor to build segmentation model.
+        input_shape: shape of input data/image ``(H, W, C)``, in general
+                case you do not need to set ``H`` and ``W`` shapes, just pass ``(None, None, C)`` to make your model be
+                able to process images af any size, but ``H`` and ``W`` of input images should be divisible by factor ``32``.
+        input_tensor: optional Keras tensor (i.e. output of `layers.Input()`) to use as image input for the model
+                (works only if ``encoder_weights`` is ``None``).
+        encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
+        freeze_encoder: if ``True`` set all layers of encoder (backbone model) as non-trainable.
+        fpn_layers: a list of layer numbers or names starting from top of the model.
+                Each of these layers will be used to build features pyramid. If ``default`` is used
+                layer names are taken from ``DEFAULT_FEATURE_PYRAMID_LAYERS``.
+        pyramid_block_filters: a number of filters in Feature Pyramid Block of FPN_.
+        segmentation_block_filters: a number of filters in Segmentation Head of FPN_.
+        upsample_rates: list of rates for upsampling pyramid blocks (to make them same spatial resolution).
+        last_upsample: rate for upsumpling concatenated pyramid predictions to
+            match spatial resolution of input data.
+        interpolation: interpolation type for upsampling layers, on of ``nearest``, ``bilinear``.
+        use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
+                is used.
+        dropout: dropout rate between 0 and 1.
+        classes: a number of classes for output (output shape - ``(h, w, classes)``).
+        activation: name of one of ``keras.activations`` for last model layer (e.g. ``sigmoid``, ``softmax``, ``linear``).
 
     Returns:
-        keras.models.Model
+        ``keras.models.Model``: **FPN**
+
+    .. _FPN:
+        http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
 
     """
 
