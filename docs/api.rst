@@ -4,7 +4,6 @@ Segmentation Models Python API
 
 Getting started with segmentation models is easy.
 
-.. _api_unet:
 Unet
 ~~~~
 .. autofunction:: segmentation_models.Unet
