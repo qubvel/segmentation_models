@@ -65,7 +65,7 @@ def Conv2DTranspose(filters,
 
     if not tuple(upsample_rate) == (2,2):
         raise NotImplementedError(
-            f'Conv2DTranspose support only upsample_rate=(2, 2), got {upsample_rate}')
+            'Conv2DTranspose support only upsample_rate=(2, 2), got {}'.format(upsample_rate))
 
     def layer(input_tensor):
         x = Transpose(filters,
@@ -95,7 +95,7 @@ def UpsampleBlock(filters,
         UpBlock = Conv2DTranspose
 
     else:
-        raise ValueError(f'Not supported up layer type {upsample_layer}')
+        raise ValueError('Not supported up layer type {}'.format(upsample_layer))
 
     def layer(input_tensor):
 
