@@ -31,4 +31,12 @@ models_preprocessing = {
 
 
 def get_preprocessing(backbone):
+    """Returns pre-processing function for image data according to name of backbone
+
+    Args:
+        backbone (str): name of classification model
+
+    Returns:
+        ``callable``: preprocessing_function
+    """
     return models_preprocessing[backbone]
