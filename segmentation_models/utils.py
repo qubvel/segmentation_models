@@ -1,6 +1,8 @@
 """ Utility functions for segmentation models """
-from functools import wraps
 import numpy as np
+from functools import wraps
+from keras.layers import BatchNormalization
+
 
 def get_layer_number(model, layer_name):
     """
@@ -67,8 +69,10 @@ def recompile(model):
 
     
 def freeze_model(model):
+    """model all layers non trainable, excluding BatchNormalization layers"""
     for layer in model.layers:
-        layer.trainable = False
+        if not isinstance(layer, BatchNormalization):
+            layer.trainable = False
     return
 
 
