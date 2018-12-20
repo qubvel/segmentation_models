@@ -1,6 +1,17 @@
-[![PyPI version](https://badge.fury.io/py/segmentation-models.svg)](https://badge.fury.io/py/segmentation-models)
+[![PyPI version](https://badge.fury.io/py/segmentation-models.svg)](https://badge.fury.io/py/segmentation-models) [![Documentation Status](https://readthedocs.org/projects/segmentation-models/badge/?version=latest)](https://segmentation-models.readthedocs.io/en/latest/?badge=latest)
 # Segmentation models Zoo
-Segmentation models with pretrained backbones
+**Segmentation models** is python library with Neural Networks
+for [Image Segmentation](https://en.wikipedia.org/wiki/Image_segmentation) based on [Keras](https://keras.io)
+([Tensorflow](https://www.tensorflow.org/)) framework.
+
+**The main features** of this library are:
+
+-  High level API (just two lines to create NN)
+-  **4** models architectures for binary and multi class segmentation (including legendary **Unet**)
+-  **15** available backbones for each architecture
+-  All backbones have **pre-trained** weights for faster and better convergence
+
+Latest **documentation** is avaliable on [Read the Docs](https://segmentation-models.readthedocs.io/en/latest/)
 
 ### Avaliable models:
  - [Unet](https://arxiv.org/abs/1505.04597)
