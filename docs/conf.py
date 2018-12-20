@@ -17,6 +17,8 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
+import sys
+sys.path.append('..')
 
 project = u'Segmentation Models'
 copyright = u'2018, Pavel Yakubovskiy'
