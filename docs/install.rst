@@ -6,6 +6,7 @@ Installation
  - Keras >=2.1.0
  - Tensorflow >= 1.4
  - scikit-image
+ - image-classifiers == 0.1.0rc0
 
 .. note::
 
@@ -25,6 +26,4 @@ To install library execute at the command line::
 
 Or use latest version available on github.com::
 
- $ git clone --recurse-submodules -j8 https://github.com/qubvel/segmentation_models.git
- $ cd segmentation_models
- $ python setup.py install
+ $ pip install git+https://github.com/qubvel/segmentation_models
