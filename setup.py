@@ -20,22 +20,24 @@ AUTHOR = 'Pavel Yakubovskiy'
 REQUIRES_PYTHON = '>=3.0.0'
 VERSION = None
 
-# What packages are required for this module to be executed?
-REQUIRED = [
-    'keras>=2.1.0', 'scikit-image', 'image-classifiers==0.1.0rc0'
-]
-
-# What packages are optional?
-EXTRAS = {
-    # 'fancy feature': ['django'],
-}
-
 # The rest you shouldn't have to touch too much :)
 # ------------------------------------------------
 # Except, perhaps the License and Trove Classifiers!
 # If you do change the License, remember to change the Trove Classifier for that!
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+# What packages are required for this module to be executed?
+try:
+    with open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+        REQUIRED = f.read().split('\n')
+except:
+    REQUIRED = []
+
+# What packages are optional?
+EXTRAS = {
+    # 'fancy feature': ['django'],
+}
 
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.md' is present in your MANIFEST.in file!
