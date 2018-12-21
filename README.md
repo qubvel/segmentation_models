@@ -49,9 +49,7 @@ Latest **documentation** is avaliable on [Read the Docs](https://segmentation-mo
 
 #### Using latest version in your project
 ```bash
-$ git clone https://github.com/qubvel/segmentation_models.git
-$ cd segmentation_models
-$ git submodule update --init --recursive
+$ pip install git+https://github.com/qubvel/segmentation_models
 ```
 
 ### Code examples

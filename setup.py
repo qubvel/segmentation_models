@@ -22,7 +22,7 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'keras>=2.1.0', 'scikit-image',
+    'keras>=2.1.0', 'scikit-image', 'image-classifiers==0.1.0rc0'
 ]
 
 # What packages are optional?
