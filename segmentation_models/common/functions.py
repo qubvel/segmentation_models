@@ -95,7 +95,7 @@ def resize_images(x,
     if interpolation == 'nearest':
         x = tf.image.resize_nearest_neighbor(x, new_shape)
     elif interpolation == 'bilinear':
-        x = tf.image.resize_bilinear(x, new_shape)
+        x = tf.image.resize_bilinear(x, new_shape, align_corners=True)
     else:
         raise ValueError('interpolation should be one '
                          'of "nearest" or "bilinear".')
