@@ -1,11 +1,9 @@
-import sys
+import os
 import pytest
-import random as rn
+import random
 import six
 import numpy as np
 import keras.backend as K
-
-sys.path.insert(0, '..')
 
 from segmentation_models import Unet
 from segmentation_models import Linknet
@@ -15,6 +13,14 @@ from segmentation_models.backbones import backbones as bkb
 
 
 BACKBONES = list(bkb.backbones.keys())
+
+
+def _select_names(names):
+    is_full = os.environ.get('FULL_TEST', False)
+    if not is_full:
+        return [random.choice(names)]
+    else:
+        return names
 
 
 def keras_test(func):
@@ -64,46 +70,51 @@ def _test_shape(model_fn, backbone, input_shape, *args, **kwargs):
     assert x.shape[:-1] == y.shape[:-1]
 
 
-def test_unet():
+@pytest.mark.parametrize('backbone', _select_names(BACKBONES))
+def test_unet(backbone):
     _test_none_shape(
-        Unet, rn.choice(BACKBONES), encoder_weights=None)
+        Unet, backbone, encoder_weights=None)
 
     _test_none_shape(
-        Unet, rn.choice(BACKBONES), encoder_weights='imagenet')
+        Unet, backbone, encoder_weights='imagenet')
 
     _test_shape(
-        Unet, rn.choice(BACKBONES), input_shape=(256, 256, 4), encoder_weights=None)
+        Unet, backbone, input_shape=(256, 256, 4), encoder_weights=None)
 
 
-def test_linknet():
+@pytest.mark.parametrize('backbone', _select_names(BACKBONES))
+def test_linknet(backbone):
     _test_none_shape(
-        Linknet, rn.choice(BACKBONES), encoder_weights=None)
-
-    _test_none_shape(
-        Linknet, rn.choice(BACKBONES), encoder_weights='imagenet')
-
-    _test_shape(
-        Linknet, rn.choice(BACKBONES), input_shape=(256, 256, 4), encoder_weights=None)
-
-
-def test_pspnet():
-
-    _test_shape(
-        PSPNet, rn.choice(BACKBONES), input_shape=(384, 384, 4), encoder_weights=None)
-
-    _test_shape(
-        PSPNet, rn.choice(BACKBONES), input_shape=(384, 384, 3), encoder_weights='imagenet')
-
-
-def test_fpn():
-    _test_none_shape(
-        FPN, rn.choice(BACKBONES), encoder_weights=None)
+        Linknet, backbone, encoder_weights=None)
 
     _test_none_shape(
-        FPN, rn.choice(BACKBONES), encoder_weights='imagenet')
+        Linknet, backbone, encoder_weights='imagenet')
 
     _test_shape(
-        FPN, rn.choice(BACKBONES), input_shape=(256, 256, 4), encoder_weights=None)
+        Linknet, backbone, input_shape=(256, 256, 4), encoder_weights=None)
+
+
+@pytest.mark.parametrize('backbone', _select_names(BACKBONES))
+def test_pspnet(backbone):
+
+    _test_shape(
+        PSPNet, backbone, input_shape=(384, 384, 4), encoder_weights=None)
+
+    _test_shape(
+        PSPNet, backbone, input_shape=(384, 384, 3), encoder_weights='imagenet')
+
+
+@pytest.mark.parametrize('backbone', _select_names(BACKBONES))
+def test_fpn(backbone):
+    _test_none_shape(
+        FPN, backbone, encoder_weights=None)
+
+    _test_none_shape(
+        FPN, backbone, encoder_weights='imagenet')
+
+    _test_shape(
+        FPN, backbone, input_shape=(256, 256, 4), encoder_weights=None)
+
 
 if __name__ == '__main__':
     pytest.main([__file__])

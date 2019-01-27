@@ -1,0 +1,89 @@
+sudo: required
+dist: trusty
+language: python
+
+matrix:
+    include:
+        # different pythons
+        - python: 3.5
+
+        # different keras versions
+        - python: 3.6
+          env: KERAS_VERSION=head
+        - python: 3.6
+          env: KERAS_VERSION=2.1.5
+        - python: 3.6
+          env: KERAS_VERSION=2.2.4
+
+git:
+  submodules: true
+
+
+install:
+  # code below is taken from http://conda.pydata.org/docs/travis.html
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest pandas
+  - source activate test-environment
+  - pip install --only-binary=numpy,scipy numpy nose scipy matplotlib h5py theano scikit-image
+
+  # install keras
+  - if [[ $KERAS_VERSION == "head" ]]; then
+      pip install --no-deps git+https://github.com/keras-team/keras.git;
+    elif [ -z $KERAS_VERSION ]; then
+      pip install keras;
+    else
+      pip install keras==$KERAS_VERSION;
+    fi
+
+  - conda install mkl mkl-service
+
+  # set library path
+  - export LD_LIBRARY_PATH=$HOME/miniconda/envs/test-environment/lib/:$LD_LIBRARY_PATH
+
+  # install lib in develop mode
+  - pip install -e .[tests]
+
+  # install TensorFlow (CPU version).
+  - pip install tensorflow==1.9
+
+  # install pydot for visualization tests
+  - conda install pydot graphviz
+
+  # detect one of markdown files is changed or not
+  - export DOC_ONLY_CHANGED=False;
+  - if [ $(git diff --name-only HEAD~1 | wc -l) == "1" ] && [[ "$(git diff --name-only HEAD~1)" == *"md" ]]; then
+      export DOC_ONLY_CHANGED=True;
+    fi
+
+# command to run tests
+script:
+  - export MKL_THREADING_LAYER="GNU"
+  - export KERAS_BACKEND="tensorflow"
+  # run keras backend init to initialize backend config
+  - python -c "import keras.backend"
+  # create models directory to avoid concurrent directory creation at runtime
+  - mkdir ~/.keras/models
+  # set up keras backend
+  - sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
+  - echo -e "Running tests with the following config:\n$(cat ~/.keras/keras.json)"
+  - if [[ "$DOC_ONLY_CHANGED" == "False" ]]; then
+      if [[ "$TEST_MODE" == "PEP8" ]]; then
+        PYTHONPATH=$PWD:$PYTHONPATH py.test --pep8 -m pep8 -n0;
+      else
+        PYTHONPATH=$PWD:$PYTHONPATH py.test tests/;
+      fi;
+    fi
