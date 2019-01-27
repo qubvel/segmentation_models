@@ -1,5 +1,9 @@
-[![PyPI version](https://badge.fury.io/py/segmentation-models.svg)](https://badge.fury.io/py/segmentation-models) [![Documentation Status](https://readthedocs.org/projects/segmentation-models/badge/?version=latest)](https://segmentation-models.readthedocs.io/en/latest/?badge=latest)
-# Segmentation models Zoo
+<div style="text-align:center"><img src ="https://github.com/qubvel/classification_models/blob/master/logo.png" /></div>
+<center> <h1>Segmentation Models</h1> </center>
+<center>[![PyPI version](https://badge.fury.io/py/segmentation-models.svg)](https://badge.fury.io/py/segmentation-models)
+[![Documentation Status](https://readthedocs.org/projects/segmentation-models/badge/?version=latest)](https://segmentation-models.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.com/qubvel/segmentation_models.svg?branch=master)](https://travis-ci.com/qubvel/segmentation_models)</center>
+
 **Segmentation models** is python library with Neural Networks
 for [Image Segmentation](https://en.wikipedia.org/wiki/Image_segmentation) based on [Keras](https://keras.io)
 ([Tensorflow](https://www.tensorflow.org/)) framework.
@@ -106,27 +110,3 @@ model.fit(x, y, epochs=100)
 - [ ] Add DPN backbones
 
 ### Change Log
-
-**Version 0.1.2**  
-
-###### Areas of improvement
-
- - Added PSPModel
- - Prepocessing functions for all backbones: 
-```python
-from segmentation_models.backbones import get_preprocessing
-
-preprocessing_fn = get_preprocessing('resnet34')
-X = preprocessing_fn(x)
-```
-###### API changes
-- Default param `use_batchnorm=True` for all decoders
-- FPN model `Upsample2D` layer renamed to `ResizeImage`
-
-**Version 0.1.1**  
- - Added `Linknet` model
- - Keras 2.2+ compatibility (fixed import of `_obtain_input_shape`)
- - Small code improvements and bug fixes
-
-**Version 0.1.0**  
- - `Unet` and `FPN` models
