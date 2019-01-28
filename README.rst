@@ -30,129 +30,105 @@ on `Keras <https://keras.io>`__
 -  All backbones have **pre-trained** weights for faster and better
    convergence
 
-Latest **documentation** is avaliable on `Read the
-Docs <https://segmentation-models.readthedocs.io/en/latest/>`__
-
-Avaliable models:
+Table of Contents
 ~~~~~~~~~~~~~~~~~
+ - `Quick start`_
+ - `Models and Backbones`_
+ - `Installation`_
+ - `Documentation`_
+ - `Change log`_
+ - `Licence`_
+ 
+Quick start
+~~~~~~~~~~~
+Since the library is built on the Keras framework, created segmentaion model is just a Keras Model, wich can be created as easy as:
+
+.. code:: python
+
+    from segmentation_models import Unet
+    
+    model = Unet()
+    
+Depending on the task, you can change the network architecture by choosing backbones with fewer or more parameters and use pretrainded weights for to initialize it:
+
+.. code:: python
+
+    model = Unet('resnet34', encoder_weights='imagenet')
+
+Change number of output classes in the model:
+
+.. code:: python
+
+    model = Unet('resnet34', classes=3, activation='softmax')
+    
+Change input shape of the model:
+
+.. code:: python
+
+    model = Unet('resnet34', input_shape=(None, None, 6), encoder_weights=None)
+
+Same manimulations can be done with ``Linknet``,``PSPNet`` and ``FPN``. For more detailed information about models API and  use cases read Documentation_.
+
+Models and Backbones
+~~~~~~~~~~~~~~~~~~~~
+**Models**
 
 -  `Unet <https://arxiv.org/abs/1505.04597>`__
 -  `FPN <http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf>`__
 -  `Linknet <https://arxiv.org/abs/1707.03718>`__
 -  `PSPNet <https://arxiv.org/abs/1612.01105>`__
 
-Avaliable backbones:
-~~~~~~~~~~~~~~~~~~~~
+**Backbones**
 
-+-----------------------+-------------------------+-----------------------------------------------+
-| Backbone model        | Name                    | Weights                                       |
-+=======================+=========================+===============================================+
-| VGG16                 | ``vgg16``               | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| VGG19                 | ``vgg19``               | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| ResNet18              | ``resnet18``            | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| ResNet34              | ``resnet34``            | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| ResNet50              | ``resnet50``            | ``imagenet``\ \ ``imagenet11k-places365ch``   |
-+-----------------------+-------------------------+-----------------------------------------------+
-| ResNet101             | ``resnet101``           | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| ResNet152             | ``resnet152``           | ``imagenet``\ \ ``imagenet11k``               |
-+-----------------------+-------------------------+-----------------------------------------------+
-| ResNeXt50             | ``resnext50``           | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| ResNeXt101            | ``resnext101``          | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| DenseNet121           | ``densenet121``         | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| DenseNet169           | ``densenet169``         | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| DenseNet201           | ``densenet201``         | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| Inception V3          | ``inceptionv3``         | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
-| Inception ResNet V2   | ``inceptionresnetv2``   | ``imagenet``                                  |
-+-----------------------+-------------------------+-----------------------------------------------+
+.. table:: 
 
-Requirements
-~~~~~~~~~~~~
+    ===========  ===== 
+    Type         Names
+    ===========  =====
+    VGG          ``'vgg16' 'vgg19'``
+    ResNet       ``'resnet18' 'resnet34' 'resnet50' 'resnet101' 'resnet152'``
+    ResNeXt      ``'resnext50' 'resnet101'``
+    DenseNet     ``'densenet121' 'densenet169' 'densenet201'`` 
+    Inception    ``'inceptionv3' 'inceptionresnetv2'``
+    ===========  =====
 
-1) Python 3.5+
-2) Keras >=2.1.0
-3) Tensorflow >= 1.4
+.. epigraph::
+    All backbones have weights trained on 2012 ILSVRC ImageNet dataset (``encoder_weights='imagenet'``). 
+
 
 Installation
 ~~~~~~~~~~~~
 
-Installing via pip
-^^^^^^^^^^^^^^^^^^
+**Requirements**
 
-``$ pip install segmentation-models``
+1) Python 3.5+
+2) Keras >= 2.1.0
+3) Tensorflow >= 1.8
 
-Using latest version in your project
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Pip package**
+
+.. code:: bash
+
+    $ pip install segmentation-models
+
+**Latest version**
 
 .. code:: bash
 
     $ pip install git+https://github.com/qubvel/segmentation_models
-
-Code examples
+    
+Documentation
 ~~~~~~~~~~~~~
-
-Train Unet model:
-
-.. code:: python
-
-    from segmentation_models import Unet
-    from segmentation_models.backbones import get_preprocessing
-
-    # prepare data
-    x, y = ...
-
-    preprocessing_fn = get_preprocessing('resnet34')
-    x = preprocessing_fn(x)
-
-    # prepare model
-    model = Unet(backbone_name='resnet34', encoder_weights='imagenet')
-    model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
-
-    # train model
-    model.fit(x, y)
-
-Train FPN model:
-
-.. code:: python
-
-    from segmentation_models import FPN
-
-    model = FPN(backbone_name='resnet34', encoder_weights='imagenet')
-
-Useful trick
-^^^^^^^^^^^^
-
-Freeze encoder weights for fine-tuning during first epochs of training:
-
-.. code:: python
-
-    from segmentation_models import FPN
-    from segmentation_models.utils import set_trainable
-
-    model = FPN(backbone_name='resnet34', encoder_weights='imagenet', freeze_encoder=True)
-    model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
-
-    # pretrain model decoder
-    model.fit(x, y, epochs=2)
-
-    # release all layers for training
-    set_trainable(model) # set all layers trainable and recompile model
-
-    # continue training
-    model.fit(x, y, epochs=100)
+Latest **documentation** is avaliable on `Read the
+Docs <https://segmentation-models.readthedocs.io/en/latest/>`__
 
 Change Log
 ~~~~~~~~~~
-CHANGELOG.md_
+To see important changes between versions look at CHANGELOG.md_
+
+Licence
+~~~~~~~
+Project is distributed under `MIT Licence`_.
 
 .. _CHANGELOG.md: https://github.com/qubvel/segmentation_models/blob/readme/CHANGELOG.md
+.. _`MIT Licence`: https://github.com/qubvel/segmentation_models/blob/readme/LICENCE
