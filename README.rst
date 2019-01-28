@@ -37,7 +37,7 @@ Table of Contents
  - `Installation`_
  - `Documentation`_
  - `Change log`_
- - `Licence`_
+ - `License`_
  
 Quick start
 ~~~~~~~~~~~
@@ -49,7 +49,7 @@ Since the library is built on the Keras framework, created segmentaion model is 
     
     model = Unet()
     
-Depending on the task, you can change the network architecture by choosing backbones with fewer or more parameters and use pretrainded weights for to initialize it:
+Depending on the task, you can change the network architecture by choosing backbones with fewer or more parameters and use pretrainded weights to initialize it:
 
 .. code:: python
 
@@ -126,9 +126,9 @@ Change Log
 ~~~~~~~~~~
 To see important changes between versions look at CHANGELOG.md_
 
-Licence
+License
 ~~~~~~~
 Project is distributed under `MIT Licence`_.
 
 .. _CHANGELOG.md: https://github.com/qubvel/segmentation_models/blob/readme/CHANGELOG.md
-.. _`MIT Licence`: https://github.com/qubvel/segmentation_models/blob/readme/LICENCE
+.. _`MIT Licence`: https://github.com/qubvel/segmentation_models/blob/readme/LICENSE
