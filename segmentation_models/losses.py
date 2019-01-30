@@ -7,10 +7,31 @@ from .metrics import jaccard_score, f_score
 
 SMOOTH = 1e-12
 
+__all__ = [
+    'jaccard_loss', 'bce_jaccard_loss', 'cce_jaccard_loss',
+    'dice_loss', 'bce_dice_loss', 'cce_dice_loss',
+]
+
 
 # ============================== Jaccard Losses ==============================
 
 def jaccard_loss(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True):
+    r"""Jaccard loss function for imbalanced datasets:
+
+    .. math:: L(A, B) = 1 - \frac{A \cap B}{A \cup B}
+
+    Args:
+        gt: ground truth 4D keras tensor (B, H, W, C)
+        pr: prediction 4D keras tensor (B, H, W, C)
+        class_weights: 1. or list of class weights, len(weights) = C
+        smooth: value to avoid division by zero
+        per_image: if ``True``, metric is calculated as mean over images in batch (B),
+            else over whole batch
+
+    Returns:
+        Jaccard loss in range [0, 1]
+
+    """
     return 1 - jaccard_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image)
 
 
@@ -37,6 +58,23 @@ get_custom_objects().update({
 # ============================== Dice Losses ================================
 
 def dice_loss(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True):
+    r"""Dice loss function for imbalanced datasets:
+
+    .. math:: L(precision, recall) = 1 - (1 + \beta^2) \frac{precision \cdot recall}
+        {\beta^2 \cdot precision + recall}
+
+    Args:
+        gt: ground truth 4D keras tensor (B, H, W, C)
+        pr: prediction 4D keras tensor (B, H, W, C)
+        class_weights: 1. or list of class weights, len(weights) = C
+        smooth: value to avoid division by zero
+        per_image: if ``True``, metric is calculated as mean over images in batch (B),
+            else over whole batch
+
+    Returns:
+        Dice loss in range [0, 1]
+
+    """
     return 1 - f_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image, beta=1.)
 
 
