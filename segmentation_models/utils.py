@@ -1,7 +1,37 @@
 """ Utility functions for segmentation models """
+import warnings
 import numpy as np
 from functools import wraps
 from keras.layers import BatchNormalization
+
+
+def legacy_support(kwargs_map):
+    """
+    Decorator which map old kwargs to new ones
+
+    Args:
+        kwargs_map: dict 'old_argument: 'new_argument' (None if removed)
+
+    """
+    def decorator(func):
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+
+            # rename arguments
+            for old_arg, new_arg in kwargs_map.items():
+                if old_arg in kwargs.keys():
+                    if new_arg is None:
+                        raise TypeError("got an unexpected keyword argument '{}'".format(old_arg))
+                    warnings.warn('`{old_arg}` is deprecated and will be removed '
+                                  'in future releases, use `{new_arg}` instead.'.format(old_arg=old_arg, new_arg=new_arg))
+                    kwargs[new_arg] = kwargs[old_arg]
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 def get_layer_number(model, layer_name):
