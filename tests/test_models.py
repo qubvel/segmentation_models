@@ -9,10 +9,10 @@ from segmentation_models import Unet
 from segmentation_models import Linknet
 from segmentation_models import PSPNet
 from segmentation_models import FPN
-from segmentation_models.backbones import backbones as bkb
+from segmentation_models import backbones
 
 
-BACKBONES = list(bkb.backbones.keys())
+BACKBONES = backbones.get_names()
 
 
 def _select_names(names):
