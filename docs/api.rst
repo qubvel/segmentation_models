@@ -20,6 +20,17 @@ PSPNet
 ~~~~~~
 .. autofunction:: segmentation_models.PSPNet
 
+metrics
+~~~~~~~
+.. autofunction:: segmentation_models.metrics.iou_score
+.. autofunction:: segmentation_models.metrics.f_score
+
+losses
+~~~~~~
+.. autofunction:: segmentation_models.losses.jaccard_loss
+.. autofunction:: segmentation_models.losses.dice_loss
+
+
 utils
 ~~~~~
 .. autofunction:: segmentation_models.backbones.get_preprocessing
