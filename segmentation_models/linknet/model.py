@@ -1,24 +1,7 @@
 from .builder import build_linknet
 from ..utils import freeze_model
 from ..utils import legacy_support
-from ..backbones import get_backbone
-
-DEFAULT_SKIP_CONNECTIONS = {
-    'vgg16': ('block5_conv3', 'block4_conv3', 'block3_conv3', 'block2_conv2'),
-    'vgg19': ('block5_conv4', 'block4_conv4', 'block3_conv4', 'block2_conv2'),
-    'resnet18': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'resnet34': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'resnet50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'resnet101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'resnet152': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'resnext50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'resnext101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'inceptionv3': (228, 86, 16, 9),
-    'inceptionresnetv2': (594, 260, 16, 9),
-    'densenet121': (311, 139, 51, 4),
-    'densenet169': (367, 139, 51, 4),
-    'densenet201': (479, 139, 51, 4),
-}
+from ..backbones import get_backbone, get_feature_layers
 
 old_args_map = {
     'freeze_encoder': 'encoder_freeze',
@@ -84,7 +67,7 @@ def Linknet(backbone_name='vgg16',
                             include_top=False)
 
     if encoder_features == 'default':
-        encoder_features = DEFAULT_SKIP_CONNECTIONS[backbone_name]
+        encoder_features = get_feature_layers(backbone_name, n=4)
 
     model = build_linknet(backbone,
                           classes,

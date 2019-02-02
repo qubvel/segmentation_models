@@ -9,10 +9,20 @@ from segmentation_models import Unet
 from segmentation_models import Linknet
 from segmentation_models import PSPNet
 from segmentation_models import FPN
-from segmentation_models.backbones import backbones as bkb
+from segmentation_models import backbones as sm_backbones
 
 
-BACKBONES = list(bkb.backbones.keys())
+def get_backbones():
+    is_travis = os.environ.get('TRAVIS', False)
+    exclude = ['senet154']
+    backbones = sm_backbones.get_names()
+
+    if is_travis:
+        backbones = [b for b in backbones if b not in exclude]
+    return backbones
+
+
+BACKBONES = get_backbones()
 
 
 def _select_names(names):
