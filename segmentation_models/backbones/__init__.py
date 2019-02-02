@@ -1,15 +1,22 @@
 from classification_models import Classifiers
+from classification_models import resnext
 
 from . import inception_resnet_v2 as irv2
 from . import inception_v3 as iv3
 
+# replace backbones with others, which have corrected padding mode in first pooling
 Classifiers._models.update({
     'inceptionresnetv2': [irv2.InceptionResNetV2, irv2.preprocess_input],
     'inceptionv3': [iv3.InceptionV3, iv3.preprocess_input],
+    'resnext50': [resnext.ResNeXt50, resnext.models.preprocess_input],
+    'resnext101': [resnext.ResNeXt101, resnext.models.preprocess_input],
 })
 
-
 DEFAULT_FEATURE_LAYERS = {
+
+    # List of layers to take features from backbone in the following order:
+    # (x16, x8, x4, x2, x1) - `x4` mean that features has 4 times less spatial
+    # resolution (Height x Width) than input image.
 
     # VGG
     'vgg16': ('block5_conv3', 'block4_conv3', 'block3_conv3', 'block2_conv2', 'block1_conv2'),
@@ -23,8 +30,8 @@ DEFAULT_FEATURE_LAYERS = {
     'resnet152': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
 
     # ResNeXt
-    'resnext50': ('conv4_block6_out', 'conv3_block4_out', 'conv2_block3_out', 'conv1_relu'),
-    'resnext101': ('conv4_block23_out', 'conv3_block4_out', 'conv2_block3_out', 'conv1_relu'),
+    'resnext50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
+    'resnext101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
 
     # Inception
     'inceptionv3': (228, 86, 16, 9),
@@ -47,7 +54,7 @@ DEFAULT_FEATURE_LAYERS = {
 
     # Mobile Nets
     'mobilenet': ('conv_pw_11_relu', 'conv_pw_5_relu', 'conv_pw_3_relu', 'conv_pw_1_relu'),
-    'mobilenetv2': ('block_13_expand_relu', 'block_6_expand_relu',  'block_3_expand_relu', 'block_1_expand_relu'),
+    'mobilenetv2': ('block_13_expand_relu', 'block_6_expand_relu', 'block_3_expand_relu', 'block_1_expand_relu'),
 
 }
 
@@ -66,4 +73,3 @@ def get_backbone(name, *args, **kwargs):
 
 def get_preprocessing(name):
     return Classifiers.get_preprocessing(name)
-
