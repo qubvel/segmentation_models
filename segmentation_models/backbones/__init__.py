@@ -23,8 +23,8 @@ DEFAULT_FEATURE_LAYERS = {
     'resnet152': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
 
     # ResNeXt
-    'resnext50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
-    'resnext101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
+    'resnext50': ('conv4_block6_out', 'conv3_block4_out', 'conv2_block3_out', 'conv1_relu'),
+    'resnext101': ('conv4_block23_out', 'conv3_block4_out', 'conv2_block3_out', 'conv1_relu'),
 
     # Inception
     'inceptionv3': (228, 86, 16, 9),
@@ -34,6 +34,20 @@ DEFAULT_FEATURE_LAYERS = {
     'densenet121': (311, 139, 51, 4),
     'densenet169': (367, 139, 51, 4),
     'densenet201': (479, 139, 51, 4),
+
+    # SE models
+    'seresnet18': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
+    'seresnet34': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1', 'relu0'),
+    'seresnet50': (233, 129, 59, 4),
+    'seresnet101': (522, 129, 59, 4),
+    'seresnet152': (811, 197, 59, 4),
+    'seresnext50': (1065, 577, 251, 4),
+    'seresnext101': (2442, 577, 251, 4),
+    'senet154': (6837, 1614, 451, 12),
+
+    # Mobile Nets
+    'mobilenet': ('conv_pw_1_relu', 'conv_pw_3_relu', 'conv_pw_5_relu', 'conv_pw_11_relu'),
+    'mobilenetv2': ('block_1_expand_relu', 'block_3_expand_relu', 'block_6_expand_relu', 'block_13_expand_relu'),
 
 }
 

@@ -1,33 +1,17 @@
 from .builder import build_psp
 from ..utils import freeze_model
 from ..utils import legacy_support
-from ..backbones import get_backbone
-
-PSP_BASE_LAYERS = {
-    'vgg16': ('block5_conv3', 'block4_conv3', 'block3_conv3'),
-    'vgg19': ('block5_conv4', 'block4_conv4', 'block3_conv4'),
-    'resnet18': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet34': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet152': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnext50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnext101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'inceptionv3': (228, 86, 16),
-    'inceptionresnetv2': (594, 260, 16),
-    'densenet121': (311, 139, 51),
-    'densenet169': (367, 139, 51),
-    'densenet201': (479, 139, 51),
-}
+from ..backbones import get_backbone, get_feature_layers
 
 
 def _get_layer_by_factor(backbone_name, factor):
+    feature_layers = get_feature_layers(backbone_name, n=3)
     if factor == 4:
-        return PSP_BASE_LAYERS[backbone_name][-1]
+        return feature_layers[-1]
     elif factor == 8:
-        return PSP_BASE_LAYERS[backbone_name][-2]
+        return feature_layers[-2]
     elif factor == 16:
-        return PSP_BASE_LAYERS[backbone_name][-3]
+        return feature_layers[-3]
     else:
         raise ValueError('Unsupported factor - `{}`, Use 4, 8 or 16.'.format(factor))
 

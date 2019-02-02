@@ -1,7 +1,7 @@
 from .builder import build_linknet
 from ..utils import freeze_model
 from ..utils import legacy_support
-from ..backbones import get_backbone
+from ..backbones import get_backbone, get_feature_layers
 
 DEFAULT_SKIP_CONNECTIONS = {
     'vgg16': ('block5_conv3', 'block4_conv3', 'block3_conv3', 'block2_conv2'),
@@ -84,7 +84,7 @@ def Linknet(backbone_name='vgg16',
                             include_top=False)
 
     if encoder_features == 'default':
-        encoder_features = DEFAULT_SKIP_CONNECTIONS[backbone_name]
+        encoder_features = get_feature_layers(backbone_name, n=4)
 
     model = build_linknet(backbone,
                           classes,

@@ -1,24 +1,8 @@
 from .builder import build_fpn
-from ..backbones import get_backbone
+from ..backbones import get_backbone, get_feature_layers
 from ..utils import freeze_model
 from ..utils import legacy_support
 
-DEFAULT_FEATURE_PYRAMID_LAYERS = {
-    'vgg16': ('block5_conv3', 'block4_conv3', 'block3_conv3'),
-    'vgg19': ('block5_conv4', 'block4_conv4', 'block3_conv4'),
-    'resnet18': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet34': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnet152': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnext50': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'resnext101': ('stage4_unit1_relu1', 'stage3_unit1_relu1', 'stage2_unit1_relu1'),
-    'inceptionv3': (228, 86, 16),
-    'inceptionresnetv2': (594, 260, 16),
-    'densenet121': (311, 139, 51),
-    'densenet169': (367, 139, 51),
-    'densenet201': (479, 139, 51),
-}
 
 old_args_map = {
     'freeze_encoder': 'encoder_freeze',
@@ -83,7 +67,7 @@ def FPN(backbone_name='vgg16',
                             include_top=False)
 
     if encoder_features == 'default':
-        encoder_features = DEFAULT_FEATURE_PYRAMID_LAYERS[backbone_name]
+        encoder_features = get_feature_layers(backbone_name, n=3)
 
     upsample_rates = [2] * len(encoder_features)
     last_upsample = 2 ** (5 - len(encoder_features))
