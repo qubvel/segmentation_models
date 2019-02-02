@@ -3,7 +3,6 @@ from ..utils import freeze_model
 from ..utils import legacy_support
 from ..backbones import get_backbone, get_feature_layers
 
-
 old_args_map = {
     'freeze_encoder': 'encoder_freeze',
     'skip_connections': 'encoder_features',
