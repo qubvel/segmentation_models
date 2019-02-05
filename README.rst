@@ -67,7 +67,7 @@ Change input shape of the model:
 
     model = Unet('resnet34', input_shape=(None, None, 6), encoder_weights=None)
 
-Same manimulations can be done with ``Linknet``,``PSPNet`` and ``FPN``. For more detailed information about models API and  use cases read Documentation_.
+Same manimulations can be done with ``Linknet``, ``PSPNet`` and ``FPN``. For more detailed information about models API and  use cases read Documentation_.
 
 Models and Backbones
 ~~~~~~~~~~~~~~~~~~~~
@@ -87,9 +87,13 @@ Models and Backbones
     ===========  =====
     VGG          ``'vgg16' 'vgg19'``
     ResNet       ``'resnet18' 'resnet34' 'resnet50' 'resnet101' 'resnet152'``
+    SE-ResNet    ``'seresnet18' 'seresnet34' 'seresnet50' 'seresnet101' 'seresnet152'``
     ResNeXt      ``'resnext50' 'resnet101'``
+    SE-ResNeXt   ``'seresnext50' 'seresnet101'``
+    SENet154     ``'senet254'``
     DenseNet     ``'densenet121' 'densenet169' 'densenet201'`` 
     Inception    ``'inceptionv3' 'inceptionresnetv2'``
+    MobileNet    ``'mobilenet' 'mobilenetv2'``
     ===========  =====
 
 .. epigraph::
