@@ -33,6 +33,7 @@ on `Keras <https://keras.io>`__
 Table of Contents
 ~~~~~~~~~~~~~~~~~
  - `Quick start`_
+ - `Simple training pipeline`_
  - `Models and Backbones`_
  - `Installation`_
  - `Documentation`_
@@ -66,8 +67,42 @@ Change input shape of the model:
 .. code:: python
 
     model = Unet('resnet34', input_shape=(None, None, 6), encoder_weights=None)
+   
+Simple training pipeline
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Same manimulations can be done with ``Linknet``, ``PSPNet`` and ``FPN``. For more detailed information about models API and  use cases read Documentation_.
+.. code:: python
+
+   from segmentation_models import Unet
+   from segmentation_models.backbones import get_preprocessing
+   from segmentation_models.losses import bce_jaccard_loss
+   from segmentation_models.metrics import iou_score
+   
+   BACKBONE = 'resnet34'
+   preprocess_input = get_prepocessing(BACKBONE)
+   
+   # load your data
+   x_train, y_train, x_val, y_val = load_data(...)
+   
+   # preprocess input
+   x_train = preprocess_input(x_train)
+   x_val = preprocess_input(x_val)
+   
+   # define model
+   model = Unet(BACKBONE, encoder_weights='imagenet')
+   model.complile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
+   
+   # fit model
+   model.fit(
+       x=x_train, 
+       y=y_train, 
+       batch_size=16, 
+       epochs=100,
+       validation_data=(x_val, y_val),
+   )
+   
+
+Same manimulations can be done with ``Linknet``, ``PSPNet`` and ``FPN``. For more detailed information about models API and  use cases `Read the Docs <https://segmentation-models.readthedocs.io/en/latest/>`__.
 
 Models and Backbones
 ~~~~~~~~~~~~~~~~~~~~
@@ -107,7 +142,8 @@ Installation
 
 1) Python 3.5+
 2) Keras >= 2.2.0
-3) Tensorflow >= 1.8
+3) Image-classifiers == 0.2.0
+4) Tensorflow 1.9 (tested)
 
 **Pip package**
 
