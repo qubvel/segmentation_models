@@ -26,7 +26,7 @@ on `Keras <https://keras.io>`__
 -  High level API (just two lines to create NN)
 -  **4** models architectures for binary and multi class segmentation
    (including legendary **Unet**)
--  **15** available backbones for each architecture
+-  **25** available backbones for each architecture
 -  All backbones have **pre-trained** weights for faster and better
    convergence
 
@@ -90,7 +90,7 @@ Models and Backbones
     SE-ResNet    ``'seresnet18' 'seresnet34' 'seresnet50' 'seresnet101' 'seresnet152'``
     ResNeXt      ``'resnext50' 'resnet101'``
     SE-ResNeXt   ``'seresnext50' 'seresnet101'``
-    SENet154     ``'senet254'``
+    SENet154     ``'senet154'``
     DenseNet     ``'densenet121' 'densenet169' 'densenet201'`` 
     Inception    ``'inceptionv3' 'inceptionresnetv2'``
     MobileNet    ``'mobilenet' 'mobilenetv2'``
@@ -106,7 +106,7 @@ Installation
 **Requirements**
 
 1) Python 3.5+
-2) Keras >= 2.1.0
+2) Keras >= 2.2.0
 3) Tensorflow >= 1.8
 
 **Pip package**
