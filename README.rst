@@ -42,7 +42,7 @@ Table of Contents
  
 Quick start
 ~~~~~~~~~~~
-Since the library is built on the Keras framework, created segmentaion model is just a Keras Model, wich can be created as easy as:
+Since the library is built on the Keras framework, created segmentaion model is just a Keras Model, which can be created as easy as:
 
 .. code:: python
 
