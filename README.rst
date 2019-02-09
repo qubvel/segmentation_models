@@ -1,5 +1,19 @@
-Tutorial
-========
+.. raw:: html
+
+    <p align="center">
+      <img width="400" height="200" src="https://cdn1.imggmi.com/uploads/2019/1/27/d7d9d327ea3340445bd82ec5377c56c7-full.png">
+    </p>
+    
+    <h1 align="center"> Segmentation Models </h1>
+    
+    <p align="center">
+      <a href="https://badge.fury.io/py/segmentation-models" alt="PyPI">
+        <img src="https://badge.fury.io/py/segmentation-models.svg" /></a>
+      <a href="https://segmentation-models.readthedocs.io/en/latest/?badge=latest" alt="Documentation">
+        <img src="https://readthedocs.org/projects/segmentation-models/badge/?version=latest" /></a>
+      <a href="https://travis-ci.com/qubvel/segmentation_models" alt="Build Status">
+        <img src="https://travis-ci.com/qubvel/segmentation_models.svg?branch=master" /></a>
+    </p>
 
 **Segmentation models** is python library with Neural Networks for
 `Image
@@ -16,6 +30,16 @@ on `Keras <https://keras.io>`__
 -  All backbones have **pre-trained** weights for faster and better
    convergence
 
+Table of Contents
+~~~~~~~~~~~~~~~~~
+ - `Quick start`_
+ - `Simple training pipeline`_
+ - `Models and Backbones`_
+ - `Installation`_
+ - `Documentation`_
+ - `Change log`_
+ - `License`_
+ 
 Quick start
 ~~~~~~~~~~~
 Since the library is built on the Keras framework, created segmentaion model is just a Keras Model, which can be created as easy as:
@@ -23,9 +47,9 @@ Since the library is built on the Keras framework, created segmentaion model is 
 .. code:: python
 
     from segmentation_models import Unet
-
+    
     model = Unet()
-
+    
 Depending on the task, you can change the network architecture by choosing backbones with fewer or more parameters and use pretrainded weights to initialize it:
 
 .. code:: python
@@ -37,13 +61,13 @@ Change number of output classes in the model:
 .. code:: python
 
     model = Unet('resnet34', classes=3, activation='softmax')
-
+    
 Change input shape of the model:
 
 .. code:: python
 
     model = Unet('resnet34', input_shape=(None, None, 6), encoder_weights=None)
-
+   
 Simple training pipeline
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -53,30 +77,30 @@ Simple training pipeline
    from segmentation_models.backbones import get_preprocessing
    from segmentation_models.losses import bce_jaccard_loss
    from segmentation_models.metrics import iou_score
-
+   
    BACKBONE = 'resnet34'
    preprocess_input = get_prepocessing(BACKBONE)
-
+   
    # load your data
    x_train, y_train, x_val, y_val = load_data(...)
-
+   
    # preprocess input
    x_train = preprocess_input(x_train)
    x_val = preprocess_input(x_val)
-
+   
    # define model
    model = Unet(BACKBONE, encoder_weights='imagenet')
    model.complile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
-
+   
    # fit model
    model.fit(
-       x=x_train,
-       y=y_train,
-       batch_size=16,
+       x=x_train, 
+       y=y_train, 
+       batch_size=16, 
        epochs=100,
        validation_data=(x_val, y_val),
    )
-
+   
 
 Same manimulations can be done with ``Linknet``, ``PSPNet`` and ``FPN``. For more detailed information about models API and  use cases `Read the Docs <https://segmentation-models.readthedocs.io/en/latest/>`__.
 
@@ -106,15 +130,15 @@ PSPNet        FPN
 .. _FPN: http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
 
 .. |unet_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/3a873a00c9742dc1fb33105ed846d5b5-full.png
-.. |linknet_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/1a996c4ef05531ff3861d80823c373d9-full.png
+.. |linknet_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/1a996c4ef05531ff3861d80823c373d9-full.png 
 .. |psp_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/aaabb97f89197b40e4879a7299b3c801-full.png
 .. |fpn_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/af00f11ef6bc8a64efd29ed873fcb0c4-full.png
 
 **Backbones**
 
-.. table::
+.. table:: 
 
-    ===========  =====
+    ===========  ===== 
     Type         Names
     ===========  =====
     VGG          ``'vgg16' 'vgg19'``
@@ -123,106 +147,50 @@ PSPNet        FPN
     ResNeXt      ``'resnext50' 'resnet101'``
     SE-ResNeXt   ``'seresnext50' 'seresnet101'``
     SENet154     ``'senet154'``
-    DenseNet     ``'densenet121' 'densenet169' 'densenet201'``
+    DenseNet     ``'densenet121' 'densenet169' 'densenet201'`` 
     Inception    ``'inceptionv3' 'inceptionresnetv2'``
     MobileNet    ``'mobilenet' 'mobilenetv2'``
     ===========  =====
 
 .. epigraph::
-    All backbones have weights trained on 2012 ILSVRC ImageNet dataset (``encoder_weights='imagenet'``).
+    All backbones have weights trained on 2012 ILSVRC ImageNet dataset (``encoder_weights='imagenet'``). 
 
 
-Fine tuning
-~~~~~~~~~~~
+Installation
+~~~~~~~~~~~~
 
-Some times, it is useful to train only randomly initialized
-*decoder* in order not to damage weights of properly trained
-*encoder* with huge gradients during first steps of training.
-In this case, all you need is just pass ``freeze_encoder = True`` argument
-while initializing the model.
+**Requirements**
 
-.. code-block:: python
+1) Python 3.5+
+2) Keras >= 2.2.0
+3) Keras Application >= 1.0.7
+4) Image Classifiers == 0.2.0
+5) Tensorflow 1.9 (tested)
 
-    from segmentation_models import Unet
-    from segmentation_models.utils import set_trainable
+**Pip package**
 
-    model = Unet(backbone_name='resnet34', encoder_weights='imagenet', freeze_encoder=True)
-    model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
+.. code:: bash
 
-    # pretrain model decoder
-    model.fit(x, y, epochs=2)
+    $ pip install segmentation-models
 
-    # release all layers for training
-    set_trainable(model) # set all layers trainable and recompile model
+**Latest version**
 
-    # continue training
-    model.fit(x, y, epochs=100)
+.. code:: bash
 
+    $ pip install git+https://github.com/qubvel/segmentation_models
+    
+Documentation
+~~~~~~~~~~~~~
+Latest **documentation** is avaliable on `Read the
+Docs <https://segmentation-models.readthedocs.io/en/latest/>`__
 
-Training with non-RGB data
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Change Log
+~~~~~~~~~~
+To see important changes between versions look at CHANGELOG.md_
 
-In case you have non RGB images (e.g. grayscale or some medical/remote sensing data)
-you have few different options:
+License
+~~~~~~~
+Project is distributed under `MIT Licence`_.
 
-1. Train network from scratch with randomly initialized weights
-
-.. code-block:: python
-
-    from segmentation_models import Unet
-
-    # read/scale/preprocess data
-    x, y = ...
-
-    # define number of channels
-    N = x.shape[-1]
-
-    # define model
-    model = Unet(backbone_name='resnet34', encoder_weights=None, input_shape=(None, None, N))
-
-    # continue with usual steps: compile, fit, etc..
-
-2. Add extra convolution layer to map ``N -> 3`` channels data and train with pretrained weights
-
-.. code-block:: python
-
-    from segmentation_models import Unet
-    from keras.layers import Input, Conv2D
-    from keras.models import Model
-
-    # read/scale/preprocess data
-    x, y = ...
-
-    # define number of channels
-    N = x.shape[-1]
-
-    base_model = Unet(backbone_name='resnet34', encoder_weights='imagenet')
-
-    inp = Input(shape=(None, None, N))
-    l1 = Conv2D(3, (1, 1))(inp) # map N channels data to 3 channels
-    out = base_model(l1)
-
-    model = Model(inp, out, name=base_model.name)
-
-    # continue with usual steps: compile, fit, etc..
-
-.. _Image Segmentation:
-    https://en.wikipedia.org/wiki/Image_segmentation
-
-.. _Tensorflow:
-    https://www.tensorflow.org/
-
-.. _Keras:
-    https://keras.io
-
-.. _Unet:
-    https://arxiv.org/pdf/1505.04597
-
-.. _Linknet:
-    https://arxiv.org/pdf/1707.03718.pdf
-
-.. _PSPNet:
-    https://arxiv.org/pdf/1612.01105.pdf
-
-.. _FPN:
-    http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
+.. _CHANGELOG.md: https://github.com/qubvel/segmentation_models/blob/readme/CHANGELOG.md
+.. _`MIT Licence`: https://github.com/qubvel/segmentation_models/blob/readme/LICENSE
