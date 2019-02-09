@@ -22,7 +22,7 @@ def get_backbones():
     return backbones
 
 
-BACKBONES = ['mobilenet', 'mobilenetv2'] #get_backbones()
+BACKBONES = get_backbones()
 
 
 def _select_names(names):
