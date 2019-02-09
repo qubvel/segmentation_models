@@ -3,6 +3,8 @@ from classification_models import resnext
 
 from . import inception_resnet_v2 as irv2
 from . import inception_v3 as iv3
+from . import mobilenet as mbn
+from . import mobilenetv2 as mbn2
 
 # replace backbones with others, which have corrected padding mode in first pooling
 Classifiers._models.update({
@@ -10,6 +12,8 @@ Classifiers._models.update({
     'inceptionv3': [iv3.InceptionV3, iv3.preprocess_input],
     'resnext50': [resnext.ResNeXt50, resnext.models.preprocess_input],
     'resnext101': [resnext.ResNeXt101, resnext.models.preprocess_input],
+    'mobilenet': [mbn.MobileNet, mbn.preprocess_input],
+    'mobilenetv2': [mbn2.MobileNetV2, mbn2.preprocess_input],
 })
 
 DEFAULT_FEATURE_LAYERS = {
