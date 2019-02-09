@@ -163,8 +163,9 @@ Installation
 
 1) Python 3.5+
 2) Keras >= 2.2.0
-3) Image-classifiers == 0.2.0
-4) Tensorflow 1.9 (tested)
+3) Keras Application >= 1.0.7
+4) Image Classifiers == 0.2.0
+5) Tensorflow 1.9 (tested)
 
 **Pip package**
 
