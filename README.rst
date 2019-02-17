@@ -1,7 +1,7 @@
 .. raw:: html
 
     <p align="center">
-      <img width="400" height="200" src="https://cdn1.imggmi.com/uploads/2019/1/27/d7d9d327ea3340445bd82ec5377c56c7-full.png">
+      <img width="400" height="200" src="https://github.com/qubvel/segmentation_models/blob/master/images/logo.png">
     </p>
     
     <h1 align="center"> Segmentation Models </h1>
@@ -129,10 +129,10 @@ PSPNet        FPN
 .. _PSPNet: https://arxiv.org/abs/1612.01105
 .. _FPN: http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
 
-.. |unet_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/3a873a00c9742dc1fb33105ed846d5b5-full.png
-.. |linknet_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/1a996c4ef05531ff3861d80823c373d9-full.png 
-.. |psp_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/aaabb97f89197b40e4879a7299b3c801-full.png
-.. |fpn_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/af00f11ef6bc8a64efd29ed873fcb0c4-full.png
+.. |unet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/unet.png
+.. |linknet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/linknet.png
+.. |psp_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/pspnet.png
+.. |fpn_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/fpn.png
 
 **Backbones**
 
