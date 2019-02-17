@@ -92,7 +92,7 @@ def cce_dice_loss(gt, pr, cce_weight=1., class_weights=1., smooth=SMOOTH, per_im
 
 # Update custom objects
 get_custom_objects().update({
-    'jaccard_loss': jaccard_loss,
-    'bce_jaccard_loss': bce_jaccard_loss,
-    'cce_jaccard_loss': cce_jaccard_loss,
+    'dice_loss': dice_loss,
+    'bce_dice_loss': bce_dice_loss,
+    'cce_dice_loss': cce_dice_loss,
 })
