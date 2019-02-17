@@ -25,8 +25,8 @@
 
 ###### Thanks
 
-@IlyaOvodov #15 #37 investigation of `align_corners` parameter in `ResizeImage` layer  
-@NiklasDL #29 investigation about convolution kernel in PSPNet final layers
+[@IlyaOvodov](https://github.com/IlyaOvodov) [#15](https://github.com/qubvel/segmentation_models/issues/15) [#37](https://github.com/qubvel/segmentation_models/pull/37) investigation of `align_corners` parameter in `ResizeImage` layer  
+[@NiklasDL](https://github.com/NiklasDL) [#29](https://github.com/qubvel/segmentation_models/issues/29) investigation about convolution kernel in PSPNet final layers
 
 **Version 0.1.2**  
 
