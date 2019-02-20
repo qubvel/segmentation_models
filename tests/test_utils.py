@@ -19,7 +19,7 @@ CASE = (
 
 def _test_regularizer(model, reg_model, x, y):
 
-    def zero_loss(pr, gt):
+    def zero_loss(gt, pr):
         return pr * 0
 
     model.compile('Adam', loss=zero_loss, metrics=['binary_accuracy'])

@@ -144,7 +144,7 @@ def set_regularization(model,
     """Set regularizers to all layers
 
     Note:
-       Returned model's config is upated correctly
+       Returned model's config is updated correctly
 
     Args:
         model (``keras.models.Model``): instance of keras model
@@ -152,7 +152,7 @@ def set_regularization(model,
         bias_regularizer(``regularizer``): regularizer of bias
         activity_regularizer(``regularizer``): regularizer of activity
         gamma_regularizer(``regularizer``): regularizer of gamma of BatchNormalization
-        beta_regularizer(``regularizer``): regularizer of bata of BatchNormalization
+        beta_regularizer(``regularizer``): regularizer of beta of BatchNormalization
 
     Return:
         out (``Model``): config updated model
