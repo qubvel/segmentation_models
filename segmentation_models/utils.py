@@ -137,7 +137,10 @@ def to_tuple(x):
 def set_regularization(model,
                        kernel_regularizer=None,
                        bias_regularizer=None,
-                       activity_regularizer=None):
+                       activity_regularizer=None,
+                       beta_regularizer=None,
+                       gamma_regularizer=None
+                       ):
     """Set regularizers to all layers
 
     Note:
@@ -148,6 +151,8 @@ def set_regularization(model,
         kernel_regularizer(``regularizer`): regularizer of kernels
         bias_regularizer(``regularizer``): regularizer of bias
         activity_regularizer(``regularizer``): regularizer of activity
+        gamma_regularizer(``regularizer``): regularizer of gamma of BatchNormalization
+        beta_regularizer(``regularizer``): regularizer of bata of BatchNormalization
 
     Return:
         out (``Model``): config updated model
@@ -163,6 +168,13 @@ def set_regularization(model,
         # set activity_regularizer
         if activity_regularizer is not None and hasattr(layer, 'activity_regularizer'):
             layer.activity_regularizer = activity_regularizer
+
+        # set beta and gamma of BN layer
+        if beta_regularizer is not None and hasattr(layer, 'beta_regularizer'):
+            layer.beta_regularizer = beta_regularizer
+
+        if gamma_regularizer is not None and hasattr(layer, 'gamma_regularizer'):
+            layer.gamma_regularizer = gamma_regularizer
 
     out = model_from_json(model.to_json())
     out.set_weights(model.get_weights())
