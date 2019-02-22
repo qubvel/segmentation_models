@@ -23,6 +23,7 @@ def Linknet(backbone_name='vgg16',
             encoder_features='default',
             decoder_filters=(None, None, None, None, 16),
             decoder_use_batchnorm=True,
+            dropout=None,
             decoder_block_type='upsampling',
             **kwargs):
     """Linknet_ is a fully convolution neural network for fast image semantic segmentation
@@ -49,6 +50,7 @@ def Linknet(backbone_name='vgg16',
             corresponding encoder block (estimates automatically and can be passed as ``None`` value).
         decoder_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
                     is used.
+        dropout: dropout rate between 0 and 1.
         decoder_block_type: one of
                     - `upsampling`:  use ``Upsampling2D`` keras layer
                     - `transpose`:   use ``Transpose2D`` keras layer
@@ -78,6 +80,7 @@ def Linknet(backbone_name='vgg16',
                           n_upsample_blocks=len(decoder_filters),
                           upsample_rates=(2, 2, 2, 2, 2),
                           upsample_kernel_size=(3, 3),
+                          dropout=dropout,
                           use_batchnorm=decoder_use_batchnorm)
 
     # lock encoder weights for fine-tuning

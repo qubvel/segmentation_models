@@ -1,5 +1,6 @@
 from keras.layers import Conv2D
 from keras.layers import Activation
+from keras.layers import SpatialDropout2D
 from keras.models import Model
 
 from .blocks import Transpose2D_block
@@ -13,6 +14,7 @@ def build_unet(backbone, classes, skip_connection_layers,
                n_upsample_blocks=5,
                block_type='upsampling',
                activation='sigmoid',
+               dropout=None,
                use_batchnorm=True):
 
     input = backbone.input
@@ -38,6 +40,9 @@ def build_unet(backbone, classes, skip_connection_layers,
 
         x = up_block(decoder_filters[i], i, upsample_rate=upsample_rate,
                      skip=skip_connection, use_batchnorm=use_batchnorm)(x)
+
+    if dropout is not None:
+        x = SpatialDropout2D(dropout)(x)
 
     x = Conv2D(classes, (3,3), padding='same', name='final_conv')(x)
     x = Activation(activation, name=activation)(x)

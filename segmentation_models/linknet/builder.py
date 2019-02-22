@@ -1,6 +1,7 @@
 from keras.layers import Conv2D
 from keras.layers import Activation
 from keras.models import Model
+from keras.layers import SpatialDropout2D
 
 from .blocks import DecoderBlock
 from ..utils import get_layer_number, to_tuple
@@ -15,6 +16,7 @@ def build_linknet(backbone,
                   upsample_kernel_size=(3, 3),
                   upsample_layer='upsampling',
                   activation='sigmoid',
+                  dropout=None,
                   use_batchnorm=True):
 
     input = backbone.input
@@ -40,6 +42,9 @@ def build_linknet(backbone,
                          use_batchnorm=use_batchnorm,
                          upsample_layer=upsample_layer,
                          skip=skip_connection)(x)
+
+    if dropout is not None:
+        x = SpatialDropout2D(dropout)(x)
 
     x = Conv2D(classes, (3, 3), padding='same', name='final_conv')(x)
     x = Activation(activation, name=activation)(x)

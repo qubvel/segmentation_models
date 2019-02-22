@@ -21,6 +21,7 @@ def Unet(backbone_name='vgg16',
          encoder_features='default',
          decoder_block_type='upsampling',
          decoder_filters=(256, 128, 64, 32, 16),
+         dropout=None,
          decoder_use_batchnorm=True,
          **kwargs):
     """ Unet_ is a fully convolution neural network for image semantic segmentation
@@ -45,6 +46,7 @@ def Unet(backbone_name='vgg16',
                 - `transpose`:   ``Transpose2D`` -> ``Conv2D``
 
             decoder_filters: list of numbers of ``Conv2D`` layer filters in decoder blocks
+            dropout: dropout rate between 0 and 1.
             decoder_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
                 is used.
 
@@ -73,6 +75,7 @@ def Unet(backbone_name='vgg16',
                        activation=activation,
                        n_upsample_blocks=len(decoder_filters),
                        upsample_rates=(2, 2, 2, 2, 2),
+                       dropout=dropout,
                        use_batchnorm=decoder_use_batchnorm)
 
     # lock encoder weights for fine-tuning
