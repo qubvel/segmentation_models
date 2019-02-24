@@ -105,10 +105,10 @@ PSPNet        FPN
 .. _PSPNet: https://arxiv.org/abs/1612.01105
 .. _FPN: http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
 
-.. |unet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/unet.png
-.. |linknet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/linknet.png
-.. |psp_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/pspnet.png
-.. |fpn_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/fpn.png
+.. |unet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/unet.jpg
+.. |linknet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/linknet.jpg
+.. |psp_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/pspnet.jpg
+.. |fpn_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/fpn.jpg
 
 **Backbones**
 
