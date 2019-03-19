@@ -141,7 +141,7 @@ def set_regularization(model,
                        beta_regularizer=None,
                        gamma_regularizer=None
                        ):
-    """Set regularizers to all layers
+    """Set regularizers to all layers. Defaultly, this function will disable the regularization of a model by setting the regularizers to be None.
 
     Note:
        Returned model's config is updated correctly
@@ -160,20 +160,20 @@ def set_regularization(model,
 
     for layer in model.layers:
         # set kernel_regularizer
-        if kernel_regularizer is not None and hasattr(layer, 'kernel_regularizer'):
+        if hasattr(layer, 'kernel_regularizer'):
             layer.kernel_regularizer = kernel_regularizer
         # set bias_regularizer
-        if bias_regularizer is not None and hasattr(layer, 'bias_regularizer'):
+        if hasattr(layer, 'bias_regularizer'):
             layer.bias_regularizer = bias_regularizer
         # set activity_regularizer
-        if activity_regularizer is not None and hasattr(layer, 'activity_regularizer'):
+        if hasattr(layer, 'activity_regularizer'):
             layer.activity_regularizer = activity_regularizer
 
         # set beta and gamma of BN layer
-        if beta_regularizer is not None and hasattr(layer, 'beta_regularizer'):
+        if hasattr(layer, 'beta_regularizer'):
             layer.beta_regularizer = beta_regularizer
 
-        if gamma_regularizer is not None and hasattr(layer, 'gamma_regularizer'):
+        if hasattr(layer, 'gamma_regularizer'):
             layer.gamma_regularizer = gamma_regularizer
 
     out = model_from_json(model.to_json())
