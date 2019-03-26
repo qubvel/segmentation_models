@@ -144,8 +144,8 @@ PSPNet        FPN
     VGG          ``'vgg16' 'vgg19'``
     ResNet       ``'resnet18' 'resnet34' 'resnet50' 'resnet101' 'resnet152'``
     SE-ResNet    ``'seresnet18' 'seresnet34' 'seresnet50' 'seresnet101' 'seresnet152'``
-    ResNeXt      ``'resnext50' 'resnet101'``
-    SE-ResNeXt   ``'seresnext50' 'seresnet101'``
+    ResNeXt      ``'resnext50' 'resnext101'``
+    SE-ResNeXt   ``'seresnext50' 'seresnext101'``
     SENet154     ``'senet154'``
     DenseNet     ``'densenet121' 'densenet169' 'densenet201'`` 
     Inception    ``'inceptionv3' 'inceptionresnetv2'``
