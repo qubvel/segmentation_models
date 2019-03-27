@@ -192,5 +192,5 @@ License
 ~~~~~~~
 Project is distributed under `MIT Licence`_.
 
-.. _CHANGELOG.md: https://github.com/qubvel/segmentation_models/blob/readme/CHANGELOG.md
-.. _`MIT Licence`: https://github.com/qubvel/segmentation_models/blob/readme/LICENSE
+.. _CHANGELOG.md: https://github.com/qubvel/segmentation_models/blob/master/CHANGELOG.md
+.. _`MIT Licence`: https://github.com/qubvel/segmentation_models/blob/master/LICENSE
