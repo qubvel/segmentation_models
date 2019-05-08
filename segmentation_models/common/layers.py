@@ -74,6 +74,7 @@ class ResizeImage(Layer):
 
     def get_config(self):
         config = {'factor': self.factor,
+                  'interpolation': self.interpolation,
                   'data_format': self.data_format}
         base_config = super(ResizeImage, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
