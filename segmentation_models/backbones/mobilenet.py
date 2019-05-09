@@ -69,6 +69,7 @@ def preprocess_input(x, **kwargs):
     # Returns
         Preprocessed array.
     """
+    kwargs['backend'] = backend
     return imagenet_utils.preprocess_input(x, mode='tf', **kwargs)
 
 
