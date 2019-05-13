@@ -38,6 +38,7 @@ Table of Contents
  - `Installation`_
  - `Documentation`_
  - `Change log`_
+ - `Citing`_
  - `License`_
  
 Quick start
@@ -187,6 +188,20 @@ Docs <https://segmentation-models.readthedocs.io/en/latest/>`__
 Change Log
 ~~~~~~~~~~
 To see important changes between versions look at CHANGELOG.md_
+
+Citing
+~~~~~~~~
+
+.. code::
+
+    @misc{Yakubovskiy:2019,
+      Author = {Pavel Yakubovskiy},
+      Title = {Segmentation Models},
+      Year = {2019},
+      Publisher = {GitHub},
+      Journal = {GitHub repository},
+      Howpublished = {\url{https://github.com/qubvel/segmentation_models}}
+    } 
 
 License
 ~~~~~~~
