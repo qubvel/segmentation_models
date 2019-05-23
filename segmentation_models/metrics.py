@@ -42,7 +42,7 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold
         
     if threshold is not None:
         pr = K.greater(pr, threshold)
-        pr = K.cast_to_floatx(pr)
+        pr = K.cast(pr, K.floatx())
 
     intersection = K.sum(gt * pr, axis=axes)
     union = K.sum(gt + pr, axis=axes) - intersection
@@ -129,7 +129,7 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, thre
         
     if threshold is not None:
         pr = K.greater(pr, threshold)
-        pr = K.cast_to_floatx(pr)
+        pr = K.cast(pr, K.floatx())
 
     tp = K.sum(gt * pr, axis=axes)
     fp = K.sum(pr, axis=axes) - tp
