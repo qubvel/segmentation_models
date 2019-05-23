@@ -200,7 +200,7 @@ def test_threshold_iou(case):
     gt, pr, res = case
     gt = _to_4d(gt)
     pr = _to_4d(pr) * 0.51
-    score_t = K.eval(iou_score(gt, pr, smooth=10e-12, threshold=0.5))
+    score = K.eval(iou_score(gt, pr, smooth=10e-12, threshold=0.5))
     assert np.allclose(score, res)
     
 
