@@ -89,7 +89,7 @@ get_custom_objects().update({
 
 # ============================== F/Dice - score ==============================
 
-def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True):
+def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None):
     r"""The F-score (Dice coefficient) can be interpreted as a weighted average of the precision and recall,
     where an F-score reaches its best value at 1 and worst score at 0.
     The relative contribution of ``precision`` and ``recall`` to the F1-score are equal.
