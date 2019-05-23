@@ -94,6 +94,8 @@ Simple training pipeline
    model.compile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
    
    # fit model
+   # if you use data generator use model.fit_generator(...) instead of model.fit(...)
+   # more about `fit_generator` here: https://keras.io/models/sequential/#fit_generator
    model.fit(
        x=x_train, 
        y=y_train, 
