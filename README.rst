@@ -57,16 +57,30 @@ Depending on the task, you can change the network architecture by choosing backb
 
     model = Unet('resnet34', encoder_weights='imagenet')
 
-Change number of output classes in the model:
+Change number of output classes in the model (choose your case):
 
 .. code:: python
-
+    
+    # binary segmentation (this parameters are default when you call Unet('resnet34')
+    model = Unet('resnet34', classes=1, activation='sigmoid')
+    
+.. code:: python
+    
+    # multiclass segmentation with non overlapping class masks (your classes + background)
     model = Unet('resnet34', classes=3, activation='softmax')
+    
+.. code:: python
+    
+    # multiclass segmentation with independent overlapping/non-overlapping class masks
+    model = Unet('resnet34', classes=3, activation='sigmoid')
+    
     
 Change input shape of the model:
 
 .. code:: python
-
+    
+    # if you set input channels not equal to 3, you have to set encoder_weights=None
+    # how to handle such case with encoder_weights='imagenet' described in docs
     model = Unet('resnet34', input_shape=(None, None, 6), encoder_weights=None)
    
 Simple training pipeline
