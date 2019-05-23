@@ -193,7 +193,16 @@ def test_per_batch(func):
     score_2 = K.eval(func(_to_4d(gt1), _to_4d(pr1), per_image=True, smooth=10e-12))
 
     assert np.allclose(score_1, score_2)
-
+    
+    
+@pytest.mark.parametrize('case', IOU_CASES)
+def test_threshold_iou(case):
+    gt, pr, res = case
+    gt = _to_4d(gt)
+    pr = _to_4d(pr) * 0.51
+    score_t = K.eval(iou_score(gt, pr, smooth=10e-12, threshold=0.5))
+    assert np.allclose(score, res)
+    
 
 if __name__ == '__main__':
     pytest.main([__file__])
