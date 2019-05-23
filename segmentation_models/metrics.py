@@ -6,13 +6,13 @@ __all__ = [
     'get_f_score', 'get_iou_score', 'get_jaccard_score',
 ]
 
-SMOOTH = 1e-12
+SMOOTH = 1.
 
 
 # ============================ Jaccard/IoU score ============================
 
 
-def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True):
+def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold=None):
     r""" The `Jaccard index`_, also known as Intersection over Union and the Jaccard similarity coefficient
     (originally coined coefficient de communauté by Paul Jaccard), is a statistic used for comparing the
     similarity and diversity of sample sets. The Jaccard coefficient measures similarity between finite sample sets,
@@ -27,6 +27,7 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True):
         smooth: value to avoid division by zero
         per_image: if ``True``, metric is calculated as mean over images in batch (B),
             else over whole batch
+        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
 
     Returns:
         IoU/Jaccard score in range [0, 1]
@@ -38,6 +39,10 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True):
         axes = [1, 2]
     else:
         axes = [0, 1, 2]
+        
+    if threshold is not None:
+        pr = K.greater(pr, threshold)
+        pr = K.cast(pr, K.floatx())
 
     intersection = K.sum(gt * pr, axis=axes)
     union = K.sum(gt + pr, axis=axes) - intersection
@@ -53,7 +58,7 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True):
     return iou
 
 
-def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True):
+def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True, threshold=None):
     """Change default parameters of IoU/Jaccard score
 
     Args:
@@ -61,12 +66,13 @@ def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True):
         smooth: value to avoid division by zero
         per_image: if ``True``, metric is calculated as mean over images in batch (B),
             else over whole batch
+        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
 
     Returns:
         ``callable``: IoU/Jaccard score
     """
     def score(gt, pr):
-        return iou_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image)
+        return iou_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image, threshold=threshold)
 
     return score
 
@@ -83,7 +89,7 @@ get_custom_objects().update({
 
 # ============================== F/Dice - score ==============================
 
-def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True):
+def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None):
     r"""The F-score (Dice coefficient) can be interpreted as a weighted average of the precision and recall,
     where an F-score reaches its best value at 1 and worst score at 0.
     The relative contribution of ``precision`` and ``recall`` to the F1-score are equal.
@@ -110,6 +116,7 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True):
         smooth: value to avoid division by zero
         per_image: if ``True``, metric is calculated as mean over images in batch (B),
             else over whole batch
+        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
 
     Returns:
         F-score in range [0, 1]
@@ -119,6 +126,10 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True):
         axes = [1, 2]
     else:
         axes = [0, 1, 2]
+        
+    if threshold is not None:
+        pr = K.greater(pr, threshold)
+        pr = K.cast(pr, K.floatx())
 
     tp = K.sum(gt * pr, axis=axes)
     fp = K.sum(pr, axis=axes) - tp
@@ -137,7 +148,7 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True):
     return score
 
 
-def get_f_score(class_weights=1, beta=1, smooth=SMOOTH, per_image=True):
+def get_f_score(class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None):
     """Change default parameters of F-score score
 
     Args:
@@ -146,12 +157,13 @@ def get_f_score(class_weights=1, beta=1, smooth=SMOOTH, per_image=True):
         beta: f-score coefficient
         per_image: if ``True``, metric is calculated as mean over images in batch (B),
             else over whole batch
+        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
 
     Returns:
         ``callable``: F-score
     """
     def score(gt, pr):
-        return f_score(gt, pr, class_weights=class_weights, beta=beta, smooth=smooth, per_image=per_image)
+        return f_score(gt, pr, class_weights=class_weights, beta=beta, smooth=smooth, per_image=per_image, threshold=threshold)
 
     return score
 

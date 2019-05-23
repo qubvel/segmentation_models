@@ -5,7 +5,7 @@ from keras.utils.generic_utils import get_custom_objects
 
 from .metrics import jaccard_score, f_score
 
-SMOOTH = 1e-12
+SMOOTH = 1.
 
 __all__ = [
     'jaccard_loss', 'bce_jaccard_loss', 'cce_jaccard_loss',
