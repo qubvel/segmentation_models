@@ -1,5 +1,17 @@
 # Change Log
 
+
+**Version 0.2.1** 
+
+###### Areas of improvement
+
+ - Added `set_regularization` function 
+ - Added `beta` argument to dice loss
+ - Added `threshold` argument for metrics
+ - Fixed `prerprocess_input` for mobilenets
+ - Fixed missing parameter `interpolation` in `ResizeImage` layer config
+ - Some minor improvements in docs, fixed typos
+
 **Version 0.2.0** 
 
 ###### Areas of improvement
