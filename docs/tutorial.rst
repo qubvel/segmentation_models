@@ -55,7 +55,7 @@ Simple training pipeline
    from segmentation_models.metrics import iou_score
 
    BACKBONE = 'resnet34'
-   preprocess_input = get_prepocessing(BACKBONE)
+   preprocess_input = get_preprocessing(BACKBONE)
 
    # load your data
    x_train, y_train, x_val, y_val = load_data(...)
@@ -66,7 +66,7 @@ Simple training pipeline
 
    # define model
    model = Unet(BACKBONE, encoder_weights='imagenet')
-   model.complile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
+   model.compile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
 
    # fit model
    model.fit(
