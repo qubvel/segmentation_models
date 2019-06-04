@@ -78,10 +78,12 @@ DEFAULT_FEATURE_LAYERS = {
     'efficientnetb1': (246, 122, 76, 30),
     'efficientnetb2': (246, 122, 76, 30),
     'efficientnetb3': (278, 122, 76, 30),
-    'efficientnetb4': (342, 154, 92, 30),
-    'efficientnetb5': (419, 199, 121, 43),
-    'efficientnetb6': (483, 231, 137, 43),
-    'efficientnetb7': (592, 276, 166, 56),
+    
+    # weights are not released
+#     'efficientnetb4': (342, 154, 92, 30),
+#     'efficientnetb5': (419, 199, 121, 43),
+#     'efficientnetb6': (483, 231, 137, 43),
+#     'efficientnetb7': (592, 276, 166, 56),
     
 }
 
