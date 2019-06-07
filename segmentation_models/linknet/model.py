@@ -62,7 +62,6 @@ def Linknet(backbone_name='vgg16',
 
     backbone = get_backbone(backbone_name,
                             input_shape=input_shape,
-                            input_tensor=None,
                             weights=encoder_weights,
                             include_top=False)
 

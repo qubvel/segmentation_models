@@ -1,3 +1,4 @@
+import efficientnet as eff
 from classification_models import Classifiers
 from classification_models import resnext
 
@@ -14,6 +15,18 @@ Classifiers._models.update({
     'resnext101': [resnext.ResNeXt101, resnext.models.preprocess_input],
     'mobilenet': [mbn.MobileNet, mbn.preprocess_input],
     'mobilenetv2': [mbn2.MobileNetV2, mbn2.preprocess_input],
+    
+    'efficientnetb0': [eff.EfficientNetB0, eff.preprocess_input],
+    'efficientnetb1': [eff.EfficientNetB1, eff.preprocess_input],
+    'efficientnetb2': [eff.EfficientNetB2, eff.preprocess_input],
+    'efficientnetb3': [eff.EfficientNetB3, eff.preprocess_input],
+
+    # weights are not released
+#     'efficientnetb4': [eff.EfficientNetB4, eff.preprocess_input],
+#     'efficientnetb5': [eff.EfficientNetB5, eff.preprocess_input],
+#     'efficientnetb6': [eff.EfficientNetB6, eff.preprocess_input],
+#     'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
+    
 })
 
 DEFAULT_FEATURE_LAYERS = {
@@ -59,7 +72,19 @@ DEFAULT_FEATURE_LAYERS = {
     # Mobile Nets
     'mobilenet': ('conv_pw_11_relu', 'conv_pw_5_relu', 'conv_pw_3_relu', 'conv_pw_1_relu'),
     'mobilenetv2': ('block_13_expand_relu', 'block_6_expand_relu', 'block_3_expand_relu', 'block_1_expand_relu'),
-
+    
+    # EfficientNets
+    'efficientnetb0': (169, 77, 47, 17),
+    'efficientnetb1': (246, 122, 76, 30),
+    'efficientnetb2': (246, 122, 76, 30),
+    'efficientnetb3': (278, 122, 76, 30),
+    
+    # weights are not released
+#     'efficientnetb4': (342, 154, 92, 30),
+#     'efficientnetb5': (419, 199, 121, 43),
+#     'efficientnetb6': (483, 231, 137, 43),
+#     'efficientnetb7': (592, 276, 166, 56),
+    
 }
 
 

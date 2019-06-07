@@ -11,13 +11,13 @@ old_args_map = {
     'interpolation': 'final_interpolation',
     'upsample_rates': None,  # removed
     'last_upsample': None,  # removed
+    'input_tensor': None, # removed
 }
 
 
 @legacy_support(old_args_map)
 def FPN(backbone_name='vgg16',
         input_shape=(None, None, 3),
-        input_tensor=None,
         classes=21,
         activation='softmax',
         encoder_weights='imagenet',
@@ -61,7 +61,6 @@ def FPN(backbone_name='vgg16',
 
     backbone = get_backbone(backbone_name,
                             input_shape=input_shape,
-                            input_tensor=input_tensor,
                             weights=encoder_weights,
                             include_top=False)
 
