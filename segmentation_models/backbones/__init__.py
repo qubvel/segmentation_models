@@ -22,8 +22,8 @@ Classifiers._models.update({
     'efficientnetb3': [eff.EfficientNetB3, eff.preprocess_input],
 
     # weights are not released
-#     'efficientnetb4': [eff.EfficientNetB4, eff.preprocess_input],
-#     'efficientnetb5': [eff.EfficientNetB5, eff.preprocess_input],
+    'efficientnetb4': [eff.EfficientNetB4, eff.preprocess_input],
+    'efficientnetb5': [eff.EfficientNetB5, eff.preprocess_input],
 #     'efficientnetb6': [eff.EfficientNetB6, eff.preprocess_input],
 #     'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
     
@@ -80,8 +80,8 @@ DEFAULT_FEATURE_LAYERS = {
     'efficientnetb3': (278, 122, 76, 30),
     
     # weights are not released
-#     'efficientnetb4': (342, 154, 92, 30),
-#     'efficientnetb5': (419, 199, 121, 43),
+    'efficientnetb4': (342, 154, 92, 30),
+    'efficientnetb5': (419, 199, 121, 43),
 #     'efficientnetb6': (483, 231, 137, 43),
 #     'efficientnetb7': (592, 276, 166, 56),
     
