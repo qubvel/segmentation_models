@@ -2,4 +2,4 @@ keras>=2.2.0
 keras_applications==1.0.7
 scikit-image
 image-classifiers==0.2.0
-efficientnet>=0.0.3
+efficientnet>=0.0.4
