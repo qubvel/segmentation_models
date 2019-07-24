@@ -46,10 +46,11 @@ install:
   - pip install -e .[tests]
 
   # install TensorFlow (CPU version).
-  - pip install tensorflow==1.9
+  - pip install tensorflow==1.12
 
-  # install pydot for visualization tests
-  - conda install pydot graphviz
+  # permanent fixes #TODO: remove
+  - pip install -U git+https://github.com/qubvel/classification_models@feature/tf.keras
+  - pip install -U git+https://github.com/qubvel/efficientnet
 
   # detect one of markdown files is changed or not
   - export DOC_ONLY_CHANGED=False;
