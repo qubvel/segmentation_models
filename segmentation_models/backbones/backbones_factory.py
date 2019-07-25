@@ -84,10 +84,14 @@ class BackbonesFactory(ModelsFactory):
         #     'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
     }
 
+    _models_delete = ['resnet50v2', 'resnet101v2', 'resnet152v2']
+
     @property
     def models(self):
         all_models = copy.copy(self._models)
         all_models.update(self._models_update)
+        for k in self._models_delete:
+            del all_models[k]
         return all_models
 
     def get_backbone(self, name, *args, **kwargs):
