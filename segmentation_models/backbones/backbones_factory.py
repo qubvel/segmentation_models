@@ -84,7 +84,7 @@ class BackbonesFactory(ModelsFactory):
         #     'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
     }
 
-    _models_delete = ['resnet50v2', 'resnet101v2', 'resnet152v2']
+    _models_delete = ['resnet50v2', 'resnet101v2', 'resnet152v2', 'nasnetlarge', 'nasnetmobile']
 
     @property
     def models(self):

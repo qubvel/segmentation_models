@@ -149,7 +149,7 @@ def build_fpn(
 
     # final stage
     x = Conv3x3BnReLU(segmentation_filters, use_batchnorm, name='final_stage')(x)
-    x = layers.UpSampling2D(size=(4, 4), interpolation='bilinear', name='final_upsampling')(x)
+    x = layers.UpSampling2D(size=(2, 2), interpolation='bilinear', name='final_upsampling')(x)
 
     # model head (define number of output classes)
     x = layers.Conv2D(
