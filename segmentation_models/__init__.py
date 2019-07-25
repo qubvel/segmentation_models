@@ -8,6 +8,16 @@ _KERAS_BACKEND = None
 _KERAS_LAYERS = None
 _KERAS_MODELS = None
 _KERAS_UTILS = None
+_KERAS_LOSSES = None
+
+
+def inject_global_losses(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        kwargs['losses'] = _KERAS_LOSSES
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 def inject_global_submodules(func):
@@ -32,12 +42,13 @@ def set_framework(name='keras'):
     else:
         raise ValueError('Not correct module name')
 
-    global _KERAS_BACKEND, _KERAS_LAYERS, _KERAS_MODELS, _KERAS_UTILS
+    global _KERAS_BACKEND, _KERAS_LAYERS, _KERAS_MODELS, _KERAS_UTILS, _KERAS_LOSSES
 
     _KERAS_BACKEND = keras.backend
     _KERAS_LAYERS = keras.layers
     _KERAS_MODELS = keras.models
     _KERAS_UTILS = keras.utils
+    _KERAS_LOSSES = keras.losses
 
 
 if os.environ.get('TF_KERAS', False):

@@ -1,5 +1,7 @@
-import keras.backend as K
-from keras.utils.generic_utils import get_custom_objects
+from keras_applications import get_submodules_from_kwargs
+from . import inject_global_submodules
+
+# from keras.utils.generic_utils import get_custom_objects
 
 __all__ = [
     'iou_score', 'jaccard_score', 'f1_score', 'f2_score', 'dice_score',
@@ -11,8 +13,8 @@ SMOOTH = 1.
 
 # ============================ Jaccard/IoU score ============================
 
-
-def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold=None):
+@inject_global_submodules
+def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold=None, **kwargs):
     r""" The `Jaccard index`_, also known as Intersection over Union and the Jaccard similarity coefficient
     (originally coined coefficient de communauté by Paul Jaccard), is a statistic used for comparing the
     similarity and diversity of sample sets. The Jaccard coefficient measures similarity between finite sample sets,
@@ -35,30 +37,34 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold
     .. _`Jaccard index`: https://en.wikipedia.org/wiki/Jaccard_index
 
     """
+
+    backend = get_submodules_from_kwargs(kwargs)[0]
+
     if per_image:
         axes = [1, 2]
     else:
         axes = [0, 1, 2]
-        
-    if threshold is not None:
-        pr = K.greater(pr, threshold)
-        pr = K.cast(pr, K.floatx())
 
-    intersection = K.sum(gt * pr, axis=axes)
-    union = K.sum(gt + pr, axis=axes) - intersection
+    if threshold is not None:
+        pr = backend.greater(pr, threshold)
+        pr = backend.cast(pr, backend.floatx())
+
+    intersection = backend.sum(gt * pr, axis=axes)
+    union = backend.sum(gt + pr, axis=axes) - intersection
     iou = (intersection + smooth) / (union + smooth)
 
     # mean per image
     if per_image:
-        iou = K.mean(iou, axis=0)
+        iou = backend.mean(iou, axis=0)
 
     # weighted mean per class
-    iou = K.mean(iou * class_weights)
+    iou = backend.mean(iou * class_weights)
 
     return iou
 
 
-def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True, threshold=None):
+@inject_global_submodules
+def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True, threshold=None, **kwargs):
     """Change default parameters of IoU/Jaccard score
 
     Args:
@@ -71,8 +77,10 @@ def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True, threshold=Non
     Returns:
         ``callable``: IoU/Jaccard score
     """
+
     def score(gt, pr):
-        return iou_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image, threshold=threshold)
+        return iou_score(gt, pr, class_weights=class_weights, smooth=smooth,
+                         per_image=per_image, threshold=threshold, **kwargs)
 
     return score
 
@@ -80,16 +88,18 @@ def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True, threshold=Non
 jaccard_score = iou_score
 get_jaccard_score = get_iou_score
 
-# Update custom objects
-get_custom_objects().update({
-    'iou_score': iou_score,
-    'jaccard_score': jaccard_score,
-})
+
+# # Update custom objects
+# get_custom_objects().update({
+#     'iou_score': iou_score,
+#     'jaccard_score': jaccard_score,
+# })
 
 
 # ============================== F/Dice - score ==============================
 
-def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None):
+@inject_global_submodules
+def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None, **kwargs):
     r"""The F-score (Dice coefficient) can be interpreted as a weighted average of the precision and recall,
     where an F-score reaches its best value at 1 and worst score at 0.
     The relative contribution of ``precision`` and ``recall`` to the F1-score are equal.
@@ -122,33 +132,37 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, thre
         F-score in range [0, 1]
 
     """
+
+    backend = get_submodules_from_kwargs(kwargs)[0]
+
     if per_image:
         axes = [1, 2]
     else:
         axes = [0, 1, 2]
-        
-    if threshold is not None:
-        pr = K.greater(pr, threshold)
-        pr = K.cast(pr, K.floatx())
 
-    tp = K.sum(gt * pr, axis=axes)
-    fp = K.sum(pr, axis=axes) - tp
-    fn = K.sum(gt, axis=axes) - tp
+    if threshold is not None:
+        pr = backend.greater(pr, threshold)
+        pr = backend.cast(pr, backend.floatx())
+
+    tp = backend.sum(gt * pr, axis=axes)
+    fp = backend.sum(pr, axis=axes) - tp
+    fn = backend.sum(gt, axis=axes) - tp
 
     score = ((1 + beta ** 2) * tp + smooth) \
             / ((1 + beta ** 2) * tp + beta ** 2 * fn + fp + smooth)
 
     # mean per image
     if per_image:
-        score = K.mean(score, axis=0)
+        score = backend.mean(score, axis=0)
 
     # weighted mean per class
-    score = K.mean(score * class_weights)
+    score = backend.mean(score * class_weights)
 
     return score
 
 
-def get_f_score(class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None):
+@inject_global_submodules
+def get_f_score(class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None, **kwargs):
     """Change default parameters of F-score score
 
     Args:
@@ -162,8 +176,10 @@ def get_f_score(class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshol
     Returns:
         ``callable``: F-score
     """
+
     def score(gt, pr):
-        return f_score(gt, pr, class_weights=class_weights, beta=beta, smooth=smooth, per_image=per_image, threshold=threshold)
+        return f_score(gt, pr, class_weights=class_weights, beta=beta, smooth=smooth, per_image=per_image,
+                       threshold=threshold, **kwargs)
 
     return score
 
@@ -172,9 +188,9 @@ f1_score = get_f_score(beta=1)
 f2_score = get_f_score(beta=2)
 dice_score = f1_score
 
-# Update custom objects
-get_custom_objects().update({
-    'f1_score': f1_score,
-    'f2_score': f2_score,
-    'dice_score': dice_score,
-})
+# # Update custom objects
+# get_custom_objects().update({
+#     'f1_score': f1_score,
+#     'f2_score': f2_score,
+#     'dice_score': dice_score,
+# })
