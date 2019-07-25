@@ -54,18 +54,18 @@ class BackbonesFactory(ModelsFactory):
                         'block_1_expand_relu'),
 
         # EfficientNets
-        'efficientnetb0':  ('block6a_expand_activation', 'block4a_expand_activation',
-                            'block3a_expand_activation', 'block2a_expand_activation'),
+        'efficientnetb0': ('block6a_expand_activation', 'block4a_expand_activation',
+                           'block3a_expand_activation', 'block2a_expand_activation'),
         'efficientnetb1': ('block6a_expand_activation', 'block4a_expand_activation',
-                            'block3a_expand_activation', 'block2a_expand_activation'),
+                           'block3a_expand_activation', 'block2a_expand_activation'),
         'efficientnetb2': ('block6a_expand_activation', 'block4a_expand_activation',
-                            'block3a_expand_activation', 'block2a_expand_activation'),
+                           'block3a_expand_activation', 'block2a_expand_activation'),
         'efficientnetb3': ('block6a_expand_activation', 'block4a_expand_activation',
-                            'block3a_expand_activation', 'block2a_expand_activation'),
+                           'block3a_expand_activation', 'block2a_expand_activation'),
         'efficientnetb4': ('block6a_expand_activation', 'block4a_expand_activation',
-                            'block3a_expand_activation', 'block2a_expand_activation'),
+                           'block3a_expand_activation', 'block2a_expand_activation'),
         'efficientnetb5': ('block6a_expand_activation', 'block4a_expand_activation',
-                            'block3a_expand_activation', 'block2a_expand_activation'),
+                           'block3a_expand_activation', 'block2a_expand_activation'),
 
     }
 
@@ -104,3 +104,6 @@ class BackbonesFactory(ModelsFactory):
 
     def get_preprocessing(self, name):
         return self.get(name)[1]
+
+
+Backbones = BackbonesFactory()
