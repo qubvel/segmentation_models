@@ -46,7 +46,7 @@ else:
     try:
         set_framework(name='keras')
     except ImportError:
-        set_framework(name='keras')
+        set_framework(name='tf.keras')
 
 from .models.unet import Unet as _Unet
 from .models.pspnet import PSPNet as _PSPNet

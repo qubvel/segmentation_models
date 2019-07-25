@@ -63,6 +63,8 @@ def FPNBlock(pyramid_filters, stage):
     conv0_name = 'fpn_stage_p{}_pre_conv'.format(stage)
     conv1_name = 'fpn_stage_p{}_conv'.format(stage)
     add_name = 'fpn_stage_p{}_add'.format(stage)
+    up_name = 'fpn_stage_p{}_upsampling'.format(stage)
+
     channels_axis = 3 if backend.image_data_format() == 'channels_last' else 1
 
     def wrapper(input_tensor, skip):
@@ -84,7 +86,9 @@ def FPNBlock(pyramid_filters, stage):
             kernel_initializer='he_uniform',
             name=conv1_name,
         )(skip)
-        x = layers.Add(name=add_name)([input_tensor, skip])
+
+        x = layers.UpSampling2D((2, 2), name=up_name)(input_tensor)
+        x = layers.Add(name=add_name)([x, skip])
 
         return x
 
