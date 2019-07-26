@@ -1,9 +1,12 @@
-name = "segmentation_models"
-
 import os
 import functools
 from .__version__ import __version__
 
+_KERAS_FRAMEWORK_NAME = 'keras'
+_TF_KERAS_FRAMEWORK_NAME = 'tf.keras'
+
+_DEFAULT_KERAS_FRAMEWORK = _KERAS_FRAMEWORK_NAME
+_KERAS_FRAMEWORK = None
 _KERAS_BACKEND = None
 _KERAS_LAYERS = None
 _KERAS_MODELS = None
@@ -32,18 +35,38 @@ def inject_global_submodules(func):
     return wrapper
 
 
-def set_framework(name='keras'):
-    if name == 'keras':
+def framework():
+    """Return name of Segmentation Models framework"""
+    return _KERAS_FRAMEWORK
+
+
+def set_framework(name):
+    """Set framework for Segmentation Models
+
+    Args:
+        name (str): one of ``keras``, ``tf.keras``, case insensitive.
+
+    Raises:
+        ValueError: in case of incorrect framework name.
+        ImportError: in case framework is not installed.
+
+    """
+    name = name.lower()
+
+    if name == _KERAS_FRAMEWORK_NAME:
         import keras
         import efficientnet.keras  # init custom objects
-    elif name == 'tensorflow' or name == 'tf.keras' or name == 'tensorflow.keras':
+    elif name == _TF_KERAS_FRAMEWORK_NAME:
         from tensorflow import keras
         import efficientnet.tfkeras  # init custom objects
     else:
-        raise ValueError('Not correct module name')
+        raise ValueError('Not correct module name `{}`, use `{}` or `{}`'.format(
+            name, _KERAS_FRAMEWORK_NAME, _TF_KERAS_FRAMEWORK_NAME))
 
-    global _KERAS_BACKEND, _KERAS_LAYERS, _KERAS_MODELS, _KERAS_UTILS, _KERAS_LOSSES
+    global _KERAS_BACKEND, _KERAS_LAYERS, _KERAS_MODELS
+    global _KERAS_UTILS, _KERAS_LOSSES, _KERAS_FRAMEWORK
 
+    _KERAS_FRAMEWORK = name
     _KERAS_BACKEND = keras.backend
     _KERAS_LAYERS = keras.layers
     _KERAS_MODELS = keras.models
@@ -51,14 +74,18 @@ def set_framework(name='keras'):
     _KERAS_LOSSES = keras.losses
 
 
-if os.environ.get('TF_KERAS', False):
-    set_framework(name='tf.keras')
-else:
-    try:
-        set_framework(name='keras')
-    except ImportError:
-        set_framework(name='tf.keras')
+# set default framework
+_framework = os.environ.get('SM_FRAMEWORK', _DEFAULT_KERAS_FRAMEWORK)
+try:
+    set_framework(_framework)
+except ImportError:
+    other = _TF_KERAS_FRAMEWORK_NAME if _framework == _KERAS_FRAMEWORK_NAME else _KERAS_FRAMEWORK_NAME
+    set_framework(other)
 
+print('Segmentation Models: using `{}` framework.'.format(_KERAS_FRAMEWORK))
+
+# wrap segmentation models with framework modules
+from .backbones.backbones_factory import Backbones
 from .models.unet import Unet as _Unet
 from .models.pspnet import PSPNet as _PSPNet
 from .models.linknet import Linknet as _Linknet
@@ -68,3 +95,12 @@ Unet = inject_global_submodules(_Unet)
 PSPNet = inject_global_submodules(_PSPNet)
 Linknet = inject_global_submodules(_Linknet)
 FPN = inject_global_submodules(_FPN)
+get_preprocessing = inject_global_submodules(Backbones.get_preprocessing)
+get_available_backbone_names = Backbones.models_names
+
+__all__ = [
+    'Unet', 'PSPNet', 'FPN', 'Linknet',
+    'set_framework', 'framework',
+    'get_preprocessing', 'get_available_backbone_names',
+    '__version__',
+]

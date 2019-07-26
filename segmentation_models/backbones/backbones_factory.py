@@ -1,6 +1,5 @@
 import copy
 import efficientnet.model as eff
-import efficientnet.preprocessing as effp
 from classification_models.models_factory import ModelsFactory
 
 from . import inception_resnet_v2 as irv2
@@ -73,18 +72,19 @@ class BackbonesFactory(ModelsFactory):
         'inceptionresnetv2': [irv2.InceptionResNetV2, irv2.preprocess_input],
         'inceptionv3': [iv3.InceptionV3, iv3.preprocess_input],
 
-        'efficientnetb0': [eff.EfficientNetB0, effp.preprocess_input],
-        'efficientnetb1': [eff.EfficientNetB1, effp.preprocess_input],
-        'efficientnetb2': [eff.EfficientNetB2, effp.preprocess_input],
-        'efficientnetb3': [eff.EfficientNetB3, effp.preprocess_input],
-        'efficientnetb4': [eff.EfficientNetB4, effp.preprocess_input],
-        'efficientnetb5': [eff.EfficientNetB5, effp.preprocess_input],
+        'efficientnetb0': [eff.EfficientNetB0, eff.preprocess_input],
+        'efficientnetb1': [eff.EfficientNetB1, eff.preprocess_input],
+        'efficientnetb2': [eff.EfficientNetB2, eff.preprocess_input],
+        'efficientnetb3': [eff.EfficientNetB3, eff.preprocess_input],
+        'efficientnetb4': [eff.EfficientNetB4, eff.preprocess_input],
+        'efficientnetb5': [eff.EfficientNetB5, eff.preprocess_input],
 
         #     'efficientnetb6': [eff.EfficientNetB6, eff.preprocess_input],
         #     'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
     }
 
-    _models_delete = ['resnet50v2', 'resnet101v2', 'resnet152v2', 'nasnetlarge', 'nasnetmobile']
+    _models_delete = ['resnet50v2', 'resnet101v2', 'resnet152v2',
+                      'nasnetlarge', 'nasnetmobile', 'xception']
 
     @property
     def models(self):
