@@ -62,7 +62,7 @@ install:
 # command to run tests
 script:
   - export MKL_THREADING_LAYER="GNU"
-  - mkdir ~/.keras/models
+  - mkdir -p ~/.keras/models
   # set up keras backend
   - if [[ "$DOC_ONLY_CHANGED" == "False" ]]; then
         PYTHONPATH=$PWD:$PYTHONPATH py.test tests/;
