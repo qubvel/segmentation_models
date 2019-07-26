@@ -145,7 +145,7 @@ def build_fpn(
                          'got {}'.format(aggregation))
 
     if dropout:
-        x = layers.Dropout(dropout, name='pyramid_dropout')(x)
+        x = layers.SpatialDropout2D(dropout, name='pyramid_dropout')(x)
 
     # final stage
     x = Conv3x3BnReLU(segmentation_filters, use_batchnorm, name='final_stage')(x)
