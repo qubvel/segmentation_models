@@ -235,7 +235,7 @@ def PSPNet(
 
     # lock encoder weights for fine-tuning
     if encoder_freeze:
-        freeze_model(backbone)
+        freeze_model(backbone, **kwargs)
 
     # loading model weights
     if weights is not None:
