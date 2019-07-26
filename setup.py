@@ -36,7 +36,7 @@ except:
 
 # What packages are optional?
 EXTRAS = {
-    # 'fancy feature': ['django'],
+    'tests': ['pytest', 'scikit-image'],
 }
 
 # Import the README and use it as the long-description.

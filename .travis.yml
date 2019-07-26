@@ -6,6 +6,8 @@ matrix:
     include:
         - python: 3.6
           env: KERAS_VERSION=2.2.4
+        - python: 3.6
+          env: SM_FRAMEWORK='tf.keras'
 
 git:
   submodules: true
@@ -26,27 +28,26 @@ install:
 
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest pandas
   - source activate test-environment
-  - pip install --only-binary=numpy,scipy numpy nose scipy matplotlib h5py theano scikit-image
+  - pip install --only-binary=numpy,scipy numpy nose scipy matplotlib h5py theano
 
-  # install keras
-  - if [[ $KERAS_VERSION == "head" ]]; then
-      pip install --no-deps git+https://github.com/keras-team/keras.git;
-    elif [ -z $KERAS_VERSION ]; then
-      pip install keras;
-    else
-      pip install keras==$KERAS_VERSION;
-    fi
-
-  - conda install mkl mkl-service
 
   # set library path
   - export LD_LIBRARY_PATH=$HOME/miniconda/envs/test-environment/lib/:$LD_LIBRARY_PATH
+  - conda install mkl mkl-service
+
+  # install TensorFlow (CPU version).
+  - pip install tensorflow==1.14
+
+  # install keras
+  - if [ -z $KERAS_VERSION ]; then
+      echo "Using tf.keras";
+    else
+      echo "Using keras";
+      pip install keras==$KERAS_VERSION;
+    fi
 
   # install lib in develop mode
   - pip install -e .[tests]
-
-  # install TensorFlow (CPU version).
-  - pip install tensorflow==1.12
 
   # permanent fixes #TODO: remove
   - pip install -U git+https://github.com/qubvel/classification_models@feature/tf.keras
@@ -61,18 +62,8 @@ install:
 # command to run tests
 script:
   - export MKL_THREADING_LAYER="GNU"
-  - export KERAS_BACKEND="tensorflow"
-  # run keras backend init to initialize backend config
-  - python -c "import keras.backend"
-  # create models directory to avoid concurrent directory creation at runtime
   - mkdir ~/.keras/models
   # set up keras backend
-  - sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
-  - echo -e "Running tests with the following config:\n$(cat ~/.keras/keras.json)"
   - if [[ "$DOC_ONLY_CHANGED" == "False" ]]; then
-      if [[ "$TEST_MODE" == "PEP8" ]]; then
-        PYTHONPATH=$PWD:$PYTHONPATH py.test --pep8 -m pep8 -n0;
-      else
         PYTHONPATH=$PWD:$PYTHONPATH py.test tests/;
-      fi;
     fi

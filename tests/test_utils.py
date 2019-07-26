@@ -1,12 +1,16 @@
 import pytest
 import numpy as np
-# import keras.backend.tensorflow_backend as KTF
-import keras.backend as K
-# import tensorflow as tf
-from keras import regularizers
 
+import segmentation_models as sm
 from segmentation_models.utils import set_regularization
 from segmentation_models import Unet
+
+if sm.framework() == sm._TF_KERAS_FRAMEWORK_NAME:
+    from tensorflow import keras
+elif sm.framework() == sm._KERAS_FRAMEWORK_NAME:
+    import keras
+else:
+    raise ValueError('Incorrect framework {}'.format(sm.framework()))
 
 X1 = np.ones((1, 32, 32, 3))
 Y1 = np.ones((1, 32, 32, 1))
@@ -32,19 +36,19 @@ def _test_regularizer(model, reg_model, x, y):
     assert loss_1 == 0
     assert loss_2 > 0
 
-    K.clear_session()
+    keras.backend.clear_session()
 
 
 @pytest.mark.parametrize('case', CASE)
 def test_kernel_reg(case):
     x, y, model_fn, backbone= case
 
-    l1_reg = regularizers.l1(0.1)
+    l1_reg = keras.regularizers.l1(0.1)
     model = model_fn(backbone)
     reg_model = set_regularization(model, kernel_regularizer=l1_reg)
     _test_regularizer(model, reg_model, x, y)
 
-    l2_reg = regularizers.l2(0.1)
+    l2_reg = keras.regularizers.l2(0.1)
     model = model_fn(backbone, encoder_weights=None)
     reg_model = set_regularization(model, kernel_regularizer=l2_reg)
     _test_regularizer(model, reg_model, x, y)
@@ -75,7 +79,7 @@ def test_bias_reg(case):
 def test_bn_reg(case):
     x, y, model_fn, backbone= case
 
-    l1_reg = regularizers.l1(1)
+    l1_reg = keras.regularizers.l1(1)
     model = model_fn(backbone)
     reg_model = set_regularization(model, gamma_regularizer=l1_reg)
     _test_regularizer(model, reg_model, x, y)
@@ -84,7 +88,7 @@ def test_bn_reg(case):
     reg_model = set_regularization(model, beta_regularizer=l1_reg)
     _test_regularizer(model, reg_model, x, y)
 
-    l2_reg = regularizers.l2(1)
+    l2_reg = keras.regularizers.l2(1)
     model = model_fn(backbone)
     reg_model = set_regularization(model, gamma_regularizer=l2_reg)
     _test_regularizer(model, reg_model, x, y)
@@ -98,7 +102,7 @@ def test_bn_reg(case):
 def test_activity_reg(case):
     x, y, model_fn, backbone= case
 
-    l2_reg = regularizers.l2(1)
+    l2_reg = keras.regularizers.l2(1)
     model = model_fn(backbone)
     reg_model = set_regularization(model, activity_regularizer=l2_reg)
     _test_regularizer(model, reg_model, x, y)
