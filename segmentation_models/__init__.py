@@ -95,8 +95,11 @@ Unet = inject_global_submodules(_Unet)
 PSPNet = inject_global_submodules(_PSPNet)
 Linknet = inject_global_submodules(_Linknet)
 FPN = inject_global_submodules(_FPN)
-get_preprocessing = inject_global_submodules(Backbones.get_preprocessing)
 get_available_backbone_names = Backbones.models_names
+
+def get_preprocessing(name):
+    prerpocess_input = Backbones.get_preprocessing(name)
+    return inject_global_submodules(prerpocess_input)
 
 __all__ = [
     'Unet', 'PSPNet', 'FPN', 'Linknet',
