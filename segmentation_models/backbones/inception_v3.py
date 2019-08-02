@@ -155,12 +155,12 @@ def InceptionV3(include_top=True,
 
     x = conv2d_bn(img_input, 32, 3, 3, strides=(2, 2), padding='same')
     x = conv2d_bn(x, 32, 3, 3, padding='same')
-    x = conv2d_bn(x, 64, 3, 3)
-    x = layers.MaxPooling2D((3, 3), strides=(2, 2))(x)
+    x = conv2d_bn(x, 64, 3, 3, padding='same')
+    x = layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same')(x)
 
     x = conv2d_bn(x, 80, 1, 1, padding='same')
     x = conv2d_bn(x, 192, 3, 3, padding='same')
-    x = layers.MaxPooling2D((3, 3), strides=(2, 2))(x)
+    x = layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same')(x)
 
     # mixed 0: 35 x 35 x 256
     branch1x1 = conv2d_bn(x, 64, 1, 1)
@@ -227,7 +227,7 @@ def InceptionV3(include_top=True,
     branch3x3dbl = conv2d_bn(
         branch3x3dbl, 96, 3, 3, strides=(2, 2), padding='same')
 
-    branch_pool = layers.MaxPooling2D((3, 3), strides=(2, 2))(x)
+    branch_pool = layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same')(x)
     x = layers.concatenate(
         [branch3x3, branch3x3dbl, branch_pool],
         axis=channel_axis,
@@ -310,7 +310,7 @@ def InceptionV3(include_top=True,
     branch7x7x3 = conv2d_bn(
         branch7x7x3, 192, 3, 3, strides=(2, 2), padding='same')
 
-    branch_pool = layers.MaxPooling2D((3, 3), strides=(2, 2))(x)
+    branch_pool = layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same')(x)
     x = layers.concatenate(
         [branch3x3, branch7x7x3, branch_pool],
         axis=channel_axis,
