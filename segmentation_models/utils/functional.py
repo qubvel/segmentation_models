@@ -1,13 +1,3 @@
-from keras_applications import get_submodules_from_kwargs
-from . import inject_global_submodules
-
-# from keras.utils.generic_utils import get_custom_objects
-
-__all__ = [
-    'iou_score', 'jaccard_score', 'f1_score', 'f2_score', 'dice_score',
-    'get_f_score', 'get_iou_score', 'get_jaccard_score',
-]
-
 SMOOTH = 1.
 
 
@@ -20,8 +10,8 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold
     .. math:: J(A, B) = \frac{A \cap B}{A \cup B}
 
     Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
+        gt: ground truth 4D keras tensor (B, H, W, C) or (B, C, H, W)
+        pr: prediction 4D keras tensor (B, H, W, C) or (B, C, H, W)
         class_weights: 1. or list of class weights, len(weights) = C
         smooth: value to avoid division by zero
         per_image: if ``True``, metric is calculated as mean over images in batch (B),
@@ -35,7 +25,7 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold
 
     """
 
-    backend = get_submodules_from_kwargs(kwargs)[0]
+    backend = kwargs['backend']
 
     if per_image:
         axes = [1, 2]
@@ -80,8 +70,8 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, thre
         FN - false negative;
 
     Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
+        gt: ground truth 4D keras tensor (B, H, W, C) or (B, C, H, W)
+        pr: prediction 4D keras tensor (B, H, W, C) or (B, C, H, W)
         class_weights: 1. or list of class weights, len(weights) = C
         beta: f-score coefficient
         smooth: value to avoid division by zero
@@ -94,7 +84,7 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, thre
 
     """
 
-    backend = get_submodules_from_kwargs(kwargs)[0]
+    backend = kwargs['backend']
 
     if per_image:
         axes = [1, 2]
@@ -143,12 +133,17 @@ def bianary_crossentropy(gt, pr, **kwargs):
 
 
 def categorical_focal_loss(gt, pr, gamma=2.0, alpha=0.25, **kwargs):
-    """Implementation of Focal Loss from the paper in multiclass classification
+    r"""Implementation of Focal Loss from the paper in multiclass classification
+
     Formula:
-        loss = -alpha*((1-p)^gamma)*log(p)
-    Arguments:
+        loss = - gt * alpha * ((1 - pr)^gamma) * log(pr)
+
+    Args:
+        gt: ground truth 4D keras tensor (B, H, W, C) or (B, C, H, W)
+        pr: prediction 4D keras tensor (B, H, W, C) or (B, C, H, W)
         alpha: the same as weighting factor in balanced cross entropy, default 0.25
         gamma: focusing parameter for modulating factor (1-p), default 2.0
+
     """
 
     backend = kwargs['backend']
@@ -156,28 +151,32 @@ def categorical_focal_loss(gt, pr, gamma=2.0, alpha=0.25, **kwargs):
     # clip to prevent NaN's and Inf's
     pr = backend.clip(pr, backend.epsilon(), 1.0 - backend.epsilon())
 
-    # Calculate cross entropy
-    cross_entropy = - gt * backend.log(pr)
-
-    # Calculate weight that consists of  modulating factor and weighting factor
-    weight = alpha * gt * backend.pow((1 - pr), gamma)
-
     # Calculate focal loss
-    loss = weight * cross_entropy
+    loss = - gt * (alpha * backend.pow((1 - pr), gamma) * backend.log(pr))
 
     return backend.mean(loss)
 
 
-def focal_loss(gt, pr, gamma=2.0, alpha=0.25, **kwargs):
-    """Implementation of Focal Loss from the paper in multiclass classification
+def binary_focal_loss(gt, pr, gamma=2.0, alpha=0.25, **kwargs):
+    r"""Implementation of Focal Loss from the paper in binary classification
 
-    Parameters:
-        alpha -- the same as wighting factor in balanced cross entropy
-        gamma -- focusing parameter for modulating factor (1-p)
-    Default value:
-        gamma -- 2.0 as mentioned in the paper
-        alpha -- 0.25 as mentioned in the paper
+    Formula:
+        loss = - gt * alpha * ((1 - pr)^gamma) * log(pr) \
+               - (1 - gt) * alpha * (pr^gamma) * log(1 - pr)
+
+    Args:
+        gt: ground truth 4D keras tensor (B, H, W, C) or (B, C, H, W)
+        pr: prediction 4D keras tensor (B, H, W, C) or (B, C, H, W)
+        alpha: the same as weighting factor in balanced cross entropy, default 0.25
+        gamma: focusing parameter for modulating factor (1-p), default 2.0
+
     """
-    l1 = categorical_focal_loss(gt, pr, gamma=gamma, alpha=alpha, **kwargs)
-    l2 = categorical_focal_loss((1 - gt), (1 - pr), gamma=gamma, alpha=alpha, **kwargs)
-    return l1 + l2
+    backend = kwargs['backend']
+
+    # clip to prevent NaN's and Inf's
+    pr = backend.clip(pr, backend.epsilon(), 1.0 - backend.epsilon())
+
+    loss_1 = - gt * (alpha * backend.pow((1 - pr), gamma) * backend.log(pr))
+    loss_0 = - (1 - gt) * (alpha * backend.pow((pr), gamma) * backend.log(1 - pr))
+    loss = backend.mean(loss_0 + loss_1)
+    return loss

@@ -13,7 +13,7 @@ class IOUScore(Metric):
         self.per_image = per_image
         self.smooth = smooth
 
-    def __call__(self, gt, pr, **kwargs):
+    def call(self, gt, pr, **kwargs):
         return F.iou_score(
             gt,
             pr,
@@ -35,7 +35,7 @@ class FScore(Metric):
         self.per_image = per_image
         self.smooth = smooth,
 
-    def __call__(self, gt, pr, **kwargs):
+    def call(self, gt, pr, **kwargs):
         return F.f_score(
             gt,
             pr,

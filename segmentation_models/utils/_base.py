@@ -1,6 +1,10 @@
-class NamedObject:
+class KerasObject:
+    _backend = None
 
     def __init__(self, name=None):
+        if self.backend is None:
+            raise RuntimeError('You cannot use `KerasObjects` with None backend.')
+
         self._name = name
 
     @property
@@ -9,12 +13,27 @@ class NamedObject:
             return self.__class__.__name__
         return self._name
 
+    def __call__(self, *args, **kwargs):
+        kwargs['backend'] = self.backend
+        return self.call(*args, **kwargs)
 
-class Metric(NamedObject):
+    def call(self, *args, **kwargs):
+        raise NotImplementedError
+
+    @property
+    def backend(self):
+        return self._backend
+
+    @backend.setter
+    def backend(self, backend):
+        self._backend = backend
+
+
+class Metric(KerasObject):
     pass
 
 
-class Loss(NamedObject):
+class Loss(KerasObject):
 
     def __add__(self, other):
         if isinstance(other, Loss):
