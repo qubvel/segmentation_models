@@ -49,10 +49,6 @@ install:
   # install lib in develop mode
   - pip install -e .[tests]
 
-  # permanent fixes #TODO: remove
-  - pip install -U git+https://github.com/qubvel/classification_models@feature/tf.keras
-  - pip install -U git+https://github.com/qubvel/efficientnet
-
   # detect one of markdown files is changed or not
   - export DOC_ONLY_CHANGED=False;
   - if [ $(git diff --name-only HEAD~1 | wc -l) == "1" ] && [[ "$(git diff --name-only HEAD~1)" == *"md" ]]; then
