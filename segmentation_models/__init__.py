@@ -1,6 +1,7 @@
 import os
 import functools
 from .__version__ import __version__
+from . import base
 
 _KERAS_FRAMEWORK_NAME = 'keras'
 _TF_KERAS_FRAMEWORK_NAME = 'tf.keras'
@@ -73,6 +74,9 @@ def set_framework(name):
     _KERAS_UTILS = keras.utils
     _KERAS_LOSSES = keras.losses
 
+    # allow losses and metrics get keras backend
+    base.KerasObject.backend = keras.backend
+
 
 # set default framework
 _framework = os.environ.get('SM_FRAMEWORK', _DEFAULT_KERAS_FRAMEWORK)
@@ -83,6 +87,11 @@ except ImportError:
     set_framework(other)
 
 print('Segmentation Models: using `{}` framework.'.format(_KERAS_FRAMEWORK))
+
+# import helper modules
+from . import losses
+from . import metrics
+from . import utils
 
 # wrap segmentation models with framework modules
 from .backbones.backbones_factory import Backbones
@@ -97,13 +106,16 @@ Linknet = inject_global_submodules(_Linknet)
 FPN = inject_global_submodules(_FPN)
 get_available_backbone_names = Backbones.models_names
 
+
 def get_preprocessing(name):
     prerpocess_input = Backbones.get_preprocessing(name)
     return inject_global_submodules(prerpocess_input)
+
 
 __all__ = [
     'Unet', 'PSPNet', 'FPN', 'Linknet',
     'set_framework', 'framework',
     'get_preprocessing', 'get_available_backbone_names',
+    'losses', 'metrics', 'utils',
     '__version__',
 ]

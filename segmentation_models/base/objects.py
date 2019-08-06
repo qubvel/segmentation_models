@@ -17,8 +17,13 @@ class KerasObject:
         kwargs['backend'] = self.backend
         return self.call(*args, **kwargs)
 
-    def call(self, *args, **kwargs):
-        raise NotImplementedError
+    @property
+    def name(self):
+        return self.__name__
+
+    @name.setter
+    def name(self, name):
+        self._name = name
 
     @property
     def backend(self):
@@ -27,6 +32,9 @@ class KerasObject:
     @backend.setter
     def backend(self, backend):
         self._backend = backend
+
+    def call(self, *args, **kwargs):
+        raise NotImplementedError
 
 
 class Metric(KerasObject):
@@ -60,9 +68,9 @@ class MultipliedLoss(Loss):
 
         # resolve name
         if len(loss.__name__.split('+')) > 1:
-            name = '{}x({})'.format(multiplier, loss.__name__)
+            name = '{} * ({})'.format(multiplier, loss.__name__)
         else:
-            name = '{}x{}'.format(multiplier, loss.__name__)
+            name = '{} * {}'.format(multiplier, loss.__name__)
         super().__init__(name=name)
         self.loss = loss
         self.multiplier = multiplier
@@ -74,7 +82,7 @@ class MultipliedLoss(Loss):
 class SumOfLosses(Loss):
 
     def __init__(self, l1, l2):
-        name = '{}+{}'.format(l1.__name__, l2.__name__)
+        name = '{} + {}'.format(l1.__name__, l2.__name__)
         super().__init__(name=name)
         self.l1 = l1
         self.l2 = l2

@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 
 import segmentation_models as sm
-from segmentation_models.metrics import iou_score, f_score
-from segmentation_models.losses import jaccard_loss, dice_loss
+from segmentation_models.metrics import IOUScore, FScore
+from segmentation_models.losses import JaccardLoss, DiceLoss
 
 if sm.framework() == sm._TF_KERAS_FRAMEWORK_NAME:
     from tensorflow import keras
@@ -12,14 +12,19 @@ elif sm.framework() == sm._KERAS_FRAMEWORK_NAME:
 else:
     raise ValueError('Incorrect framework {}'.format(sm.framework()))
 
+iou_score = IOUScore(smooth=10e-12)
+f_score = FScore(smooth=10e-12)
+jaccard_loss = JaccardLoss(smooth=10e-12)
+dice_loss = DiceLoss(smooth=10e-12)
+
 METRICS = [
     iou_score,
     f_score,
 ]
 
 LOSSES = [
-    dice_loss,
     jaccard_loss,
+    dice_loss,
 ]
 
 GT0 = np.array(

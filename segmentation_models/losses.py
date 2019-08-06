@@ -1,181 +1,111 @@
-from . import inject_global_losses
-from . import inject_global_submodules
-from .metrics import jaccard_score, f_score
+from .base import Loss
+from .base import functional as F
 
-SMOOTH = 1.
-
-__all__ = [
-    'jaccard_loss', 'bce_jaccard_loss', 'cce_jaccard_loss',
-    'dice_loss', 'bce_dice_loss', 'cce_dice_loss',
-]
+SMOOTH = 1e-5
 
 
-# ============================== Jaccard Losses ==============================
+class JaccardLoss(Loss):
 
-def jaccard_loss(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True):
-    r"""Jaccard loss function for imbalanced datasets:
+    def __init__(self, class_weights=None, per_image=True, smooth=SMOOTH):
+        super().__init__(name='jaccard_loss')
+        self.class_weights = class_weights or 1.
+        self.per_image = per_image
+        self.smooth = smooth
 
-    .. math:: L(A, B) = 1 - \frac{A \cap B}{A \cup B}
-
-    Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights, len(weights) = C
-        smooth: value to avoid division by zero
-        per_image: if ``True``, metric is calculated as mean over images in batch (B),
-            else over whole batch
-
-    Returns:
-        Jaccard loss in range [0, 1]
-
-    """
-    return 1 - jaccard_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image)
+    def call(self, gt, pr, **kwargs):
+        return 1 - F.iou_score(
+            gt,
+            pr,
+            class_weights=self.class_weights,
+            smooth=self.smooth,
+            per_image=self.per_image,
+            threshold=None,
+            **kwargs
+        )
 
 
-@inject_global_losses
-@inject_global_submodules
-def bce_jaccard_loss(gt, pr, bce_weight=1., smooth=SMOOTH, per_image=True, **kwargs):
-    r"""Sum of binary crossentropy and jaccard losses:
-    
-    .. math:: L(A, B) = bce_weight * binary_crossentropy(A, B) + jaccard_loss(A, B)
-    
-    Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights for jaccard loss, len(weights) = C
-        smooth: value to avoid division by zero
-        per_image: if ``True``, jaccard loss is calculated as mean over images in batch (B),
-            else over whole batch (only for jaccard loss)
+class DiceLoss(Loss):
 
-    Returns:
-        loss
-    
-    """
-    backend = kwargs['backend']
-    losses = kwargs['losses']
+    def __init__(self, beta=1, class_weights=None, per_image=True, smooth=SMOOTH):
+        super().__init__(name='dice_loss')
+        self.beta = beta
+        self.class_weights = class_weights or 1.
+        self.per_image = per_image
+        self.smooth = smooth
 
-    bce = backend.mean(losses.binary_crossentropy(gt, pr))
-    loss = bce_weight * bce + jaccard_loss(gt, pr, smooth=smooth, per_image=per_image)
-    return loss
+    def call(self, gt, pr, **kwargs):
+        return 1 - F.f_score(
+            gt,
+            pr,
+            beta=self.beta,
+            class_weights=self.class_weights,
+            smooth=self.smooth,
+            per_image=self.per_image,
+            threshold=None,
+            **kwargs
+        )
 
 
-@inject_global_losses
-@inject_global_submodules
-def cce_jaccard_loss(gt, pr, cce_weight=1., class_weights=1., smooth=SMOOTH, per_image=True, **kwargs):
-    r"""Sum of categorical crossentropy and jaccard losses:
-    
-    .. math:: L(A, B) = cce_weight * categorical_crossentropy(A, B) + jaccard_loss(A, B)
-    
-    Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights for jaccard loss, len(weights) = C
-        smooth: value to avoid division by zero
-        per_image: if ``True``, jaccard loss is calculated as mean over images in batch (B),
-            else over whole batch
+class BinaryCELoss(Loss):
 
-    Returns:
-        loss
-    
-    """
-    backend = kwargs['backend']
-    losses = kwargs['losses']
+    def __init__(self):
+        super().__init__(name='binary_crossentropy')
 
-    cce = losses.categorical_crossentropy(gt, pr) * class_weights
-    cce = backend.mean(cce)
-    return cce_weight * cce + jaccard_loss(gt, pr, smooth=smooth, class_weights=class_weights, per_image=per_image)
+    def call(self, gt, pr, **kwargs):
+        return F.bianary_crossentropy(gt, pr, **kwargs)
 
 
-# # Update custom objects
-# get_custom_objects().update({
-#     'jaccard_loss': jaccard_loss,
-#     'bce_jaccard_loss': bce_jaccard_loss,
-#     'cce_jaccard_loss': cce_jaccard_loss,
-# })
+class CategoricalCELoss(Loss):
+
+    def __init__(self, class_weights=None):
+        super().__init__(name='categorical_crossentropy')
+        self.class_weights = class_weights
+
+    def call(self, gt, pr, **kwargs):
+        return F.categorical_crossentropy(gt, pr, self.class_weights, **kwargs)
 
 
-# ============================== Dice Losses ================================
+class CategoricalFocalLoss(Loss):
 
-def dice_loss(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, beta=1., **kwargs):
-    r"""Dice loss function for imbalanced datasets:
+    def __init__(self, alpha=0.25, gamma=2.):
+        super().__init__(name='focal_loss')
+        self.alpha = alpha
+        self.gamma = gamma
 
-    .. math:: L(precision, recall) = 1 - (1 + \beta^2) \frac{precision \cdot recall}
-        {\beta^2 \cdot precision + recall}
-
-    Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights, len(weights) = C
-        smooth: value to avoid division by zero
-        per_image: if ``True``, metric is calculated as mean over images in batch (B),
-            else over whole batch
-        beta: coefficient for precision recall balance
-
-    Returns:
-        Dice loss in range [0, 1]
-
-    """
-    return 1 - f_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image, beta=beta)
-
-@inject_global_losses
-@inject_global_submodules
-def bce_dice_loss(gt, pr, bce_weight=1., smooth=SMOOTH, per_image=True, beta=1., **kwargs):
-    r"""Sum of binary crossentropy and dice losses:
-    
-    .. math:: L(A, B) = bce_weight * binary_crossentropy(A, B) + dice_loss(A, B)
-    
-    Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights for dice loss, len(weights) = C 
-        smooth: value to avoid division by zero
-        per_image: if ``True``, dice loss is calculated as mean over images in batch (B),
-            else over whole batch
-        beta: coefficient for precision recall balance
-
-    Returns:
-        loss
-    
-    """
-    backend = kwargs['backend']
-    losses = kwargs['losses']
-
-    bce = backend.mean(losses.binary_crossentropy(gt, pr))
-    loss = bce_weight * bce + dice_loss(gt, pr, smooth=smooth, per_image=per_image, beta=beta)
-    return loss
-
-@inject_global_losses
-@inject_global_submodules
-def cce_dice_loss(gt, pr, cce_weight=1., class_weights=1., smooth=SMOOTH, per_image=True, beta=1., **kwargs):
-    r"""Sum of categorical crossentropy and dice losses:
-    
-    .. math:: L(A, B) = cce_weight * categorical_crossentropy(A, B) + dice_loss(A, B)
-    
-    Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights for dice loss, len(weights) = C 
-        smooth: value to avoid division by zero
-        per_image: if ``True``, dice loss is calculated as mean over images in batch (B),
-            else over whole batch
-        beta: coefficient for precision recall balance
-
-    Returns:
-        loss
-    
-    """
-    backend = kwargs['backend']
-    losses = kwargs['losses']
-
-    cce = losses.categorical_crossentropy(gt, pr) * class_weights
-    cce = backend.mean(cce)
-    return cce_weight * cce + dice_loss(gt, pr, smooth=smooth, class_weights=class_weights, per_image=per_image,
-                                        beta=beta)
+    def call(self, gt, pr, **kwargs):
+        return F.categorical_focal_loss(gt, pr, self.alpha, self.gamma, **kwargs)
 
 
-# # Update custom objects
-# get_custom_objects().update({
-#     'dice_loss': dice_loss,
-#     'bce_dice_loss': bce_dice_loss,
-#     'cce_dice_loss': cce_dice_loss,
-# })
+class BinaryFocalLoss(Loss):
+
+    def __init__(self, alpha=0.25, gamma=2.):
+        super().__init__(name='binary_focal_loss')
+        self.alpha = alpha
+        self.gamma = gamma
+
+    def call(self, gt, pr, **kwargs):
+        return F.binary_focal_loss(gt, pr, self.alpha, self.gamma, **kwargs)
+
+
+# aliases
+jaccard_loss = JaccardLoss()
+dice_loss = DiceLoss()
+
+binary_focal_loss = BinaryFocalLoss()
+categorical_focal_loss = CategoricalFocalLoss()
+
+binary_crossentropy = BinaryCELoss()
+categorical_crossentropy = CategoricalCELoss()
+
+# loss combinations
+bce_dice_loss = binary_crossentropy + dice_loss
+bce_jaccard_loss = binary_crossentropy + jaccard_loss
+
+cce_dice_loss = categorical_crossentropy + dice_loss
+cce_jaccard_loss = categorical_crossentropy + jaccard_loss
+
+binary_focal_dice_loss = binary_focal_loss + dice_loss
+binary_focal_jaccard_loss = binary_focal_loss + jaccard_loss
+
+categorical_focal_dice_loss = categorical_focal_loss + dice_loss
+categorical_focal_jaccard_loss = categorical_focal_loss + jaccard_loss
