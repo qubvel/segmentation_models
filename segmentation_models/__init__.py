@@ -74,8 +74,13 @@ def set_framework(name):
     _KERAS_UTILS = keras.utils
     _KERAS_LOSSES = keras.losses
 
-    # allow losses and metrics get keras backend
-    base.KerasObject.backend = keras.backend
+    # allow losses and metrics get keras submodules
+    base.KerasObject.set_submodules(
+        backend=keras.backend,
+        layers=keras.layers,
+        models=keras.models,
+        utils=keras.utils,
+    )
 
 
 # set default framework

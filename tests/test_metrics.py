@@ -12,11 +12,6 @@ elif sm.framework() == sm._KERAS_FRAMEWORK_NAME:
 else:
     raise ValueError('Incorrect framework {}'.format(sm.framework()))
 
-# iou_score = IOUScore(smooth=10e-12)
-# f_score = FScore(smooth=10e-12)
-# jaccard_loss = JaccardLoss(smooth=10e-12)
-# dice_loss = DiceLoss(smooth=10e-12)
-
 METRICS = [
     IOUScore,
     FScore,
