@@ -1,7 +1,7 @@
 SMOOTH = 1.
 
 
-def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold=None, **kwargs):
+def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=False, threshold=None, **kwargs):
     r""" The `Jaccard index`_, also known as Intersection over Union and the Jaccard similarity coefficient
     (originally coined coefficient de communauté by Paul Jaccard), is a statistic used for comparing the
     similarity and diversity of sample sets. The Jaccard coefficient measures similarity between finite sample sets,
@@ -50,7 +50,7 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold
     return iou
 
 
-def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None, **kwargs):
+def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=False, threshold=None, **kwargs):
     r"""The F-score (Dice coefficient) can be interpreted as a weighted average of the precision and recall,
     where an F-score reaches its best value at 1 and worst score at 0.
     The relative contribution of ``precision`` and ``recall`` to the F1-score are equal.

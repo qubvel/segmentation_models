@@ -27,7 +27,7 @@ class JaccardLoss(Loss):
         model.compile('SGD', loss=loss)
     """
 
-    def __init__(self, class_weights=None, per_image=True, smooth=SMOOTH):
+    def __init__(self, class_weights=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='jaccard_loss')
         self.class_weights = class_weights or 1.
         self.per_image = per_image
@@ -79,7 +79,7 @@ class DiceLoss(Loss):
         model.compile('SGD', loss=loss)
     """
 
-    def __init__(self, beta=1, class_weights=None, per_image=True, smooth=SMOOTH):
+    def __init__(self, beta=1, class_weights=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='dice_loss')
         self.beta = beta
         self.class_weights = class_weights or 1.

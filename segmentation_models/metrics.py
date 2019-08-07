@@ -32,7 +32,7 @@ class IOUScore(Metric):
         model.compile('SGD', loss=loss, metrics=[metric])
     """
 
-    def __init__(self, class_weights=None, threshold=None, per_image=True, smooth=SMOOTH):
+    def __init__(self, class_weights=None, threshold=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='iou_score')
         self.class_weights = class_weights or 1
         self.threshold = threshold
@@ -88,7 +88,7 @@ class FScore(Metric):
         model.compile('SGD', loss=loss, metrics=[metric])
     """
 
-    def __init__(self, beta=1, class_weights=None, threshold=None, per_image=True, smooth=SMOOTH):
+    def __init__(self, beta=1, class_weights=None, threshold=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='f{}-score'.format(beta))
         self.beta = beta
         self.class_weights = class_weights or 1
