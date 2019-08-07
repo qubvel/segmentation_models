@@ -210,6 +210,7 @@ def Linknet(
         classes: a number of classes for output (output shape - ``(h, w, classes)``).
         activation: name of one of ``keras.activations`` for last model layer
             (e.g. ``sigmoid``, ``softmax``, ``linear``).
+        weights: optional, path to model weights.
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
         encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
         encoder_features: a list of layer numbers or names starting from top of the model.

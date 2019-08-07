@@ -22,16 +22,18 @@ PSPNet
 
 metrics
 ~~~~~~~
-.. autofunction:: segmentation_models.metrics.iou_score
-.. autofunction:: segmentation_models.metrics.f_score
+.. autofunction:: segmentation_models.metrics.IOUScore
+.. autofunction:: segmentation_models.metrics.FScore
 
 losses
 ~~~~~~
-.. autofunction:: segmentation_models.losses.jaccard_loss
-.. autofunction:: segmentation_models.losses.dice_loss
-
+.. autofunction:: segmentation_models.losses.JaccardLoss
+.. autofunction:: segmentation_models.losses.DiceLoss
+.. autofunction:: segmentation_models.losses.BinaryCELoss
+.. autofunction:: segmentation_models.losses.CategoricalCELoss
+.. autofunction:: segmentation_models.losses.BinaryFocalLoss
+.. autofunction:: segmentation_models.losses.CategoricalFocalLoss
 
 utils
 ~~~~~
-.. autofunction:: segmentation_models.backbones.get_preprocessing
 .. autofunction:: segmentation_models.utils.set_trainable

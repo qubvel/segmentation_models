@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 
 import segmentation_models as sm
-from segmentation_models.metrics import iou_score, f_score
-from segmentation_models.losses import jaccard_loss, dice_loss
+from segmentation_models.metrics import IOUScore, FScore
+from segmentation_models.losses import JaccardLoss, DiceLoss
 
 if sm.framework() == sm._TF_KERAS_FRAMEWORK_NAME:
     from tensorflow import keras
@@ -13,13 +13,13 @@ else:
     raise ValueError('Incorrect framework {}'.format(sm.framework()))
 
 METRICS = [
-    iou_score,
-    f_score,
+    IOUScore,
+    FScore,
 ]
 
 LOSSES = [
-    dice_loss,
-    jaccard_loss,
+    JaccardLoss,
+    DiceLoss,
 ]
 
 GT0 = np.array(
@@ -127,7 +127,8 @@ def test_iou_metric(case):
     gt, pr, res = case
     gt = _to_4d(gt)
     pr = _to_4d(pr)
-    score = keras.backend.eval(iou_score(gt, pr, smooth=10e-12))
+    iou_score = IOUScore(smooth=10e-12)
+    score = keras.backend.eval(iou_score(gt, pr))
     assert np.allclose(score, res)
 
 
@@ -136,7 +137,8 @@ def test_jaccrad_loss(case):
     gt, pr, res = case
     gt = _to_4d(gt)
     pr = _to_4d(pr)
-    score = keras.backend.eval(jaccard_loss(gt, pr, smooth=10e-12))
+    jaccard_loss = JaccardLoss(smooth=10e-12)
+    score = keras.backend.eval(jaccard_loss(gt, pr))
     assert np.allclose(score, 1 - res)
 
 
@@ -144,7 +146,8 @@ def _test_f_metric(case, beta=1):
     gt, pr, res = case
     gt = _to_4d(gt)
     pr = _to_4d(pr)
-    score = keras.backend.eval(f_score(gt, pr, beta=beta, smooth=10e-12))
+    f_score = FScore(beta=beta, smooth=10e-12)
+    score = keras.backend.eval(f_score(gt, pr))
     assert np.allclose(score, res)
 
 
@@ -163,7 +166,8 @@ def test_dice_loss(case):
     gt, pr, res = case
     gt = _to_4d(gt)
     pr = _to_4d(pr)
-    score = keras.backend.eval(dice_loss(gt, pr, smooth=10e-12))
+    dice_loss = DiceLoss(smooth=10e-12)
+    score = keras.backend.eval(dice_loss(gt, pr))
     assert np.allclose(score, 1 - res)
 
 
@@ -176,10 +180,10 @@ def test_per_image(func):
     pr = _add_4d(pr)
 
     # calculate score per image
-    score_1 = keras.backend.eval(func(gt, pr, per_image=True, smooth=10e-12))
+    score_1 = keras.backend.eval(func(per_image=True, smooth=10e-12)(gt, pr))
     score_2 = np.mean([
-        keras.backend.eval(func(_to_4d(GT0), _to_4d(PR1), smooth=10e-12)),
-        keras.backend.eval(func(_to_4d(GT1), _to_4d(PR2), smooth=10e-12)),
+        keras.backend.eval(func(smooth=10e-12)(_to_4d(GT0), _to_4d(PR1))),
+        keras.backend.eval(func(smooth=10e-12)(_to_4d(GT1), _to_4d(PR2))),
     ])
     assert np.allclose(score_1, score_2)
 
@@ -193,11 +197,11 @@ def test_per_batch(func):
     pr = _add_4d(pr)
 
     # calculate score per batch
-    score_1 = keras.backend.eval(func(gt, pr, per_image=False, smooth=10e-12))
+    score_1 = keras.backend.eval(func(per_image=False, smooth=10e-12)(gt, pr))
 
     gt1 = np.concatenate([GT0, GT1], axis=0)
     pr1 = np.concatenate([PR1, PR2], axis=0)
-    score_2 = keras.backend.eval(func(_to_4d(gt1), _to_4d(pr1), per_image=True, smooth=10e-12))
+    score_2 = keras.backend.eval(func(per_image=True, smooth=10e-12)(_to_4d(gt1), _to_4d(pr1)))
 
     assert np.allclose(score_1, score_2)
 
@@ -207,7 +211,8 @@ def test_threshold_iou(case):
     gt, pr, res = case
     gt = _to_4d(gt)
     pr = _to_4d(pr) * 0.51
-    score = keras.backend.eval(iou_score(gt, pr, smooth=10e-12, threshold=0.5))
+    iou_score = IOUScore(smooth=10e-12, threshold=0.5)
+    score = keras.backend.eval(iou_score(gt, pr))
     assert np.allclose(score, res)
 
 

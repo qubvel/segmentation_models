@@ -4,17 +4,20 @@ from keras_applications import get_submodules_from_kwargs
 from . import inject_global_submodules
 
 
-def recompile(model):
-    model.compile(model.optimizer, model.loss, model.metrics)
-
-
-def set_trainable(model, **kwargs):
+def set_trainable(model, recompile=True, **kwargs):
     """Set all layers of model trainable and recompile it
 
     Note:
         Model is recompiled using same optimizer, loss and metrics::
 
-            model.compile(model.optimizer, model.loss, model.metrics)
+            model.compile(
+                model.optimizer,
+                loss=model.loss,
+                metrics=model.metrics,
+                loss_weights=model.loss_weights,
+                sample_weight_mode=model.sample_weight_mode,
+                weighted_metrics=model.weighted_metrics,
+            )
 
     Args:
         model (``keras.models.Model``): instance of keras model
@@ -22,7 +25,16 @@ def set_trainable(model, **kwargs):
     """
     for layer in model.layers:
         layer.trainable = True
-    recompile(model)
+
+    if recompile:
+        model.compile(
+            model.optimizer,
+            loss=model.loss,
+            metrics=model.metrics,
+            loss_weights=model.loss_weights,
+            sample_weight_mode=model.sample_weight_mode,
+            weighted_metrics=model.weighted_metrics,
+        )
 
 
 @inject_global_submodules
