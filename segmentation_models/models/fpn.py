@@ -195,8 +195,6 @@ def FPN(
         input_shape: shape of input data/image ``(H, W, C)``, in general
                 case you do not need to set ``H`` and ``W`` shapes, just pass ``(None, None, C)`` to make your model be
                 able to process images af any size, but ``H`` and ``W`` of input images should be divisible by factor ``32``.
-        input_tensor: optional Keras tensor (i.e. output of `layers.Input()`) to use as image input for the model
-                (works only if ``encoder_weights`` is ``None``).
         classes: a number of classes for output (output shape - ``(h, w, classes)``).
         weights: optional, path to model weights.
         activation: name of one of ``keras.activations`` for last model layer (e.g. ``sigmoid``, ``softmax``, ``linear``).
@@ -210,7 +208,6 @@ def FPN(
                 is used.
         pyramid_aggregation: one of 'sum' or 'concat'. The way to aggregate pyramid blocks.
         pyramid_dropout: spatial dropout rate for feature pyramid in range (0, 1).
-        final_interpolation: interpolation type for upsampling layers, on of ``nearest``, ``bilinear``.
 
     Returns:
         ``keras.models.Model``: **FPN**
