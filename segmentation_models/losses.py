@@ -56,9 +56,9 @@ class DiceLoss(Loss):
     .. math:: L(tp, fp, fn) = \frac{(1 + \beta^2) \cdot tp} {(1 + \beta^2) \cdot fp + \beta^2 \cdot fn + fp}
 
     where:
-        tp - true positives;
-        fp - false positives;
-        fn - false negatives;
+         - tp - true positives;
+         - fp - false positives;
+         - fn - false negatives;
 
     Args:
         beta: Float or integer coefficient for precision and recall balance.

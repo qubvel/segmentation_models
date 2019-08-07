@@ -20,10 +20,16 @@ class IOUScore(Metric):
         threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction will not be round
 
     Returns:
-        A callable ``iou_score`` instance. Can be passed to ``model.compile(..., metrics=[iou_score])``.
+       A callable ``iou_score`` instance. Can be used in ``model.compile(...)`` function.
 
     .. _`Jaccard index`: https://en.wikipedia.org/wiki/Jaccard_index
 
+    Example:
+
+    .. code:: python
+
+        metric = IOUScore()
+        model.compile('SGD', loss=loss, metrics=[metric])
     """
 
     def __init__(self, class_weights=None, threshold=None, per_image=True, smooth=SMOOTH):
@@ -56,12 +62,12 @@ class FScore(Metric):
 
     The formula in terms of *Type I* and *Type II* errors:
 
-    .. math:: F_\beta(A, B) = \frac{(1 + \beta^2) TP} {(1 + \beta^2) TP + \beta^2 FN + FP}
+    .. math:: L(tp, fp, fn) = \frac{(1 + \beta^2) \cdot tp} {(1 + \beta^2) \cdot fp + \beta^2 \cdot fn + fp}
 
     where:
-        TP - true positive;
-        FP - false positive;
-        FN - false negative;
+         - tp - true positives;
+         - fp - false positives;
+         - fn - false negatives;
 
     Args:
         beta: f-score coefficient
@@ -72,8 +78,14 @@ class FScore(Metric):
         threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction will not be round
 
     Returns:
-        callable: f_score
+        A callable ``f_score`` instance. Can be used in ``model.compile(...)`` function.
 
+    Example:
+
+    .. code:: python
+
+        metric = FScore()
+        model.compile('SGD', loss=loss, metrics=[metric])
     """
 
     def __init__(self, beta=1, class_weights=None, threshold=None, per_image=True, smooth=SMOOTH):
