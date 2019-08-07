@@ -10,7 +10,14 @@ def set_trainable(model, recompile=True, **kwargs):
     Note:
         Model is recompiled using same optimizer, loss and metrics::
 
-            model.compile(model.optimizer, model.loss, model.metrics)
+        model.compile(
+            model.optimizer,
+            loss=model.loss,
+            metrics=model.metrics,
+            loss_weights=model.loss_weights,
+            sample_weight_mode=model.sample_weight_mode,
+            weighted_metrics=model.weighted_metrics,
+        )
 
     Args:
         model (``keras.models.Model``): instance of keras model

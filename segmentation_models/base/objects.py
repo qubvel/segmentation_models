@@ -5,7 +5,10 @@ class KerasObject:
     _utils = None
 
     def __init__(self, name=None):
-        if self.backend is None:
+        if (self.backend is None or
+                self.utils is None or
+                self.models is None or
+                self.layers is None):
             raise RuntimeError('You cannot use `KerasObjects` with None submodules.')
 
         self._name = name
@@ -15,9 +18,6 @@ class KerasObject:
         if self._name is None:
             return self.__class__.__name__
         return self._name
-
-    def __call__(self, *args, **kwargs):
-        return self.call(*args, **kwargs)
 
     @property
     def name(self):
@@ -35,6 +35,15 @@ class KerasObject:
         cls._utils = utils
 
     @property
+    def submodules(self):
+        return {
+            'backend': self.backend,
+            'layers': self.layers,
+            'models': self.models,
+            'utils': self.utils,
+        }
+
+    @property
     def backend(self):
         return self._backend
 
@@ -50,15 +59,9 @@ class KerasObject:
     def utils(self):
         return self._utils
 
-    def call(self, *args, **kwargs):
-        raise NotImplementedError
-
 
 class Metric(KerasObject):
-
-    def __call__(self, *args, **kwargs):
-        kwargs['backend'] = self.backend
-        self.call(*args, **kwargs)
+    pass
 
 
 class Loss(KerasObject):
@@ -67,7 +70,7 @@ class Loss(KerasObject):
         if isinstance(other, Loss):
             return SumOfLosses(self, other)
         else:
-            raise ValueError('Loss should be inherited from `BaseLoss` class')
+            raise ValueError('Loss should be inherited from `Loss` class')
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -80,10 +83,6 @@ class Loss(KerasObject):
 
     def __rmul__(self, other):
         return self.__mul__(other)
-
-    def __call__(self, *args, **kwargs):
-        kwargs['backend'] = self.backend
-        self.call(*args, **kwargs)
 
 
 class MultipliedLoss(Loss):
@@ -99,8 +98,8 @@ class MultipliedLoss(Loss):
         self.loss = loss
         self.multiplier = multiplier
 
-    def call(self, gt, pr, **kwargs):
-        return self.multiplier * self.loss(gt, pr, **kwargs)
+    def __call__(self, gt, pr):
+        return self.multiplier * self.loss(gt, pr)
 
 
 class SumOfLosses(Loss):
@@ -111,5 +110,5 @@ class SumOfLosses(Loss):
         self.l1 = l1
         self.l2 = l2
 
-    def call(self, gt, pr, **kwargs):
-        return self.l1(gt, pr, **kwargs) + self.l2(gt, pr, **kwargs)
+    def __call__(self, gt, pr):
+        return self.l1(gt, pr) + self.l2(gt, pr)

@@ -3,11 +3,11 @@ Installation
 
 **Requirements**
 
-1) Python 3.5+
-2) Keras >= 2.2.0
-3) Keras Applications >= 1.7.0
-4) Image Classifiers == 0.2.0
-5) Tensorflow 1.9 (tested)
+1) Python 3
+2) Keras >= 2.2.0 or TensorFlow >= 1.13
+3) keras-applications >= 1.0.7, <=1.0.8
+4) image-classifiers == 1.0.0
+5) efficientnet == 1.0.0
 
 
 .. note::

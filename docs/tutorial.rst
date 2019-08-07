@@ -50,7 +50,7 @@ Simple training pipeline
 .. code:: python
 
    from segmentation_models import Unet
-   from segmentation_models.backbones import get_preprocessing
+   from segmentation_models import get_preprocessing
    from segmentation_models.losses import bce_jaccard_loss
    from segmentation_models.metrics import iou_score
 
@@ -126,6 +126,7 @@ PSPNet        FPN
     DenseNet     ``'densenet121' 'densenet169' 'densenet201'``
     Inception    ``'inceptionv3' 'inceptionresnetv2'``
     MobileNet    ``'mobilenet' 'mobilenetv2'``
+    EfficientNet ``efficientnetb0`` ``efficientnetb1`` ``efficientnetb2`` ``efficientnetb3`` ``efficientnetb4`` ``efficientnetb5``
     ===========  =====
 
 .. epigraph::
