@@ -34,7 +34,7 @@ class IOUScore(Metric):
 
     def __init__(self, class_weights=None, threshold=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='iou_score')
-        self.class_weights = class_weights or 1
+        self.class_weights = class_weights if class_weights is not None else 1
         self.threshold = threshold
         self.per_image = per_image
         self.smooth = smooth
@@ -91,7 +91,7 @@ class FScore(Metric):
     def __init__(self, beta=1, class_weights=None, threshold=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='f{}-score'.format(beta))
         self.beta = beta
-        self.class_weights = class_weights or 1
+        self.class_weights = class_weights if class_weights is not None else 1
         self.threshold = threshold
         self.per_image = per_image
         self.smooth = smooth,

@@ -29,7 +29,7 @@ class JaccardLoss(Loss):
 
     def __init__(self, class_weights=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='jaccard_loss')
-        self.class_weights = class_weights or 1.
+        self.class_weights = class_weights if class_weights is not None else 1
         self.per_image = per_image
         self.smooth = smooth
 
@@ -82,7 +82,7 @@ class DiceLoss(Loss):
     def __init__(self, beta=1, class_weights=None, per_image=False, smooth=SMOOTH):
         super().__init__(name='dice_loss')
         self.beta = beta
-        self.class_weights = class_weights or 1.
+        self.class_weights = class_weights if class_weights is not None else 1
         self.per_image = per_image
         self.smooth = smooth
 
