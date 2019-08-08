@@ -36,6 +36,15 @@ def inject_global_submodules(func):
     return wrapper
 
 
+def filter_kwargs(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        new_kwargs = {k: v for k, v in kwargs.items() if k in ['backend', 'layers', 'models', 'utils']}
+        return func(*args, **new_kwargs)
+
+    return wrapper
+
+
 def framework():
     """Return name of Segmentation Models framework"""
     return _KERAS_FRAMEWORK
@@ -114,7 +123,13 @@ get_available_backbone_names = Backbones.models_names
 
 def get_preprocessing(name):
     prerpocess_input = Backbones.get_preprocessing(name)
-    return inject_global_submodules(prerpocess_input)
+    # add bakcend, models, layers, utils submodules in kwargs
+    prerpocess_input = inject_global_submodules(prerpocess_input)
+    # delete other kwargs
+    # keras-applications preprocessing raise an error if something
+    # except `backend`, `layers`, `models`, `utils` passed in kwargs
+    prerpocess_input = filter_kwargs(prerpocess_input)
+    return prerpocess_input
 
 
 __all__ = [
