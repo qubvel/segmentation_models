@@ -30,13 +30,12 @@ on `Keras <https://keras.io>`__
 -  All backbones have **pre-trained** weights for faster and better
    convergence
 
-.. note::
+**Note**
 
-    New version ``1.*`` is not compatible with previously trained models, if you have such models and want ot load them roll back with:
+    New version ``1.*`` is not compatible with previously trained models,
+    if you have such models and want ot load them roll back with:
 
-    .. code:: bash
-
-        $ pip install -U segmentation-models==0.2.1
+    $ pip install -U segmentation-models==0.2.1
 
 Table of Contents
 ~~~~~~~~~~~~~~~~~
