@@ -65,6 +65,10 @@ class BackbonesFactory(ModelsFactory):
                            'block3a_expand_activation', 'block2a_expand_activation'),
         'efficientnetb5': ('block6a_expand_activation', 'block4a_expand_activation',
                            'block3a_expand_activation', 'block2a_expand_activation'),
+        'efficientnetb6': ('block6a_expand_activation', 'block4a_expand_activation',
+                           'block3a_expand_activation', 'block2a_expand_activation'),
+        'efficientnetb7': ('block6a_expand_activation', 'block4a_expand_activation',
+                           'block3a_expand_activation', 'block2a_expand_activation'),
 
     }
 
@@ -78,11 +82,11 @@ class BackbonesFactory(ModelsFactory):
         'efficientnetb3': [eff.EfficientNetB3, eff.preprocess_input],
         'efficientnetb4': [eff.EfficientNetB4, eff.preprocess_input],
         'efficientnetb5': [eff.EfficientNetB5, eff.preprocess_input],
-
-        #     'efficientnetb6': [eff.EfficientNetB6, eff.preprocess_input],
-        #     'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
+        'efficientnetb6': [eff.EfficientNetB6, eff.preprocess_input],
+        'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
     }
 
+    # currently not supported
     _models_delete = ['resnet50v2', 'resnet101v2', 'resnet152v2',
                       'nasnetlarge', 'nasnetmobile', 'xception']
 
