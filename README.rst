@@ -62,8 +62,8 @@ Library is build to work together with Keras and TensorFlow Keras frameworks
 By default it tries to import ``keras``, if it is not installed, it will try to start with ``tensorflow.keras`` framework.
 There are several ways to choose framework:
 
- 1. Provide environment variable ``SM_FRAMEWORK=keras`` / ``SM_FRAMEWORK=tf.keras`` before import ``segmentation_models``
- 2. Change framework ``sm.set_framework('keras')`` /  ``sm.set_framework('tf.keras')``
+- Provide environment variable ``SM_FRAMEWORK=keras`` / ``SM_FRAMEWORK=tf.keras`` before import ``segmentation_models``
+- Change framework ``sm.set_framework('keras')`` /  ``sm.set_framework('tf.keras')``
 
 You can also specify what kind of ``image_data_format`` to use, segmentation-models works with both: ``channels_last`` and ``channels_first``.
 This can be useful for further model conversion to Nvidia TensorRT format or optimizing model for cpu/gpu computations.
