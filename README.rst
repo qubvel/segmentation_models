@@ -19,16 +19,17 @@
 `Image
 Segmentation <https://en.wikipedia.org/wiki/Image_segmentation>`__ based
 on `Keras <https://keras.io>`__
-(`Tensorflow <https://www.tensorflow.org/>`__) framework.
+and `Tensorflow Keras <https://www.tensorflow.org/>`__ frameworks.
 
 **The main features** of this library are:
 
--  High level API (just two lines to create NN)
--  **4** models architectures for binary and multi class segmentation
+-  High level API (just two lines of code to create model for segmentation)
+-  **4** models architectures for binary and multi-class image segmentation
    (including legendary **Unet**)
 -  **25** available backbones for each architecture
 -  All backbones have **pre-trained** weights for faster and better
    convergence
+- Helpful segmentation losses (Jaccard, Dice, Focal) and metrics (IoU, F-score)
 
 **Important note**
 
