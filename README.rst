@@ -33,7 +33,7 @@ on `Keras <https://keras.io>`__
 **Important note**
 
     Some models of version ``1.*`` are not compatible with previously trained models,
-    if you have such models and want ot load them - roll back with:
+    if you have such models and want to load them - roll back with:
 
     $ pip install -U segmentation-models==0.2.1
 
@@ -75,7 +75,7 @@ This can be useful for further model conversion to Nvidia TensorRT format or opt
     keras.backend.set_image_data_format('channels_last')
     # or keras.backend.set_image_data_format('channels_first')
 
-Created segmentaion model is just a Keras Model, which can be build as easy as:
+Created segmentaion model is just an instance of Keras Model, which can be build as easy as:
 
 .. code:: python
     
