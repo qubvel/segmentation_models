@@ -1,18 +1,10 @@
-import keras.backend as K
-from keras.utils.generic_utils import get_custom_objects
+from .base import Metric
+from .base import functional as F
 
-__all__ = [
-    'iou_score', 'jaccard_score', 'f1_score', 'f2_score', 'dice_score',
-    'get_f_score', 'get_iou_score', 'get_jaccard_score',
-]
-
-SMOOTH = 1.
+SMOOTH = 1e-5
 
 
-# ============================ Jaccard/IoU score ============================
-
-
-def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold=None):
+class IOUScore(Metric):
     r""" The `Jaccard index`_, also known as Intersection over Union and the Jaccard similarity coefficient
     (originally coined coefficient de communauté by Paul Jaccard), is a statistic used for comparing the
     similarity and diversity of sample sets. The Jaccard coefficient measures similarity between finite sample sets,
@@ -21,75 +13,57 @@ def iou_score(gt, pr, class_weights=1., smooth=SMOOTH, per_image=True, threshold
     .. math:: J(A, B) = \frac{A \cap B}{A \cup B}
 
     Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights, len(weights) = C
+        class_weights: 1. or ``np.array`` of class weights (``len(weights) = num_classes``).
+        class_indexes: Optional integer or list of integers, classes to consider, if ``None`` all classes are used.
         smooth: value to avoid division by zero
         per_image: if ``True``, metric is calculated as mean over images in batch (B),
             else over whole batch
-        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
+        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction will not be round
 
     Returns:
-        IoU/Jaccard score in range [0, 1]
+       A callable ``iou_score`` instance. Can be used in ``model.compile(...)`` function.
 
     .. _`Jaccard index`: https://en.wikipedia.org/wiki/Jaccard_index
 
+    Example:
+
+    .. code:: python
+
+        metric = IOUScore()
+        model.compile('SGD', loss=loss, metrics=[metric])
     """
-    if per_image:
-        axes = [1, 2]
-    else:
-        axes = [0, 1, 2]
-        
-    if threshold is not None:
-        pr = K.greater(pr, threshold)
-        pr = K.cast(pr, K.floatx())
 
-    intersection = K.sum(gt * pr, axis=axes)
-    union = K.sum(gt + pr, axis=axes) - intersection
-    iou = (intersection + smooth) / (union + smooth)
+    def __init__(
+            self,
+            class_weights=None,
+            class_indexes=None,
+            threshold=None,
+            per_image=False,
+            smooth=SMOOTH,
+            name=None,
+    ):
+        name = name or 'iou_score'
+        super().__init__(name=name)
+        self.class_weights = class_weights if class_weights is not None else 1
+        self.class_indexes = class_indexes
+        self.threshold = threshold
+        self.per_image = per_image
+        self.smooth = smooth
 
-    # mean per image
-    if per_image:
-        iou = K.mean(iou, axis=0)
-
-    # weighted mean per class
-    iou = K.mean(iou * class_weights)
-
-    return iou
-
-
-def get_iou_score(class_weights=1., smooth=SMOOTH, per_image=True, threshold=None):
-    """Change default parameters of IoU/Jaccard score
-
-    Args:
-        class_weights: 1. or list of class weights, len(weights) = C
-        smooth: value to avoid division by zero
-        per_image: if ``True``, metric is calculated as mean over images in batch (B),
-            else over whole batch
-        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
-
-    Returns:
-        ``callable``: IoU/Jaccard score
-    """
-    def score(gt, pr):
-        return iou_score(gt, pr, class_weights=class_weights, smooth=smooth, per_image=per_image, threshold=threshold)
-
-    return score
+    def __call__(self, gt, pr):
+        return F.iou_score(
+            gt,
+            pr,
+            class_weights=self.class_weights,
+            class_indexes=self.class_indexes,
+            smooth=self.smooth,
+            per_image=self.per_image,
+            threshold=self.threshold,
+            **self.submodules
+        )
 
 
-jaccard_score = iou_score
-get_jaccard_score = get_iou_score
-
-# Update custom objects
-get_custom_objects().update({
-    'iou_score': iou_score,
-    'jaccard_score': jaccard_score,
-})
-
-
-# ============================== F/Dice - score ==============================
-
-def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None):
+class FScore(Metric):
     r"""The F-score (Dice coefficient) can be interpreted as a weighted average of the precision and recall,
     where an F-score reaches its best value at 1 and worst score at 0.
     The relative contribution of ``precision`` and ``recall`` to the F1-score are equal.
@@ -100,81 +74,190 @@ def f_score(gt, pr, class_weights=1, beta=1, smooth=SMOOTH, per_image=True, thre
 
     The formula in terms of *Type I* and *Type II* errors:
 
-    .. math:: F_\beta(A, B) = \frac{(1 + \beta^2) TP} {(1 + \beta^2) TP + \beta^2 FN + FP}
-
+    .. math:: L(tp, fp, fn) = \frac{(1 + \beta^2) \cdot tp} {(1 + \beta^2) \cdot fp + \beta^2 \cdot fn + fp}
 
     where:
-        TP - true positive;
-        FP - false positive;
-        FN - false negative;
+         - tp - true positives;
+         - fp - false positives;
+         - fn - false negatives;
 
     Args:
-        gt: ground truth 4D keras tensor (B, H, W, C)
-        pr: prediction 4D keras tensor (B, H, W, C)
-        class_weights: 1. or list of class weights, len(weights) = C
-        beta: f-score coefficient
-        smooth: value to avoid division by zero
-        per_image: if ``True``, metric is calculated as mean over images in batch (B),
-            else over whole batch
-        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
+        beta: Integer of float f-score coefficient to balance precision and recall.
+        class_weights: 1. or ``np.array`` of class weights (``len(weights) = num_classes``)
+        class_indexes: Optional integer or list of integers, classes to consider, if ``None`` all classes are used.
+        smooth: Float value to avoid division by zero.
+        per_image: If ``True``, metric is calculated as mean over images in batch (B),
+            else over whole batch.
+        threshold: Float value to round predictions (use ``>`` comparison), if ``None`` prediction will not be round.
+        name: Optional string, if ``None`` default ``f{beta}-score`` name is used.
 
     Returns:
-        F-score in range [0, 1]
+        A callable ``f_score`` instance. Can be used in ``model.compile(...)`` function.
 
+    Example:
+
+    .. code:: python
+
+        metric = FScore()
+        model.compile('SGD', loss=loss, metrics=[metric])
     """
-    if per_image:
-        axes = [1, 2]
-    else:
-        axes = [0, 1, 2]
-        
-    if threshold is not None:
-        pr = K.greater(pr, threshold)
-        pr = K.cast(pr, K.floatx())
 
-    tp = K.sum(gt * pr, axis=axes)
-    fp = K.sum(pr, axis=axes) - tp
-    fn = K.sum(gt, axis=axes) - tp
+    def __init__(
+            self,
+            beta=1,
+            class_weights=None,
+            class_indexes=None,
+            threshold=None,
+            per_image=False,
+            smooth=SMOOTH,
+            name=None,
+    ):
+        name = name or 'f{}-score'.format(beta)
+        super().__init__(name=name)
+        self.beta = beta
+        self.class_weights = class_weights if class_weights is not None else 1
+        self.class_indexes = class_indexes
+        self.threshold = threshold
+        self.per_image = per_image
+        self.smooth = smooth
 
-    score = ((1 + beta ** 2) * tp + smooth) \
-            / ((1 + beta ** 2) * tp + beta ** 2 * fn + fp + smooth)
+    def __call__(self, gt, pr):
+        return F.f_score(
+            gt,
+            pr,
+            beta=self.beta,
+            class_weights=self.class_weights,
+            class_indexes=self.class_indexes,
+            smooth=self.smooth,
+            per_image=self.per_image,
+            threshold=self.threshold,
+            **self.submodules
+        )
 
-    # mean per image
-    if per_image:
-        score = K.mean(score, axis=0)
 
-    # weighted mean per class
-    score = K.mean(score * class_weights)
+class Precision(Metric):
+    r"""Creates a criterion that measures the Precision between the
+    ground truth (gt) and the prediction (pr).
 
-    return score
+    .. math:: F_\beta(tp, fp) = \frac{tp} {(tp + fp)}
 
-
-def get_f_score(class_weights=1, beta=1, smooth=SMOOTH, per_image=True, threshold=None):
-    """Change default parameters of F-score score
+    where:
+         - tp - true positives;
+         - fp - false positives;
 
     Args:
-        class_weights: 1. or list of class weights, len(weights) = C
-        smooth: value to avoid division by zero
-        beta: f-score coefficient
-        per_image: if ``True``, metric is calculated as mean over images in batch (B),
-            else over whole batch
-        threshold: value to round predictions (use ``>`` comparison), if ``None`` prediction prediction will not be round
+        class_weights: 1. or ``np.array`` of class weights (``len(weights) = num_classes``).
+        class_indexes: Optional integer or list of integers, classes to consider, if ``None`` all classes are used.
+        smooth: Float value to avoid division by zero.
+        per_image: If ``True``, metric is calculated as mean over images in batch (B),
+            else over whole batch.
+        threshold: Float value to round predictions (use ``>`` comparison), if ``None`` prediction will not be round.
+        name: Optional string, if ``None`` default ``precision`` name is used.
 
     Returns:
-        ``callable``: F-score
+        A callable ``precision`` instance. Can be used in ``model.compile(...)`` function.
+
+    Example:
+
+    .. code:: python
+
+        metric = Precision()
+        model.compile('SGD', loss=loss, metrics=[metric])
     """
-    def score(gt, pr):
-        return f_score(gt, pr, class_weights=class_weights, beta=beta, smooth=smooth, per_image=per_image, threshold=threshold)
 
-    return score
+    def __init__(
+            self,
+            class_weights=None,
+            class_indexes=None,
+            threshold=None,
+            per_image=False,
+            smooth=SMOOTH,
+            name=None,
+    ):
+        name = name or 'precision'
+        super().__init__(name=name)
+        self.class_weights = class_weights if class_weights is not None else 1
+        self.class_indexes = class_indexes
+        self.threshold = threshold
+        self.per_image = per_image
+        self.smooth = smooth
+
+    def __call__(self, gt, pr):
+        return F.precision(
+            gt,
+            pr,
+            class_weights=self.class_weights,
+            class_indexes=self.class_indexes,
+            smooth=self.smooth,
+            per_image=self.per_image,
+            threshold=self.threshold,
+            **self.submodules
+        )
 
 
-f1_score = get_f_score(beta=1)
-f2_score = get_f_score(beta=2)
-dice_score = f1_score
+class Recall(Metric):
+    r"""Creates a criterion that measures the Precision between the
+    ground truth (gt) and the prediction (pr).
 
-# Update custom objects
-get_custom_objects().update({
-    'f1_score': f1_score,
-    'f2_score': f2_score,
-    'dice_score': dice_score,
-})
+    .. math:: F_\beta(tp, fn) = \frac{tp} {(tp + fn)}
+
+    where:
+         - tp - true positives;
+         - fn - false negatives;
+
+    Args:
+        class_weights: 1. or ``np.array`` of class weights (``len(weights) = num_classes``).
+        class_indexes: Optional integer or list of integers, classes to consider, if ``None`` all classes are used.
+        smooth: Float value to avoid division by zero.
+        per_image: If ``True``, metric is calculated as mean over images in batch (B),
+            else over whole batch.
+        threshold: Float value to round predictions (use ``>`` comparison), if ``None`` prediction will not be round.
+        name: Optional string, if ``None`` default ``recall`` name is used.
+
+    Returns:
+        A callable ``recall`` instance. Can be used in ``model.compile(...)`` function.
+
+    Example:
+
+    .. code:: python
+
+        metric = Precision()
+        model.compile('SGD', loss=loss, metrics=[metric])
+    """
+
+    def __init__(
+            self,
+            class_weights=None,
+            class_indexes=None,
+            threshold=None,
+            per_image=False,
+            smooth=SMOOTH,
+            name=None,
+    ):
+        name = name or 'recall'
+        super().__init__(name=name)
+        self.class_weights = class_weights if class_weights is not None else 1
+        self.class_indexes = class_indexes
+        self.threshold = threshold
+        self.per_image = per_image
+        self.smooth = smooth
+
+    def __call__(self, gt, pr):
+        return F.recall(
+            gt,
+            pr,
+            class_weights=self.class_weights,
+            class_indexes=self.class_indexes,
+            smooth=self.smooth,
+            per_image=self.per_image,
+            threshold=self.threshold,
+            **self.submodules
+        )
+
+
+# aliases
+iou_score = IOUScore()
+f1_score = FScore(beta=1)
+f2_score = FScore(beta=2)
+precision = Precision()
+recall = Recall()

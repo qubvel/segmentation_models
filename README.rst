@@ -19,21 +19,30 @@
 `Image
 Segmentation <https://en.wikipedia.org/wiki/Image_segmentation>`__ based
 on `Keras <https://keras.io>`__
-(`Tensorflow <https://www.tensorflow.org/>`__) framework.
+and `Tensorflow Keras <https://www.tensorflow.org/>`__ frameworks.
 
 **The main features** of this library are:
 
--  High level API (just two lines to create NN)
--  **4** models architectures for binary and multi class segmentation
+-  High level API (just two lines of code to create model for segmentation)
+-  **4** models architectures for binary and multi-class image segmentation
    (including legendary **Unet**)
 -  **25** available backbones for each architecture
 -  All backbones have **pre-trained** weights for faster and better
    convergence
+- Helpful segmentation losses (Jaccard, Dice, Focal) and metrics (IoU, F-score)
+
+**Important note**
+
+    Some models of version ``1.*`` are not compatible with previously trained models,
+    if you have such models and want to load them - roll back with:
+
+    $ pip install -U segmentation-models==0.2.1
 
 Table of Contents
 ~~~~~~~~~~~~~~~~~
  - `Quick start`_
  - `Simple training pipeline`_
+ - `Examples`_
  - `Models and Backbones`_
  - `Installation`_
  - `Documentation`_
@@ -43,36 +52,58 @@ Table of Contents
  
 Quick start
 ~~~~~~~~~~~
-Since the library is built on the Keras framework, created segmentaion model is just a Keras Model, which can be created as easy as:
+Library is build to work together with Keras and TensorFlow Keras frameworks
 
 .. code:: python
 
-    from segmentation_models import Unet
+    import segmentation_models as sm
+    # Segmentation Models: using `keras` framework.
+
+By default it tries to import ``keras``, if it is not installed, it will try to start with ``tensorflow.keras`` framework.
+There are several ways to choose framework:
+
+- Provide environment variable ``SM_FRAMEWORK=keras`` / ``SM_FRAMEWORK=tf.keras`` before import ``segmentation_models``
+- Change framework ``sm.set_framework('keras')`` /  ``sm.set_framework('tf.keras')``
+
+You can also specify what kind of ``image_data_format`` to use, segmentation-models works with both: ``channels_last`` and ``channels_first``.
+This can be useful for further model conversion to Nvidia TensorRT format or optimizing model for cpu/gpu computations.
+
+.. code:: python
+
+    import keras
+    # or from tensorflow import keras
+
+    keras.backend.set_image_data_format('channels_last')
+    # or keras.backend.set_image_data_format('channels_first')
+
+Created segmentaion model is just an instance of Keras Model, which can be build as easy as:
+
+.. code:: python
     
-    model = Unet()
+    model = sm.Unet()
     
 Depending on the task, you can change the network architecture by choosing backbones with fewer or more parameters and use pretrainded weights to initialize it:
 
 .. code:: python
 
-    model = Unet('resnet34', encoder_weights='imagenet')
+    model = sm.Unet('resnet34', encoder_weights='imagenet')
 
 Change number of output classes in the model (choose your case):
 
 .. code:: python
     
     # binary segmentation (this parameters are default when you call Unet('resnet34')
-    model = Unet('resnet34', classes=1, activation='sigmoid')
+    model = sm.Unet('resnet34', classes=1, activation='sigmoid')
     
 .. code:: python
     
     # multiclass segmentation with non overlapping class masks (your classes + background)
-    model = Unet('resnet34', classes=3, activation='softmax')
+    model = sm.Unet('resnet34', classes=3, activation='softmax')
     
 .. code:: python
     
     # multiclass segmentation with independent overlapping/non-overlapping class masks
-    model = Unet('resnet34', classes=3, activation='sigmoid')
+    model = sm.Unet('resnet34', classes=3, activation='sigmoid')
     
     
 Change input shape of the model:
@@ -88,38 +119,44 @@ Simple training pipeline
 
 .. code:: python
 
-   from segmentation_models import Unet
-   from segmentation_models.backbones import get_preprocessing
-   from segmentation_models.losses import bce_jaccard_loss
-   from segmentation_models.metrics import iou_score
-   
-   BACKBONE = 'resnet34'
-   preprocess_input = get_preprocessing(BACKBONE)
-   
-   # load your data
-   x_train, y_train, x_val, y_val = load_data(...)
-   
-   # preprocess input
-   x_train = preprocess_input(x_train)
-   x_val = preprocess_input(x_val)
-   
-   # define model
-   model = Unet(BACKBONE, encoder_weights='imagenet')
-   model.compile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
-   
-   # fit model
-   # if you use data generator use model.fit_generator(...) instead of model.fit(...)
-   # more about `fit_generator` here: https://keras.io/models/sequential/#fit_generator
-   model.fit(
-       x=x_train, 
-       y=y_train, 
-       batch_size=16, 
+    import segmentation_models as sm
+
+    BACKBONE = 'resnet34'
+    preprocess_input = sm.get_preprocessing(BACKBONE)
+
+    # load your data
+    x_train, y_train, x_val, y_val = load_data(...)
+
+    # preprocess input
+    x_train = preprocess_input(x_train)
+    x_val = preprocess_input(x_val)
+
+    # define model
+    model = sm.Unet(BACKBONE, encoder_weights='imagenet')
+    model.compile(
+        'Adam',
+        loss=sm.losses.bce_jaccard_loss,
+        metrics=[sm.metrics.iou_score],
+    )
+
+    # fit model
+    # if you use data generator use model.fit_generator(...) instead of model.fit(...)
+    # more about `fit_generator` here: https://keras.io/models/sequential/#fit_generator
+    model.fit(
+       x=x_train,
+       y=y_train,
+       batch_size=16,
        epochs=100,
        validation_data=(x_val, y_val),
-   )
-   
+    )
 
 Same manimulations can be done with ``Linknet``, ``PSPNet`` and ``FPN``. For more detailed information about models API and  use cases `Read the Docs <https://segmentation-models.readthedocs.io/en/latest/>`__.
+
+Examples
+~~~~~~~~
+Models training examples:
+ - [Jupyter Notebook] Binary segmentation (`cars`) on CamVid dataset `here <https://github.com/qubvel/segmentation_models/blob/master/examples/binary%20segmentation%20(camvid).ipynb>`__.
+ - [Jupyter Notebook] Multi-class segmentation (`cars`, `pedestrians`) on CamVid dataset `here <https://github.com/qubvel/segmentation_models/blob/master/examples/multiclass%20segmentation%20(camvid).ipynb>`__.
 
 Models and Backbones
 ~~~~~~~~~~~~~~~~~~~~
@@ -135,6 +172,7 @@ Unet          Linknet
 ============= ==============
 |unet_image|  |linknet_image|
 ============= ==============
+
 ============= ==============
 PSPNet        FPN
 ============= ==============
@@ -167,7 +205,7 @@ PSPNet        FPN
     DenseNet       ``'densenet121' 'densenet169' 'densenet201'`` 
     Inception      ``'inceptionv3' 'inceptionresnetv2'``
     MobileNet      ``'mobilenet' 'mobilenetv2'``
-    EfficientNet   ``'efficientnetb0' 'efficientnetb1' 'efficientnetb2' 'efficientnetb3'``
+    EfficientNet   ``'efficientnetb0' 'efficientnetb1' 'efficientnetb2' 'efficientnetb3' 'efficientnetb4' 'efficientnetb5' efficientnetb6' efficientnetb7'``
     =============  =====
 
 .. epigraph::
@@ -179,19 +217,25 @@ Installation
 
 **Requirements**
 
-1) Python 3.5+
-2) Keras >= 2.2.0
-3) Keras Application >= 1.0.7
-4) Image Classifiers == 0.2.0
-5) Tensorflow 1.9 (tested)
+1) python 3
+2) keras >= 2.2.0 or tensorflow >= 1.13
+3) keras-applications >= 1.0.7, <=1.0.8
+4) image-classifiers == 1.0.*
+5) efficientnet == 1.0.*
 
-**Pip package**
+**PyPI stable package**
 
 .. code:: bash
 
-    $ pip install segmentation-models
+    $ pip install -U segmentation-models
 
-**Latest version**
+**PyPI latest package**
+
+.. code:: bash
+
+    $ pip install -U --pre segmentation-models
+
+**Source latest version**
 
 .. code:: bash
 

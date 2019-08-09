@@ -36,7 +36,7 @@ except:
 
 # What packages are optional?
 EXTRAS = {
-    # 'fancy feature': ['django'],
+    'tests': ['pytest', 'scikit-image'],
 }
 
 # Import the README and use it as the long-description.
@@ -104,7 +104,7 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=find_packages(exclude=('tests', 'docs', 'images')),
+    packages=find_packages(exclude=('tests', 'docs', 'images', 'examples')),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
 

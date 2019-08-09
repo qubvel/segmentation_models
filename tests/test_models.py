@@ -3,19 +3,25 @@ import pytest
 import random
 import six
 import numpy as np
-import keras.backend as K
 
+import segmentation_models as sm
 from segmentation_models import Unet
 from segmentation_models import Linknet
 from segmentation_models import PSPNet
 from segmentation_models import FPN
-from segmentation_models import backbones as sm_backbones
+from segmentation_models import get_available_backbone_names
 
+if sm.framework() == sm._TF_KERAS_FRAMEWORK_NAME:
+    from tensorflow import keras
+elif sm.framework() == sm._KERAS_FRAMEWORK_NAME:
+    import keras
+else:
+    raise ValueError('Incorrect framework {}'.format(sm.framework()))
 
 def get_backbones():
     is_travis = os.environ.get('TRAVIS', False)
-    exclude = ['senet154']
-    backbones = sm_backbones.get_names()
+    exclude = ['senet154', 'efficientnetb6', 'efficientnetb7']
+    backbones = get_available_backbone_names()
 
     if is_travis:
         backbones = [b for b in backbones if b not in exclude]
@@ -43,7 +49,7 @@ def keras_test(func):
     @six.wraps(func)
     def wrapper(*args, **kwargs):
         output = func(*args, **kwargs)
-        K.clear_session()
+        keras.backend.clear_session()
         return output
     return wrapper
 
