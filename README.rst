@@ -32,7 +32,7 @@ on `Keras <https://keras.io>`__
 
 **Important note**
 
-    New version ``1.*`` is not compatible with previously trained models,
+    Some models of version ``1.*`` are not compatible with previously trained models,
     if you have such models and want ot load them - roll back with:
 
     $ pip install -U segmentation-models==0.2.1
