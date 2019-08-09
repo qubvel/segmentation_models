@@ -20,7 +20,7 @@ else:
 
 def get_backbones():
     is_travis = os.environ.get('TRAVIS', False)
-    exclude = ['senet154']
+    exclude = ['senet154', 'efficientnetb6', 'efficientnetb7']
     backbones = get_available_backbone_names()
 
     if is_travis:
