@@ -122,14 +122,14 @@ get_available_backbone_names = Backbones.models_names
 
 
 def get_preprocessing(name):
-    prerpocess_input = Backbones.get_preprocessing(name)
+    preprocess_input = Backbones.get_preprocessing(name)
     # add bakcend, models, layers, utils submodules in kwargs
-    prerpocess_input = inject_global_submodules(prerpocess_input)
+    preprocess_input = inject_global_submodules(preprocess_input)
     # delete other kwargs
     # keras-applications preprocessing raise an error if something
     # except `backend`, `layers`, `models`, `utils` passed in kwargs
-    prerpocess_input = filter_kwargs(prerpocess_input)
-    return prerpocess_input
+    preprocess_input = filter_kwargs(preprocess_input)
+    return preprocess_input
 
 
 __all__ = [
