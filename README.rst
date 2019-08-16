@@ -76,7 +76,7 @@ This can be useful for further model conversion to Nvidia TensorRT format or opt
     keras.backend.set_image_data_format('channels_last')
     # or keras.backend.set_image_data_format('channels_first')
 
-Created segmentaion model is just an instance of Keras Model, which can be build as easy as:
+Created segmentation model is just an instance of Keras Model, which can be build as easy as:
 
 .. code:: python
     
