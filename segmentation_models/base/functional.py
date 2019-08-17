@@ -14,7 +14,7 @@ def _gather_channels(x, indexes, **kwargs):
         x = backend.permute_dimensions(x, (1, 2, 3, 0))
     else:
         x = backend.permute_dimensions(x, (1, 0, 2, 3))
-        x = backend.gather(x.indexes)
+        x = backend.gather(x, indexes)
         x = backend.permute_dimensions(x, (1, 0, 2, 3))
     return x
 
