@@ -184,9 +184,9 @@ def precision(gt, pr, class_weights=1, class_indexes=None, smooth=SMOOTH, per_im
 
     # score calculation
     tp = backend.sum(gt * pr, axis=axes)
-    fn = backend.sum(gt, axis=axes) - tp
-
-    score = (tp + smooth) / (tp + fn + smooth)
+    fp = backend.sum(pr, axis=axes) - tp
+    
+    score = (tp + smooth) / (tp + fp + smooth)
     score = average(score, per_image, class_weights, **kwargs)
 
     return score
@@ -222,9 +222,9 @@ def recall(gt, pr, class_weights=1, class_indexes=None, smooth=SMOOTH, per_image
     axes = get_reduce_axes(per_image, **kwargs)
 
     tp = backend.sum(gt * pr, axis=axes)
-    fp = backend.sum(pr, axis=axes) - tp
+    fn = backend.sum(gt, axis=axes) - tp
 
-    score = (tp + smooth) / (tp + fp + smooth)
+    score = (tp + smooth) / (tp + fn + smooth)
     score = average(score, per_image, class_weights, **kwargs)
 
     return score
