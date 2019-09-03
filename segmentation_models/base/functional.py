@@ -251,7 +251,7 @@ def categorical_crossentropy(gt, pr, class_weights=1., class_indexes=None, **kwa
     return - backend.mean(output)
 
 
-def bianary_crossentropy(gt, pr, **kwargs):
+def binary_crossentropy(gt, pr, **kwargs):
     backend = kwargs['backend']
     return backend.mean(backend.binary_crossentropy(gt, pr))
 
