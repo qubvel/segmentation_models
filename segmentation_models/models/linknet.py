@@ -100,7 +100,7 @@ def DecoderTransposeX2Block(filters, stage, use_batchnorm):
 
     def wrapper(input_tensor, skip=None):
         input_filters = backend.int_shape(input_tensor)[channels_axis]
-        output_filters = backend.int_shape(skip) if skip else filters
+        output_filters = backend.int_shape(skip)[channels_axis] if skip is not None else filters
 
         x = Conv1x1BnReLU(input_filters // 4, use_batchnorm, name=conv_block1_name)(input_tensor)
         x = layers.Conv2DTranspose(
