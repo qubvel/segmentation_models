@@ -1,5 +1,21 @@
 # Change Log
 
+**Version 1.0.0**
+
+###### Areas of improvement
+ - Support for `keras` and `tf.keras`
+ - Losses as classes, base loss operations (sum of losses, multiplied loss)
+ - NCHW and NHWC support
+ - Removed pure tf operations to work with other keras backends
+ - Reduced a number of custom objects for better models serialization and deserialization
+
+###### New featrues
+ - New backbones: EfficentNetB[0-7] 
+ - New loss function: Focal loss 
+ - New metrics: Precision, Recall
+ 
+###### API changes
+ - `get_preprocessing` moved from `sm.backbones.get_preprocessing` to `sm.get_preprocessing`
 
 **Version 0.2.1** 
 
