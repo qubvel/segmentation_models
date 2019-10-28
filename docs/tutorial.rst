@@ -139,7 +139,7 @@ Fine tuning
 Some times, it is useful to train only randomly initialized
 *decoder* in order not to damage weights of properly trained
 *encoder* with huge gradients during first steps of training.
-In this case, all you need is just pass ``freeze_encoder = True`` argument
+In this case, all you need is just pass ``encoder_freeze = True`` argument
 while initializing the model.
 
 .. code-block:: python
@@ -147,7 +147,7 @@ while initializing the model.
     from segmentation_models import Unet
     from segmentation_models.utils import set_trainable
 
-    model = Unet(backbone_name='resnet34', encoder_weights='imagenet', freeze_encoder=True)
+    model = Unet(backbone_name='resnet34', encoder_weights='imagenet', encoder_freeze=True)
     model.compile('Adam', 'binary_crossentropy', ['binary_accuracy'])
 
     # pretrain model decoder
