@@ -303,6 +303,6 @@ def binary_focal_loss(gt, pr, gamma=2.0, alpha=0.25, **kwargs):
     pr = backend.clip(pr, backend.epsilon(), 1.0 - backend.epsilon())
 
     loss_1 = - gt * (alpha * backend.pow((1 - pr), gamma) * backend.log(pr))
-    loss_0 = - (1 - gt) * (alpha * backend.pow((pr), gamma) * backend.log(1 - pr))
+    loss_0 = - (1 - gt) * ((1 - alpha) * backend.pow((pr), gamma) * backend.log(1 - pr))
     loss = backend.mean(loss_0 + loss_1)
     return loss
