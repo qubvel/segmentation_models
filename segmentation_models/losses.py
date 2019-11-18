@@ -235,7 +235,7 @@ class BinaryFocalLoss(Loss):
         self.gamma = gamma
 
     def __call__(self, gt, pr):
-        return F.binary_focal_loss(gt, pr, self.alpha, self.gamma, **self.submodules)
+        return F.binary_focal_loss(gt, pr, alpha=self.alpha, gamma=self.gamma, **self.submodules)
 
 
 # aliases
