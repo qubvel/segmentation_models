@@ -200,8 +200,8 @@ class CategoricalFocalLoss(Loss):
         return F.categorical_focal_loss(
             gt,
             pr,
-            self.alpha,
-            self.gamma,
+            alpha=self.alpha,
+            gamma=self.gamma,
             class_indexes=self.class_indexes,
             **self.submodules
         )
