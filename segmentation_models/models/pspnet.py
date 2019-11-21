@@ -140,7 +140,7 @@ def build_psp(
         name='final_conv',
     )(x)
 
-    x = layers.UpSampling2D(final_upsampling_factor, name='final_upsampling')(x)
+    x = layers.UpSampling2D(final_upsampling_factor, name='final_upsampling', interpolation='bilinear')(x)
     x = layers.Activation(activation, name=activation)(x)
 
     model = models.Model(input_, x)
