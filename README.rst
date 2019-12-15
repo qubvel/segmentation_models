@@ -1,12 +1,11 @@
 .. raw:: html
 
     <p align="center">
-      <img width="400" height="200" src="https://github.com/qubvel/segmentation_models/blob/master/images/logo.png">
-    </p>
-    
-    <h1 align="center"> Segmentation Models </h1>
-    
-    <p align="center">
+      <img src="https://i.ibb.co/GtxGS8m/Segmentation-Models-V1-Side-3-1.png">
+      <b>Python library with Neural Networks for Image Segmentation based on <a href=https://www.keras.io>Keras</a> and <a href=https://www.tensorflow.org>TensorFlow</a>.
+      </b>
+      <br></br>
+
       <a href="https://badge.fury.io/py/segmentation-models" alt="PyPI">
         <img src="https://badge.fury.io/py/segmentation-models.svg" /></a>
       <a href="https://segmentation-models.readthedocs.io/en/latest/?badge=latest" alt="Documentation">
@@ -15,11 +14,6 @@
         <img src="https://travis-ci.com/qubvel/segmentation_models.svg?branch=master" /></a>
     </p>
 
-**Segmentation models** is python library with Neural Networks for
-`Image
-Segmentation <https://en.wikipedia.org/wiki/Image_segmentation>`__ based
-on `Keras <https://keras.io>`__
-and `Tensorflow Keras <https://www.tensorflow.org/>`__ frameworks.
 
 **The main features** of this library are:
 
