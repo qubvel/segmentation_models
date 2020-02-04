@@ -1,7 +1,7 @@
 from keras_applications import get_submodules_from_kwargs
 
 from ._common_blocks import Conv2dBn
-from ._utils import freeze_model
+from ._utils import freeze_model, get_submodules_args
 from ..backbones.backbones_factory import Backbones
 
 backend = None
@@ -217,7 +217,8 @@ def FPN(
 
     """
     global backend, layers, models, keras_utils
-    backend, layers, models, keras_utils = get_submodules_from_kwargs(kwargs)
+    submodule_args = get_submodules_args(kwargs)
+    backend, layers, models, keras_utils = get_submodules_from_kwargs(submodule_args)
 
     backbone = Backbones.get_backbone(
         backbone_name,
