@@ -1,7 +1,7 @@
 from keras_applications import get_submodules_from_kwargs
 
 from ._common_blocks import Conv2dBn
-from ._utils import freeze_model, get_submodules_args
+from ._utils import freeze_model, filter_keras_submodules
 from ..backbones.backbones_factory import Backbones
 
 backend = None
@@ -233,7 +233,7 @@ def Linknet(
     """
 
     global backend, layers, models, keras_utils
-    submodule_args = get_submodules_args(kwargs)
+    submodule_args = filter_keras_submodules(kwargs)
     backend, layers, models, keras_utils = get_submodules_from_kwargs(submodule_args)
 
     if decoder_block_type == 'upsampling':

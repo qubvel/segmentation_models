@@ -10,7 +10,7 @@ def freeze_model(model, **kwargs):
     return
 
 
-def get_submodules_args(kwargs):
-    """Selects arguments that define keras_application submodules. """
+def filter_keras_submodules(kwargs):
+    """Selects only arguments that define keras_application submodules. """
     submodule_keys = kwargs.keys() & {'backend', 'layers', 'models', 'utils'}
     return {key: kwargs[key] for key in submodule_keys}
