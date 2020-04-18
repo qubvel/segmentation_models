@@ -27,7 +27,7 @@ def get_submodules():
 #  Blocks
 # ---------------------------------------------------------------------
 
-def Conv3x3BnReLU(filters, use_batchnorm, name=None):
+def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -35,6 +35,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None):
             filters,
             kernel_size=3,
             activation='relu',
+            activation_dtype=activation_dtype,
             kernel_initializer='he_uniform',
             padding='same',
             use_batchnorm=use_batchnorm,
@@ -45,15 +46,25 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None):
     return wrapper
 
 
-def DoubleConv3x3BnReLU(filters, use_batchnorm, name=None):
+def DoubleConv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
     name1, name2 = None, None
     if name is not None:
         name1 = name + 'a'
         name2 = name + 'b'
 
     def wrapper(input_tensor):
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=name1)(input_tensor)
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=name2)(x)
+        x = Conv3x3BnReLU(
+            filters,
+            use_batchnorm,
+            name=name1,
+            activation_dtype=activation_dtype
+        )(input_tensor)
+        x = Conv3x3BnReLU(
+            filters,
+            use_batchnorm,
+            name=name2,
+            activation_dtype=activation_dtype
+        )(x)
         return x
 
     return wrapper
@@ -106,6 +117,7 @@ def build_fpn(
         segmentation_filters=128,
         classes=1,
         activation='sigmoid',
+        activation_dtype=None,
         use_batchnorm=True,
         aggregation='sum',
         dropout=None,
@@ -124,22 +136,30 @@ def build_fpn(
     p2 = FPNBlock(pyramid_filters, stage=2)(p3, skips[3])
 
     # add segmentation head to each
-    s5 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm, name='segm_stage5')(p5)
-    s4 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm, name='segm_stage4')(p4)
-    s3 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm, name='segm_stage3')(p3)
-    s2 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm, name='segm_stage2')(p2)
+    s5 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
+                             name='segm_stage5', activation_dtype=activation_dtype)(p5)
+    s4 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
+                             name='segm_stage4', activation_dtype=activation_dtype)(p4)
+    s3 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
+                             name='segm_stage3', activation_dtype=activation_dtype)(p3)
+    s2 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
+                             name='segm_stage2', activation_dtype=activation_dtype)(p2)
 
     # upsampling to same resolution
-    s5 = layers.UpSampling2D((8, 8), interpolation='nearest', name='upsampling_stage5')(s5)
-    s4 = layers.UpSampling2D((4, 4), interpolation='nearest', name='upsampling_stage4')(s4)
-    s3 = layers.UpSampling2D((2, 2), interpolation='nearest', name='upsampling_stage3')(s3)
+    s5 = layers.UpSampling2D(
+        (8, 8), interpolation='nearest', name='upsampling_stage5')(s5)
+    s4 = layers.UpSampling2D(
+        (4, 4), interpolation='nearest', name='upsampling_stage4')(s4)
+    s3 = layers.UpSampling2D(
+        (2, 2), interpolation='nearest', name='upsampling_stage3')(s3)
 
     # aggregating results
     if aggregation == 'sum':
         x = layers.Add(name='aggregation_sum')([s2, s3, s4, s5])
     elif aggregation == 'concat':
         concat_axis = 3 if backend.image_data_format() == 'channels_last' else 1
-        x = layers.Concatenate(axis=concat_axis, name='aggregation_concat')([s2, s3, s4, s5])
+        x = layers.Concatenate(
+            axis=concat_axis, name='aggregation_concat')([s2, s3, s4, s5])
     else:
         raise ValueError('Aggregation parameter should be in ("sum", "concat"), '
                          'got {}'.format(aggregation))
@@ -148,8 +168,10 @@ def build_fpn(
         x = layers.SpatialDropout2D(dropout, name='pyramid_dropout')(x)
 
     # final stage
-    x = Conv3x3BnReLU(segmentation_filters, use_batchnorm, name='final_stage')(x)
-    x = layers.UpSampling2D(size=(2, 2), interpolation='bilinear', name='final_upsampling')(x)
+    x = Conv3x3BnReLU(segmentation_filters, use_batchnorm,
+                      name='final_stage', activation_dtype=activation_dtype)(x)
+    x = layers.UpSampling2D(
+        size=(2, 2), interpolation='bilinear', name='final_upsampling')(x)
 
     # model head (define number of output classes)
     x = layers.Conv2D(
@@ -160,7 +182,11 @@ def build_fpn(
         kernel_initializer='glorot_uniform',
         name='head_conv',
     )(x)
-    x = layers.Activation(activation, name=activation)(x)
+    if activation_dtype is None:
+        x = layers.Activation(activation, name=activation)(x)
+    else:
+        x = layers.Activation(activation, name=activation,
+                              dtype=activation_dtype)(x)
 
     # create keras model instance
     model = models.Model(input_, x)
@@ -177,6 +203,7 @@ def FPN(
         input_shape=(None, None, 3),
         classes=21,
         activation='softmax',
+        activation_dtype=None,
         weights=None,
         encoder_weights='imagenet',
         encoder_freeze=False,
@@ -198,6 +225,8 @@ def FPN(
         classes: a number of classes for output (output shape - ``(h, w, classes)``).
         weights: optional, path to model weights.
         activation: name of one of ``keras.activations`` for last model layer (e.g. ``sigmoid``, ``softmax``, ``linear``).
+        activation_dtype: Optional type parameter to force activations
+            to be treated in certain type. Used when mixed_precision is enabled.
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
         encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
         encoder_features: a list of layer numbers or names starting from top of the model.
@@ -218,7 +247,8 @@ def FPN(
     """
     global backend, layers, models, keras_utils
     submodule_args = filter_keras_submodules(kwargs)
-    backend, layers, models, keras_utils = get_submodules_from_kwargs(submodule_args)
+    backend, layers, models, keras_utils = get_submodules_from_kwargs(
+        submodule_args)
 
     backbone = Backbones.get_backbone(
         backbone_name,
@@ -239,6 +269,7 @@ def FPN(
         use_batchnorm=pyramid_use_batchnorm,
         dropout=pyramid_dropout,
         activation=activation,
+        activation_dtype=activation_dtype,
         classes=classes,
         aggregation=pyramid_aggregation,
     )

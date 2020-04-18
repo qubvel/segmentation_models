@@ -27,7 +27,7 @@ def get_submodules():
 #  Blocks
 # ---------------------------------------------------------------------
 
-def Conv3x3BnReLU(filters, use_batchnorm, name=None):
+def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -35,6 +35,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None):
             filters,
             kernel_size=3,
             activation='relu',
+            activation_dtype=activation_dtype,
             kernel_initializer='he_uniform',
             padding='same',
             use_batchnorm=use_batchnorm,
@@ -45,7 +46,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None):
     return wrapper
 
 
-def Conv1x1BnReLU(filters, use_batchnorm, name=None):
+def Conv1x1BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -53,6 +54,7 @@ def Conv1x1BnReLU(filters, use_batchnorm, name=None):
             filters,
             kernel_size=1,
             activation='relu',
+            activation_dtype=activation_dtype,
             kernel_initializer='he_uniform',
             padding='same',
             use_batchnorm=use_batchnorm,
@@ -63,7 +65,7 @@ def Conv1x1BnReLU(filters, use_batchnorm, name=None):
     return wrapper
 
 
-def DecoderUpsamplingX2Block(filters, stage, use_batchnorm):
+def DecoderUpsamplingX2Block(filters, stage, use_batchnorm, activation_dtype=None):
     conv_block1_name = 'decoder_stage{}a'.format(stage)
     conv_block2_name = 'decoder_stage{}b'.format(stage)
     conv_block3_name = 'decoder_stage{}c'.format(stage)
@@ -74,12 +76,16 @@ def DecoderUpsamplingX2Block(filters, stage, use_batchnorm):
 
     def wrapper(input_tensor, skip=None):
         input_filters = backend.int_shape(input_tensor)[channels_axis]
-        output_filters = backend.int_shape(skip)[channels_axis] if skip is not None else filters
+        output_filters = backend.int_shape(
+            skip)[channels_axis] if skip is not None else filters
 
-        x = Conv1x1BnReLU(input_filters // 4, use_batchnorm, name=conv_block1_name)(input_tensor)
+        x = Conv1x1BnReLU(input_filters // 4, use_batchnorm, name=conv_block1_name,
+                          activation_dtype=activation_dtype)(input_tensor)
         x = layers.UpSampling2D((2, 2), name=up_name)(x)
-        x = Conv3x3BnReLU(input_filters // 4, use_batchnorm, name=conv_block2_name)(x)
-        x = Conv1x1BnReLU(output_filters, use_batchnorm, name=conv_block3_name)(x)
+        x = Conv3x3BnReLU(input_filters // 4, use_batchnorm,
+                          name=conv_block2_name, activation_dtype=activation_dtype)(x)
+        x = Conv1x1BnReLU(output_filters, use_batchnorm,
+                          name=conv_block3_name, activation_dtype=activation_dtype)(x)
 
         if skip is not None:
             x = layers.Add(name=add_name)([x, skip])
@@ -88,7 +94,7 @@ def DecoderUpsamplingX2Block(filters, stage, use_batchnorm):
     return wrapper
 
 
-def DecoderTransposeX2Block(filters, stage, use_batchnorm):
+def DecoderTransposeX2Block(filters, stage, use_batchnorm, activation_dtype=None):
     conv_block1_name = 'decoder_stage{}a'.format(stage)
     transpose_name = 'decoder_stage{}b_transpose'.format(stage)
     bn_name = 'decoder_stage{}b_bn'.format(stage)
@@ -100,9 +106,11 @@ def DecoderTransposeX2Block(filters, stage, use_batchnorm):
 
     def wrapper(input_tensor, skip=None):
         input_filters = backend.int_shape(input_tensor)[channels_axis]
-        output_filters = backend.int_shape(skip)[channels_axis] if skip is not None else filters
+        output_filters = backend.int_shape(
+            skip)[channels_axis] if skip is not None else filters
 
-        x = Conv1x1BnReLU(input_filters // 4, use_batchnorm, name=conv_block1_name)(input_tensor)
+        x = Conv1x1BnReLU(input_filters // 4, use_batchnorm,
+                          name=conv_block1_name, activation_dtype=activation_dtype)(input_tensor)
         x = layers.Conv2DTranspose(
             filters=input_filters // 4,
             kernel_size=(4, 4),
@@ -114,9 +122,13 @@ def DecoderTransposeX2Block(filters, stage, use_batchnorm):
 
         if use_batchnorm:
             x = layers.BatchNormalization(axis=bn_axis, name=bn_name)(x)
-
-        x = layers.Activation('relu', name=relu_name)(x)
-        x = Conv1x1BnReLU(output_filters, use_batchnorm, name=conv_block3_name)(x)
+        if activation_dtype is None:
+            x = layers.Activation('relu', name=relu_name)(x)
+        else:
+            x = layers.Activation('relu', name=relu_name,
+                                  dtype=activation_dtype)(x)
+        x = Conv1x1BnReLU(output_filters, use_batchnorm,
+                          name=conv_block3_name)(x)
 
         if skip is not None:
             x = layers.Add(name=add_name)([x, skip])
@@ -138,6 +150,7 @@ def build_linknet(
         n_upsample_blocks=5,
         classes=1,
         activation='sigmoid',
+        activation_dtype=None,
         use_batchnorm=True,
 ):
     input_ = backbone.input
@@ -149,8 +162,10 @@ def build_linknet(
 
     # add center block if previous operation was maxpooling (for vgg models)
     if isinstance(backbone.layers[-1], layers.MaxPooling2D):
-        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1')(x)
-        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2')(x)
+        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1',
+                          activation_dtype=activation_dtype)(x)
+        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2',
+                          activation_dtype=activation_dtype)(x)
 
     # building decoder blocks
     for i in range(n_upsample_blocks):
@@ -160,7 +175,8 @@ def build_linknet(
         else:
             skip = None
 
-        x = decoder_block(decoder_filters[i], stage=i, use_batchnorm=use_batchnorm)(x, skip)
+        x = decoder_block(
+            decoder_filters[i], stage=i, use_batchnorm=use_batchnorm)(x, skip)
 
     # model head (define number of output classes)
     x = layers.Conv2D(
@@ -170,7 +186,10 @@ def build_linknet(
         use_bias=True,
         kernel_initializer='glorot_uniform'
     )(x)
-    x = layers.Activation(activation, name=activation)(x)
+    if activation_dtype is None:
+        x = layers.Activation(activation, name=activation)(x)
+    else:
+        x = layers.Activation(activation, name=activation, dtype=activation_dtype)(x)
 
     # create keras model instance
     model = models.Model(input_, x)
@@ -187,6 +206,7 @@ def Linknet(
         input_shape=(None, None, 3),
         classes=1,
         activation='sigmoid',
+        activation_dtype=None,
         weights=None,
         encoder_weights='imagenet',
         encoder_freeze=False,
@@ -210,6 +230,8 @@ def Linknet(
         classes: a number of classes for output (output shape - ``(h, w, classes)``).
         activation: name of one of ``keras.activations`` for last model layer
             (e.g. ``sigmoid``, ``softmax``, ``linear``).
+        activation_dtype: Optional type parameter to force activations
+            to be treated in certain type. Used when mixed_precision is enabled.
         weights: optional, path to model weights.
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
         encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
@@ -234,7 +256,8 @@ def Linknet(
 
     global backend, layers, models, keras_utils
     submodule_args = filter_keras_submodules(kwargs)
-    backend, layers, models, keras_utils = get_submodules_from_kwargs(submodule_args)
+    backend, layers, models, keras_utils = get_submodules_from_kwargs(
+        submodule_args)
 
     if decoder_block_type == 'upsampling':
         decoder_block = DecoderUpsamplingX2Block
@@ -262,6 +285,7 @@ def Linknet(
         decoder_filters=decoder_filters,
         classes=classes,
         activation=activation,
+        activation_dtype=activation_dtype,
         n_upsample_blocks=len(decoder_filters),
         use_batchnorm=decoder_use_batchnorm,
     )
