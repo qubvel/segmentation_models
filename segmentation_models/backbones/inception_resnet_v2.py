@@ -77,7 +77,7 @@ def conv2d_bn(x,
                                       name=bn_name)(x)
     if activation is not None:
         ac_name = None if name is None else name + '_ac'
-        if activation_dtype is None:
+        if activation_dtype is None or activation != 'softmax':
             x = layers.Activation(activation, name=ac_name)(x)
         else:
             x = layers.Activation(activation, name=ac_name, dtype=activation_dtype)(x)
@@ -164,7 +164,7 @@ def inception_resnet_block(x, scale, block_type, block_idx, activation='relu', a
                       arguments={'scale': scale},
                       name=block_name)([x, up])
     if activation is not None:
-        if activation_dtype is None:
+        if activation_dtype is None or activation != 'softmax':
             x = layers.Activation(activation, name=block_name + '_ac')(x)
         else:
             x = layers.Activation(activation, name=block_name + '_ac', dtype=activation_dtype)(x)

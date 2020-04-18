@@ -122,7 +122,7 @@ def DecoderTransposeX2Block(filters, stage, use_batchnorm, activation_dtype=None
 
         if use_batchnorm:
             x = layers.BatchNormalization(axis=bn_axis, name=bn_name)(x)
-        if activation_dtype is None:
+        if activation_dtype is None or activation != 'softmax':
             x = layers.Activation('relu', name=relu_name)(x)
         else:
             x = layers.Activation('relu', name=relu_name,
@@ -186,7 +186,7 @@ def build_linknet(
         use_bias=True,
         kernel_initializer='glorot_uniform'
     )(x)
-    if activation_dtype is None:
+    if activation_dtype is None or activation != 'softmax':
         x = layers.Activation(activation, name=activation)(x)
     else:
         x = layers.Activation(activation, name=activation, dtype=activation_dtype)(x)
