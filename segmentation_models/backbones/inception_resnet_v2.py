@@ -44,6 +44,7 @@ def conv2d_bn(x,
               strides=1,
               padding='same',
               activation='relu',
+              activation_dtype=None,
               use_bias=False,
               name=None):
     """Utility function to apply conv + BN.
@@ -54,6 +55,8 @@ def conv2d_bn(x,
         strides: strides in `Conv2D`.
         padding: padding mode in `Conv2D`.
         activation: activation in `Conv2D`.
+        activation_dtype: Optional type parameter to force activations
+            to be treated in certain type. Used when mixed_precision is enabled.
         use_bias: whether to use a bias in `Conv2D`.
         name: name of the ops; will become `name + '_ac'` for the activation
             and `name + '_bn'` for the batch norm layer.
@@ -74,11 +77,14 @@ def conv2d_bn(x,
                                       name=bn_name)(x)
     if activation is not None:
         ac_name = None if name is None else name + '_ac'
-        x = layers.Activation(activation, name=ac_name)(x)
+        if activation_dtype is None:
+            x = layers.Activation(activation, name=ac_name)(x)
+        else:
+            x = layers.Activation(activation, name=ac_name, dtype=activation_dtype)(x)
     return x
 
 
-def inception_resnet_block(x, scale, block_type, block_idx, activation='relu'):
+def inception_resnet_block(x, scale, block_type, block_idx, activation='relu', activation_dtype=None):
     """Adds a Inception-ResNet block.
     This function builds 3 types of Inception-ResNet blocks mentioned
     in the paper, controlled by the `block_type` argument (which is the
@@ -108,6 +114,8 @@ def inception_resnet_block(x, scale, block_type, block_idx, activation='relu'):
             (see [activations](../activations.md)).
             When `activation=None`, no activation is applied
             (i.e., "linear" activation: `a(x) = x`).
+        activation_dtype: Optional type parameter to force activations
+            to be treated in certain type. Used when mixed_precision is enabled.
     # Returns
         Output tensor for the block.
     # Raises
@@ -115,24 +123,24 @@ def inception_resnet_block(x, scale, block_type, block_idx, activation='relu'):
             `'block17'` or `'block8'`.
     """
     if block_type == 'block35':
-        branch_0 = conv2d_bn(x, 32, 1)
-        branch_1 = conv2d_bn(x, 32, 1)
-        branch_1 = conv2d_bn(branch_1, 32, 3)
-        branch_2 = conv2d_bn(x, 32, 1)
-        branch_2 = conv2d_bn(branch_2, 48, 3)
-        branch_2 = conv2d_bn(branch_2, 64, 3)
+        branch_0 = conv2d_bn(x, 32, 1, activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(x, 32, 1, activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(branch_1, 32, 3, activation_dtype=activation_dtype)
+        branch_2 = conv2d_bn(x, 32, 1, activation_dtype=activation_dtype)
+        branch_2 = conv2d_bn(branch_2, 48, 3, activation_dtype=activation_dtype)
+        branch_2 = conv2d_bn(branch_2, 64, 3, activation_dtype=activation_dtype)
         branches = [branch_0, branch_1, branch_2]
     elif block_type == 'block17':
-        branch_0 = conv2d_bn(x, 192, 1)
-        branch_1 = conv2d_bn(x, 128, 1)
-        branch_1 = conv2d_bn(branch_1, 160, [1, 7])
-        branch_1 = conv2d_bn(branch_1, 192, [7, 1])
+        branch_0 = conv2d_bn(x, 192, 1, activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(x, 128, 1, activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(branch_1, 160, [1, 7], activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(branch_1, 192, [7, 1], activation_dtype=activation_dtype)
         branches = [branch_0, branch_1]
     elif block_type == 'block8':
-        branch_0 = conv2d_bn(x, 192, 1)
-        branch_1 = conv2d_bn(x, 192, 1)
-        branch_1 = conv2d_bn(branch_1, 224, [1, 3])
-        branch_1 = conv2d_bn(branch_1, 256, [3, 1])
+        branch_0 = conv2d_bn(x, 192, 1, activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(x, 192, 1, activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(branch_1, 224, [1, 3], activation_dtype=activation_dtype)
+        branch_1 = conv2d_bn(branch_1, 256, [3, 1], activation_dtype=activation_dtype)
         branches = [branch_0, branch_1]
     else:
         raise ValueError('Unknown Inception-ResNet block type. '
@@ -148,14 +156,18 @@ def inception_resnet_block(x, scale, block_type, block_idx, activation='relu'):
                    1,
                    activation=None,
                    use_bias=True,
-                   name=block_name + '_conv')
+                   name=block_name + '_conv',
+                   activation_dtype=activation_dtype)
 
     x = layers.Lambda(lambda inputs, scale: inputs[0] + inputs[1] * scale,
                       output_shape=backend.int_shape(x)[1:],
                       arguments={'scale': scale},
                       name=block_name)([x, up])
     if activation is not None:
-        x = layers.Activation(activation, name=block_name + '_ac')(x)
+        if activation_dtype is None:
+            x = layers.Activation(activation, name=block_name + '_ac')(x)
+        else:
+            x = layers.Activation(activation, name=block_name + '_ac', dtype=activation_dtype)(x)
     return x
 
 
@@ -165,6 +177,7 @@ def InceptionResNetV2(include_top=True,
                       input_shape=None,
                       pooling=None,
                       classes=1000,
+                      activation_dtype=None,
                       **kwargs):
     """Instantiates the Inception-ResNet v2 architecture.
     Optionally loads weights pre-trained on ImageNet.
@@ -234,23 +247,23 @@ def InceptionResNetV2(include_top=True,
             img_input = input_tensor
 
     # Stem block: 35 x 35 x 192
-    x = conv2d_bn(img_input, 32, 3, strides=2, padding='same')
-    x = conv2d_bn(x, 32, 3, padding='same')
-    x = conv2d_bn(x, 64, 3, padding='same')
-    x = layers.MaxPooling2D(3, strides=2, padding='same')(x)
-    x = conv2d_bn(x, 80, 1, padding='same')
-    x = conv2d_bn(x, 192, 3, padding='same')
-    x = layers.MaxPooling2D(3, strides=2, padding='same')(x)
+    x = conv2d_bn(img_input, 32, 3, strides=2, padding='same', activation_dtype=activation_dtype)
+    x = conv2d_bn(x, 32, 3, padding='same', activation_dtype=activation_dtype)
+    x = conv2d_bn(x, 64, 3, padding='same', activation_dtype=activation_dtype)
+    x = layers.MaxPooling2D(3, strides=2, padding='same', activation_dtype=activation_dtype)(x)
+    x = conv2d_bn(x, 80, 1, padding='same', activation_dtype=activation_dtype)
+    x = conv2d_bn(x, 192, 3, padding='same', activation_dtype=activation_dtype)
+    x = layers.MaxPooling2D(3, strides=2, padding='same', activation_dtype=activation_dtype)(x)
 
     # Mixed 5b (Inception-A block): 35 x 35 x 320
-    branch_0 = conv2d_bn(x, 96, 1, padding='same')
-    branch_1 = conv2d_bn(x, 48, 1, padding='same')
-    branch_1 = conv2d_bn(branch_1, 64, 5, padding='same')
-    branch_2 = conv2d_bn(x, 64, 1, padding='same')
-    branch_2 = conv2d_bn(branch_2, 96, 3, padding='same')
-    branch_2 = conv2d_bn(branch_2, 96, 3, padding='same')
-    branch_pool = layers.AveragePooling2D(3, strides=1, padding='same')(x)
-    branch_pool = conv2d_bn(branch_pool, 64, 1, padding='same')
+    branch_0 = conv2d_bn(x, 96, 1, padding='same', activation_dtype=activation_dtype)
+    branch_1 = conv2d_bn(x, 48, 1, padding='same', activation_dtype=activation_dtype)
+    branch_1 = conv2d_bn(branch_1, 64, 5, padding='same', activation_dtype=activation_dtype)
+    branch_2 = conv2d_bn(x, 64, 1, padding='same', activation_dtype=activation_dtype)
+    branch_2 = conv2d_bn(branch_2, 96, 3, padding='same', activation_dtype=activation_dtype)
+    branch_2 = conv2d_bn(branch_2, 96, 3, padding='same', activation_dtype=activation_dtype)
+    branch_pool = layers.AveragePooling2D(3, strides=1, padding='same', activation_dtype=activation_dtype)(x)
+    branch_pool = conv2d_bn(branch_pool, 64, 1, padding='same', activation_dtype=activation_dtype)
     branches = [branch_0, branch_1, branch_2, branch_pool]
     channel_axis = 1 if backend.image_data_format() == 'channels_first' else 3
     x = layers.Concatenate(axis=channel_axis, name='mixed_5b')(branches)
@@ -263,11 +276,11 @@ def InceptionResNetV2(include_top=True,
                                    block_idx=block_idx)
 
     # Mixed 6a (Reduction-A block): 17 x 17 x 1088
-    branch_0 = conv2d_bn(x, 384, 3, strides=2, padding='same')
-    branch_1 = conv2d_bn(x, 256, 1, padding='same')
-    branch_1 = conv2d_bn(branch_1, 256, 3, padding='same')
-    branch_1 = conv2d_bn(branch_1, 384, 3, strides=2, padding='same')
-    branch_pool = layers.MaxPooling2D(3, strides=2, padding='same')(x)
+    branch_0 = conv2d_bn(x, 384, 3, strides=2, padding='same', activation_dtype=activation_dtype)
+    branch_1 = conv2d_bn(x, 256, 1, padding='same', activation_dtype=activation_dtype)
+    branch_1 = conv2d_bn(branch_1, 256, 3, padding='same', activation_dtype=activation_dtype)
+    branch_1 = conv2d_bn(branch_1, 384, 3, strides=2, padding='same', activation_dtype=activation_dtype)
+    branch_pool = layers.MaxPooling2D(3, strides=2, padding='same', activation_dtype=activation_dtype)(x)
     branches = [branch_0, branch_1, branch_pool]
     x = layers.Concatenate(axis=channel_axis, name='mixed_6a')(branches)
 
@@ -279,14 +292,14 @@ def InceptionResNetV2(include_top=True,
                                    block_idx=block_idx)
 
     # Mixed 7a (Reduction-B block): 8 x 8 x 2080
-    branch_0 = conv2d_bn(x, 256, 1, padding='same')
-    branch_0 = conv2d_bn(branch_0, 384, 3, strides=2, padding='same')
-    branch_1 = conv2d_bn(x, 256, 1, padding='same')
-    branch_1 = conv2d_bn(branch_1, 288, 3, strides=2, padding='same')
-    branch_2 = conv2d_bn(x, 256, 1, padding='same')
-    branch_2 = conv2d_bn(branch_2, 288, 3, padding='same')
-    branch_2 = conv2d_bn(branch_2, 320, 3, strides=2, padding='same')
-    branch_pool = layers.MaxPooling2D(3, strides=2, padding='same')(x)
+    branch_0 = conv2d_bn(x, 256, 1, padding='same', activation_dtype=activation_dtype)
+    branch_0 = conv2d_bn(branch_0, 384, 3, strides=2, padding='same', activation_dtype=activation_dtype)
+    branch_1 = conv2d_bn(x, 256, 1, padding='same', activation_dtype=activation_dtype)
+    branch_1 = conv2d_bn(branch_1, 288, 3, strides=2, padding='same', activation_dtype=activation_dtype)
+    branch_2 = conv2d_bn(x, 256, 1, padding='same', activation_dtype=activation_dtype)
+    branch_2 = conv2d_bn(branch_2, 288, 3, padding='same', activation_dtype=activation_dtype)
+    branch_2 = conv2d_bn(branch_2, 320, 3, strides=2, padding='same', activation_dtype=activation_dtype)
+    branch_pool = layers.MaxPooling2D(3, strides=2, padding='same', activation_dtype=activation_dtype)(x)
     branches = [branch_0, branch_1, branch_2, branch_pool]
     x = layers.Concatenate(axis=channel_axis, name='mixed_7a')(branches)
 
@@ -295,20 +308,26 @@ def InceptionResNetV2(include_top=True,
         x = inception_resnet_block(x,
                                    scale=0.2,
                                    block_type='block8',
-                                   block_idx=block_idx)
+                                   block_idx=block_idx,
+                                   activation_dtype=activation_dtype)
     x = inception_resnet_block(x,
                                scale=1.,
                                activation=None,
                                block_type='block8',
-                               block_idx=10)
+                               block_idx=10,
+                               activation_dtype=activation_dtype)
 
     # Final convolution block: 8 x 8 x 1536
-    x = conv2d_bn(x, 1536, 1, name='conv_7b')
+    x = conv2d_bn(x, 1536, 1, name='conv_7b', activation_dtype=activation_dtype)
 
     if include_top:
         # Classification block
         x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
-        x = layers.Dense(classes, activation='softmax', name='predictions')(x)
+        if activation_dtype is None:
+            x = layers.Dense(classes, activation='softmax', name='predictions')(x)
+        else:
+            x = layers.Dense(classes, name='dense_logists')(x)
+            x = layers.Activation('softmax', dtype=activation_dtype, name='predictions')(x)
     else:
         if pooling == 'avg':
             x = layers.GlobalAveragePooling2D()(x)
