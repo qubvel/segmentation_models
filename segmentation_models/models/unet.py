@@ -27,7 +27,7 @@ def get_submodules():
 #  Blocks
 # ---------------------------------------------------------------------
 
-def Conv3x3BnReLU(filters, use_batchnorm, name=None):
+def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -35,6 +35,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None):
             filters,
             kernel_size=3,
             activation='relu',
+            activation_dtype=activation_dtype,
             kernel_initializer='he_uniform',
             padding='same',
             use_batchnorm=use_batchnorm,
@@ -45,7 +46,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None):
     return wrapper
 
 
-def DecoderUpsamplingX2Block(filters, stage, use_batchnorm=False):
+def DecoderUpsamplingX2Block(filters, stage, use_batchnorm=False, activation_dtype=None):
     up_name = 'decoder_stage{}_upsampling'.format(stage)
     conv1_name = 'decoder_stage{}a'.format(stage)
     conv2_name = 'decoder_stage{}b'.format(stage)
@@ -57,17 +58,20 @@ def DecoderUpsamplingX2Block(filters, stage, use_batchnorm=False):
         x = layers.UpSampling2D(size=2, name=up_name)(input_tensor)
 
         if skip is not None:
-            x = layers.Concatenate(axis=concat_axis, name=concat_name)([x, skip])
+            x = layers.Concatenate(
+                axis=concat_axis, name=concat_name)([x, skip])
 
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv1_name)(x)
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv2_name)(x)
+        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv1_name,
+                          activation_dtype=activation_dtype)(x)
+        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv2_name,
+                          activation_dtype=activation_dtype)(x)
 
         return x
 
     return wrapper
 
 
-def DecoderTransposeX2Block(filters, stage, use_batchnorm=False):
+def DecoderTransposeX2Block(filters, stage, use_batchnorm=False, activation_dtype=None):
     transp_name = 'decoder_stage{}a_transpose'.format(stage)
     bn_name = 'decoder_stage{}a_bn'.format(stage)
     relu_name = 'decoder_stage{}a_relu'.format(stage)
@@ -90,12 +94,18 @@ def DecoderTransposeX2Block(filters, stage, use_batchnorm=False):
         if use_batchnorm:
             x = layers.BatchNormalization(axis=bn_axis, name=bn_name)(x)
 
-        x = layers.Activation('relu', name=relu_name)(x)
+        if activation_dtype is None:
+            x = layers.Activation('relu', name=relu_name)(x)
+        else:
+            x = layers.Activation('relu', name=relu_name,
+                                  dtype=activation_dtype)(x)
 
         if skip is not None:
-            x = layers.Concatenate(axis=concat_axis, name=concat_name)([x, skip])
+            x = layers.Concatenate(
+                axis=concat_axis, name=concat_name)([x, skip])
 
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv_block_name)(x)
+        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv_block_name,
+                          activation_dtype=activation_dtype)(x)
 
         return x
 
@@ -114,6 +124,7 @@ def build_unet(
         n_upsample_blocks=5,
         classes=1,
         activation='sigmoid',
+        activation_dtype=None,
         use_batchnorm=True,
 ):
     input_ = backbone.input
@@ -125,8 +136,10 @@ def build_unet(
 
     # add center block if previous operation was maxpooling (for vgg models)
     if isinstance(backbone.layers[-1], layers.MaxPooling2D):
-        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1')(x)
-        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2')(x)
+        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1',
+                          activation_dtype=activation_dtype)(x)
+        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2',
+                          activation_dtype=activation_dtype)(x)
 
     # building decoder blocks
     for i in range(n_upsample_blocks):
@@ -136,7 +149,8 @@ def build_unet(
         else:
             skip = None
 
-        x = decoder_block(decoder_filters[i], stage=i, use_batchnorm=use_batchnorm)(x, skip)
+        x = decoder_block(
+            decoder_filters[i], stage=i, use_batchnorm=use_batchnorm)(x, skip)
 
     # model head (define number of output classes)
     x = layers.Conv2D(
@@ -147,7 +161,11 @@ def build_unet(
         kernel_initializer='glorot_uniform',
         name='final_conv',
     )(x)
-    x = layers.Activation(activation, name=activation)(x)
+    if activation_dtype is None:
+        x = layers.Activation(activation, name=activation)(x)
+    else:
+        x = layers.Activation(activation, name=activation,
+                              dtype=activation_dtype)(x)
 
     # create keras model instance
     model = models.Model(input_, x)
@@ -164,6 +182,7 @@ def Unet(
         input_shape=(None, None, 3),
         classes=1,
         activation='sigmoid',
+        activation_dtype=None,
         weights=None,
         encoder_weights='imagenet',
         encoder_freeze=False,
@@ -184,6 +203,8 @@ def Unet(
         classes: a number of classes for output (output shape - ``(h, w, classes)``).
         activation: name of one of ``keras.activations`` for last model layer
             (e.g. ``sigmoid``, ``softmax``, ``linear``).
+        activation_dtype: Optional type parameter to force activations
+            to be treated in certain type. Used when mixed_precision is enabled.
         weights: optional, path to model weights.
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
         encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
@@ -209,7 +230,8 @@ def Unet(
 
     global backend, layers, models, keras_utils
     submodule_args = filter_keras_submodules(kwargs)
-    backend, layers, models, keras_utils = get_submodules_from_kwargs(submodule_args)
+    backend, layers, models, keras_utils = get_submodules_from_kwargs(
+        submodule_args)
 
     if decoder_block_type == 'upsampling':
         decoder_block = DecoderUpsamplingX2Block
@@ -237,6 +259,7 @@ def Unet(
         decoder_filters=decoder_filters,
         classes=classes,
         activation=activation,
+        activation_dtype=activation_dtype,
         n_upsample_blocks=len(decoder_filters),
         use_batchnorm=decoder_use_batchnorm,
     )
