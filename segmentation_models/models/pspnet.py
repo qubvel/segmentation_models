@@ -46,7 +46,7 @@ def check_input_shape(input_shape, factor):
 #  Blocks
 # ---------------------------------------------------------------------
 
-def Conv1x1BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
+def Conv1x1BnReLU(filters, use_batchnorm, name=None):
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -54,7 +54,6 @@ def Conv1x1BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
             filters,
             kernel_size=1,
             activation='relu',
-            activation_dtype=activation_dtype,
             kernel_initializer='he_uniform',
             padding='same',
             use_batchnorm=use_batchnorm,
@@ -69,8 +68,7 @@ def SpatialContextBlock(
         level,
         conv_filters=512,
         pooling_type='avg',
-        use_batchnorm=True,
-        activation_dtype=None
+        use_batchnorm=True
 ):
     if pooling_type not in ('max', 'avg'):
         raise ValueError('Unsupported pooling type - `{}`.'.format(pooling_type) +
@@ -97,8 +95,7 @@ def SpatialContextBlock(
 
         x = Pooling2D(pool_size, strides=pool_size,
                       padding='same', name=pooling_name)(input_tensor)
-        x = Conv1x1BnReLU(conv_filters, use_batchnorm,
-                          name=conv_block_name, activation_dtype=activation_dtype)(x)
+        x = Conv1x1BnReLU(conv_filters, use_batchnorm, name=conv_block_name)(x)
         x = layers.UpSampling2D(
             up_size, interpolation='bilinear', name=upsampling_name)(x)
         return x
@@ -127,21 +124,16 @@ def build_psp(
          else backbone.get_layer(index=psp_layer_idx).output)
 
     # build spatial pyramid
-    x1 = SpatialContextBlock(1, conv_filters, pooling_type,
-                             use_batchnorm, activation_dtype=activation_dtype)(x)
-    x2 = SpatialContextBlock(2, conv_filters, pooling_type,
-                             use_batchnorm, activation_dtype=activation_dtype)(x)
-    x3 = SpatialContextBlock(3, conv_filters, pooling_type,
-                             use_batchnorm, activation_dtype=activation_dtype)(x)
-    x6 = SpatialContextBlock(6, conv_filters, pooling_type,
-                             use_batchnorm, activation_dtype=activation_dtype)(x)
+    x1 = SpatialContextBlock(1, conv_filters, pooling_type, use_batchnorm)(x)
+    x2 = SpatialContextBlock(2, conv_filters, pooling_type, use_batchnorm)(x)
+    x3 = SpatialContextBlock(3, conv_filters, pooling_type, use_batchnorm)(x)
+    x6 = SpatialContextBlock(6, conv_filters, pooling_type, use_batchnorm)(x)
 
     # aggregate spatial pyramid
     concat_axis = 3 if backend.image_data_format() == 'channels_last' else 1
     x = layers.Concatenate(axis=concat_axis, name='psp_concat')(
         [x, x1, x2, x3, x6])
-    x = Conv1x1BnReLU(conv_filters, use_batchnorm,
-                      name='aggregation', activation_dtype=activation_dtype)(x)
+    x = Conv1x1BnReLU(conv_filters, use_batchnorm, name='aggregation')(x)
 
     # model regularization
     if dropout is not None:

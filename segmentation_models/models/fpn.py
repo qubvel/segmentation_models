@@ -27,7 +27,7 @@ def get_submodules():
 #  Blocks
 # ---------------------------------------------------------------------
 
-def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
+def Conv3x3BnReLU(filters, use_batchnorm, name=None):
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -35,7 +35,6 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
             filters,
             kernel_size=3,
             activation='relu',
-            activation_dtype=activation_dtype,
             kernel_initializer='he_uniform',
             padding='same',
             use_batchnorm=use_batchnorm,
@@ -46,7 +45,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
     return wrapper
 
 
-def DoubleConv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
+def DoubleConv3x3BnReLU(filters, use_batchnorm, name=None):
     name1, name2 = None, None
     if name is not None:
         name1 = name + 'a'
@@ -56,14 +55,12 @@ def DoubleConv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None
         x = Conv3x3BnReLU(
             filters,
             use_batchnorm,
-            name=name1,
-            activation_dtype=activation_dtype
+            name=name1
         )(input_tensor)
         x = Conv3x3BnReLU(
             filters,
             use_batchnorm,
-            name=name2,
-            activation_dtype=activation_dtype
+            name=name2
         )(x)
         return x
 
@@ -136,14 +133,14 @@ def build_fpn(
     p2 = FPNBlock(pyramid_filters, stage=2)(p3, skips[3])
 
     # add segmentation head to each
-    s5 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
-                             name='segm_stage5', activation_dtype=activation_dtype)(p5)
-    s4 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
-                             name='segm_stage4', activation_dtype=activation_dtype)(p4)
-    s3 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
-                             name='segm_stage3', activation_dtype=activation_dtype)(p3)
-    s2 = DoubleConv3x3BnReLU(segmentation_filters, use_batchnorm,
-                             name='segm_stage2', activation_dtype=activation_dtype)(p2)
+    s5 = DoubleConv3x3BnReLU(segmentation_filters,
+                             use_batchnorm, name='segm_stage5')(p5)
+    s4 = DoubleConv3x3BnReLU(segmentation_filters,
+                             use_batchnorm, name='segm_stage4')(p4)
+    s3 = DoubleConv3x3BnReLU(segmentation_filters,
+                             use_batchnorm, name='segm_stage3')(p3)
+    s2 = DoubleConv3x3BnReLU(segmentation_filters,
+                             use_batchnorm, name='segm_stage2')(p2)
 
     # upsampling to same resolution
     s5 = layers.UpSampling2D(
@@ -169,7 +166,7 @@ def build_fpn(
 
     # final stage
     x = Conv3x3BnReLU(segmentation_filters, use_batchnorm,
-                      name='final_stage', activation_dtype=activation_dtype)(x)
+                      name='final_stage')(x)
     x = layers.UpSampling2D(
         size=(2, 2), interpolation='bilinear', name='final_upsampling')(x)
 

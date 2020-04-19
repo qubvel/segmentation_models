@@ -27,7 +27,7 @@ def get_submodules():
 #  Blocks
 # ---------------------------------------------------------------------
 
-def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
+def Conv3x3BnReLU(filters, use_batchnorm, name=None):
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -35,7 +35,6 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
             filters,
             kernel_size=3,
             activation='relu',
-            activation_dtype=activation_dtype,
             kernel_initializer='he_uniform',
             padding='same',
             use_batchnorm=use_batchnorm,
@@ -46,7 +45,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None, activation_dtype=None):
     return wrapper
 
 
-def DecoderUpsamplingX2Block(filters, stage, use_batchnorm=False, activation_dtype=None):
+def DecoderUpsamplingX2Block(filters, stage, use_batchnorm=False):
     up_name = 'decoder_stage{}_upsampling'.format(stage)
     conv1_name = 'decoder_stage{}a'.format(stage)
     conv2_name = 'decoder_stage{}b'.format(stage)
@@ -61,17 +60,15 @@ def DecoderUpsamplingX2Block(filters, stage, use_batchnorm=False, activation_dty
             x = layers.Concatenate(
                 axis=concat_axis, name=concat_name)([x, skip])
 
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv1_name,
-                          activation_dtype=activation_dtype)(x)
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv2_name,
-                          activation_dtype=activation_dtype)(x)
+        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv1_name)(x)
+        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv2_name)(x)
 
         return x
 
     return wrapper
 
 
-def DecoderTransposeX2Block(filters, stage, use_batchnorm=False, activation_dtype=None):
+def DecoderTransposeX2Block(filters, stage, use_batchnorm=False):
     transp_name = 'decoder_stage{}a_transpose'.format(stage)
     bn_name = 'decoder_stage{}a_bn'.format(stage)
     relu_name = 'decoder_stage{}a_relu'.format(stage)
@@ -94,18 +91,13 @@ def DecoderTransposeX2Block(filters, stage, use_batchnorm=False, activation_dtyp
         if use_batchnorm:
             x = layers.BatchNormalization(axis=bn_axis, name=bn_name)(x)
 
-        if activation_dtype is None or activation != 'softmax':
-            x = layers.Activation('relu', name=relu_name)(x)
-        else:
-            x = layers.Activation('relu', name=relu_name,
-                                  dtype=activation_dtype)(x)
-
+        x = layers.Activation('relu', name=relu_name)(x)
+        
         if skip is not None:
             x = layers.Concatenate(
                 axis=concat_axis, name=concat_name)([x, skip])
 
-        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv_block_name,
-                          activation_dtype=activation_dtype)(x)
+        x = Conv3x3BnReLU(filters, use_batchnorm, name=conv_block_name)(x)
 
         return x
 
@@ -136,10 +128,8 @@ def build_unet(
 
     # add center block if previous operation was maxpooling (for vgg models)
     if isinstance(backbone.layers[-1], layers.MaxPooling2D):
-        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1',
-                          activation_dtype=activation_dtype)(x)
-        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2',
-                          activation_dtype=activation_dtype)(x)
+        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1')(x)
+        x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2')(x)
 
     # building decoder blocks
     for i in range(n_upsample_blocks):
