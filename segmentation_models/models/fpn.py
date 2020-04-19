@@ -179,7 +179,7 @@ def build_fpn(
         kernel_initializer='glorot_uniform',
         name='head_conv',
     )(x)
-    if activation_dtype is None or activation != 'softmax':
+    if activation_dtype is None:
         x = layers.Activation(activation, name=activation)(x)
     else:
         x = layers.Activation(activation, name=activation,

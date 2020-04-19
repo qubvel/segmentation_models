@@ -63,7 +63,7 @@ def Conv2dBn(
             x = layers.BatchNormalization(axis=bn_axis, name=bn_name)(x)
 
         if activation:
-            if activation_dtype is None or activation != 'softmax':
+            if activation_dtype is None:
                 x = layers.Activation(activation, name=act_name)(x)
             else:
                 x = layers.Activation(activation, name=act_name, dtype=activation_dtype)(x)
