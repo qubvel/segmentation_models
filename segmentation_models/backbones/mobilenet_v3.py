@@ -49,6 +49,7 @@ from tensorflow.keras import backend as K
 #layers = None
 #models = None
 #keras_utils = None
+from tensorflow.python.keras.applications import imagenet_utils
 
 BASE_WEIGHT_PATH = ('https://github.com/DrSlink/mobilenet_v3_keras/'
                     'releases/download/v1.0/')
@@ -600,13 +601,24 @@ def MobileNetV3Large(input_shape=None,
                        **kwargs)
 
 
+
+def preprocess_input(x, **kwargs):
+    """Preprocesses a numpy array encoding a batch of images.
+    # Arguments
+        x: a 4D numpy array consists of RGB values within [0, 255].
+    # Returns
+        Preprocessed array.
+    """
+    return imagenet_utils.preprocess_input(x, mode='tf', **kwargs)
+
+
 setattr(MobileNetV3Small, '__doc__', MobileNetV3.__doc__)
 setattr(MobileNetV3Large, '__doc__', MobileNetV3.__doc__)
 
 if __name__ == '__main__':
     input_tensor = Input(shape=(None, None, 3), name='image_input')
-    #model = MobileNetV3Large(include_top=False, input_shape=(416, 416, 3), weights='imagenet', alpha=1.0)
-    model = MobileNetV3Large(include_top=True, input_tensor=input_tensor, weights='imagenet', alpha=1.0)
+    model = MobileNetV3Small(include_top=False, input_shape=(416, 416, 3), weights=None, alpha=1.0)
+    #model = MobileNetV3Large(include_top=True, input_tensor=input_tensor, weights='imagenet', alpha=1.0)
     model.summary()
 
     import numpy as np
