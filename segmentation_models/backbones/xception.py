@@ -19,12 +19,8 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-from tensorflow.keras import backend as backend
-from tensorflow.keras import layers as layers
-from tensorflow.keras import models as models
-from tensorflow.keras.utils import get_source_inputs, get_file
-from tensorflow.keras.applications import imagenet_utils
-from keras_applications.imagenet_utils import _obtain_input_shape
+from keras_applications import imagenet_utils
+from keras_applications import get_submodules_from_kwargs
 
 
 TF_WEIGHTS_PATH = (
@@ -36,6 +32,10 @@ TF_WEIGHTS_PATH_NO_TOP = (
     'releases/download/v0.4/'
     'xception_weights_tf_dim_ordering_tf_kernels_notop.h5')
 
+backend = None
+layers = None
+models = None
+keras_utils = None
 
 def Xception(include_top=True,
              weights='imagenet',
@@ -91,6 +91,8 @@ def Xception(include_top=True,
         RuntimeError: If attempting to run this model with a
             backend that does not support separable convolutions.
     """
+    global backend, layers, models, keras_utils
+    backend, layers, models, keras_utils = get_submodules_from_kwargs(kwargs)
 
     if not (weights in {'imagenet', None} or os.path.exists(weights)):
         raise ValueError('The `weights` argument should be either '
@@ -103,7 +105,7 @@ def Xception(include_top=True,
                          ' as true, `classes` should be 1000')
 
     # Determine proper input shape
-    input_shape = _obtain_input_shape(input_shape,
+    input_shape = imagenet_utils._obtain_input_shape(input_shape,
                                       default_size=299,
                                       min_size=71,
                                       data_format=backend.image_data_format(),
@@ -278,7 +280,7 @@ def Xception(include_top=True,
     # Ensure that the model takes into account
     # any potential predecessors of `input_tensor`.
     if input_tensor is not None:
-        inputs = get_source_inputs(input_tensor)
+        inputs = keras_utils.get_source_inputs(input_tensor)
     else:
         inputs = img_input
     # Create model.
@@ -287,13 +289,13 @@ def Xception(include_top=True,
     # Load weights.
     if weights == 'imagenet':
         if include_top:
-            weights_path = get_file(
+            weights_path = keras_utils.get_file(
                 'xception_weights_tf_dim_ordering_tf_kernels.h5',
                 TF_WEIGHTS_PATH,
                 cache_subdir='models',
                 file_hash='0a58e3b7378bc2990ea3b43d5981f1f6')
         else:
-            weights_path = get_file(
+            weights_path = keras_utils.get_file(
                 'xception_weights_tf_dim_ordering_tf_kernels_notop.h5',
                 TF_WEIGHTS_PATH_NO_TOP,
                 cache_subdir='models',
