@@ -250,7 +250,7 @@ Citing
 .. code::
 
     @misc{Yakubovskiy:2019,
-      Author = {Pavel Yakubovskiy},
+      Author = {Pavel Iakubovskii},
       Title = {Segmentation Models},
       Year = {2019},
       Publisher = {GitHub},
