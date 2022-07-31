@@ -160,6 +160,7 @@ Models and Backbones
 -  `FPN <http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf>`__
 -  `Linknet <https://arxiv.org/abs/1707.03718>`__
 -  `PSPNet <https://arxiv.org/abs/1612.01105>`__
+-  `DeeplabV3+ <https://arxiv.org/abs/1802.02611>`__
 
 ============= ==============
 Unet          Linknet
