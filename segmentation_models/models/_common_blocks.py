@@ -9,6 +9,7 @@ def Conv2dBn(
         data_format=None,
         dilation_rate=(1, 1),
         activation=None,
+        activation_dtype=None,
         kernel_initializer='glorot_uniform',
         bias_initializer='zeros',
         kernel_regularizer=None,
@@ -62,7 +63,10 @@ def Conv2dBn(
             x = layers.BatchNormalization(axis=bn_axis, name=bn_name)(x)
 
         if activation:
-            x = layers.Activation(activation, name=act_name)(x)
+            if activation_dtype is None:
+                x = layers.Activation(activation, name=act_name)(x)
+            else:
+                x = layers.Activation(activation, name=act_name, dtype=activation_dtype)(x)
 
         return x
 

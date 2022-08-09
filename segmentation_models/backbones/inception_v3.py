@@ -77,6 +77,7 @@ def InceptionV3(include_top=True,
                 input_tensor=None,
                 input_shape=None,
                 pooling=None,
+                activation_dtype=None,
                 classes=1000,
                 **kwargs):
     """Instantiates the Inception v3 architecture.
@@ -109,6 +110,8 @@ def InceptionV3(include_top=True,
                 the output of the model will be a 2D tensor.
             - `max` means that global max pooling will
                 be applied.
+        activation_dtype: Optional type parameter to force activations
+            to be treated in certain type. Used when mixed_precision is enabled.
         classes: optional number of classes to classify images
             into, only to be specified if `include_top` is True, and
             if no `weights` argument is specified.
@@ -345,7 +348,13 @@ def InceptionV3(include_top=True,
     if include_top:
         # Classification block
         x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
-        x = layers.Dense(classes, activation='softmax', name='predictions')(x)
+        if activation_dtype is None:
+            x = layers.Dense(classes, activation='softmax', name='predictions')(x)
+        else:
+            #only softmax activation must be cast when using mixed precision
+            x = layers.Dense(classes, name='dense_logits')(x)
+            x = layers.Activation('softmax', dtype=activation_dtype, name='predictions')(x)
+            
     else:
         if pooling == 'avg':
             x = layers.GlobalAveragePooling2D()(x)

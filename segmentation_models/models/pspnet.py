@@ -25,14 +25,16 @@ def get_submodules():
 
 def check_input_shape(input_shape, factor):
     if input_shape is None:
-        raise ValueError("Input shape should be a tuple of 3 integers, not None!")
+        raise ValueError(
+            "Input shape should be a tuple of 3 integers, not None!")
 
-    h, w = input_shape[:2] if backend.image_data_format() == 'channels_last' else input_shape[1:]
+    h, w = input_shape[:2] if backend.image_data_format(
+    ) == 'channels_last' else input_shape[1:]
     min_size = factor * 6
 
     is_wrong_shape = (
-            h % min_size != 0 or w % min_size != 0 or
-            h < min_size or w < min_size
+        h % min_size != 0 or w % min_size != 0 or
+        h < min_size or w < min_size
     )
 
     if is_wrong_shape:
@@ -66,7 +68,7 @@ def SpatialContextBlock(
         level,
         conv_filters=512,
         pooling_type='avg',
-        use_batchnorm=True,
+        use_batchnorm=True
 ):
     if pooling_type not in ('max', 'avg'):
         raise ValueError('Unsupported pooling type - `{}`.'.format(pooling_type) +
@@ -81,17 +83,21 @@ def SpatialContextBlock(
     def wrapper(input_tensor):
         # extract input feature maps size (h, and w dimensions)
         input_shape = backend.int_shape(input_tensor)
-        spatial_size = input_shape[1:3] if backend.image_data_format() == 'channels_last' else input_shape[2:]
+        spatial_size = input_shape[1:3] if backend.image_data_format(
+        ) == 'channels_last' else input_shape[2:]
 
         # Compute the kernel and stride sizes according to how large the final feature map will be
         # When the kernel factor and strides are equal, then we can compute the final feature map factor
         # by simply dividing the current factor by the kernel or stride factor
         # The final feature map sizes are 1x1, 2x2, 3x3, and 6x6.
-        pool_size = up_size = [spatial_size[0] // level, spatial_size[1] // level]
+        pool_size = up_size = [spatial_size[0] //
+                               level, spatial_size[1] // level]
 
-        x = Pooling2D(pool_size, strides=pool_size, padding='same', name=pooling_name)(input_tensor)
+        x = Pooling2D(pool_size, strides=pool_size,
+                      padding='same', name=pooling_name)(input_tensor)
         x = Conv1x1BnReLU(conv_filters, use_batchnorm, name=conv_block_name)(x)
-        x = layers.UpSampling2D(up_size, interpolation='bilinear', name=upsampling_name)(x)
+        x = layers.UpSampling2D(
+            up_size, interpolation='bilinear', name=upsampling_name)(x)
         return x
 
     return wrapper
@@ -110,6 +116,7 @@ def build_psp(
         final_upsampling_factor=8,
         classes=21,
         activation='softmax',
+        activation_dtype=None,
         dropout=None,
 ):
     input_ = backbone.input
@@ -124,7 +131,8 @@ def build_psp(
 
     # aggregate spatial pyramid
     concat_axis = 3 if backend.image_data_format() == 'channels_last' else 1
-    x = layers.Concatenate(axis=concat_axis, name='psp_concat')([x, x1, x2, x3, x6])
+    x = layers.Concatenate(axis=concat_axis, name='psp_concat')(
+        [x, x1, x2, x3, x6])
     x = Conv1x1BnReLU(conv_filters, use_batchnorm, name='aggregation')(x)
 
     # model regularization
@@ -140,8 +148,13 @@ def build_psp(
         name='final_conv',
     )(x)
 
-    x = layers.UpSampling2D(final_upsampling_factor, name='final_upsampling', interpolation='bilinear')(x)
-    x = layers.Activation(activation, name=activation)(x)
+    x = layers.UpSampling2D(final_upsampling_factor,
+                            name='final_upsampling', interpolation='bilinear')(x)
+    if activation_dtype is None:
+        x = layers.Activation(activation, name=activation)(x)
+    else:
+        x = layers.Activation(activation, name=activation,
+                              dtype=activation_dtype)(x)
 
     model = models.Model(input_, x)
 
@@ -157,6 +170,7 @@ def PSPNet(
         input_shape=(384, 384, 3),
         classes=21,
         activation='softmax',
+        activation_dtype=None,
         weights=None,
         encoder_weights='imagenet',
         encoder_freeze=False,
@@ -177,6 +191,8 @@ def PSPNet(
         classes: a number of classes for output (output shape - ``(h, w, classes)``).
         activation: name of one of ``keras.activations`` for last model layer
                 (e.g. ``sigmoid``, ``softmax``, ``linear``).
+        activation_dtype: Optional type parameter to force activations
+            to be treated in certain type. Used when mixed_precision is enabled.
         weights: optional, path to model weights.
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
         encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
@@ -198,7 +214,8 @@ def PSPNet(
 
     global backend, layers, models, keras_utils
     submodule_args = filter_keras_submodules(kwargs)
-    backend, layers, models, keras_utils = get_submodules_from_kwargs(submodule_args)
+    backend, layers, models, keras_utils = get_submodules_from_kwargs(
+        submodule_args)
 
     # control image input shape
     check_input_shape(input_shape, downsample_factor)
@@ -220,7 +237,8 @@ def PSPNet(
     elif downsample_factor == 4:
         psp_layer_idx = feature_layers[2]
     else:
-        raise ValueError('Unsupported factor - `{}`, Use 4, 8 or 16.'.format(downsample_factor))
+        raise ValueError(
+            'Unsupported factor - `{}`, Use 4, 8 or 16.'.format(downsample_factor))
 
     model = build_psp(
         backbone,
@@ -231,6 +249,7 @@ def PSPNet(
         final_upsampling_factor=downsample_factor,
         classes=classes,
         activation=activation,
+        activation_dtype=activation_dtype,
         dropout=psp_dropout,
     )
 
