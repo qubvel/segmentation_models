@@ -43,7 +43,7 @@ Table of Contents
  - `Change log`_
  - `Citing`_
  - `License`_
- 
+
 Quick start
 ~~~~~~~~~~~
 Library is build to work together with Keras and TensorFlow Keras frameworks
@@ -73,9 +73,9 @@ This can be useful for further model conversion to Nvidia TensorRT format or opt
 Created segmentation model is just an instance of Keras Model, which can be build as easy as:
 
 .. code:: python
-    
+
     model = sm.Unet()
-    
+
 Depending on the task, you can change the network architecture by choosing backbones with fewer or more parameters and use pretrainded weights to initialize it:
 
 .. code:: python
@@ -85,29 +85,29 @@ Depending on the task, you can change the network architecture by choosing backb
 Change number of output classes in the model (choose your case):
 
 .. code:: python
-    
+
     # binary segmentation (this parameters are default when you call Unet('resnet34')
     model = sm.Unet('resnet34', classes=1, activation='sigmoid')
-    
+
 .. code:: python
-    
+
     # multiclass segmentation with non overlapping class masks (your classes + background)
     model = sm.Unet('resnet34', classes=3, activation='softmax')
-    
+
 .. code:: python
-    
+
     # multiclass segmentation with independent overlapping/non-overlapping class masks
     model = sm.Unet('resnet34', classes=3, activation='sigmoid')
-    
-    
+
+
 Change input shape of the model:
 
 .. code:: python
-    
+
     # if you set input channels not equal to 3, you have to set encoder_weights=None
     # how to handle such case with encoder_weights='imagenet' described in docs
     model = Unet('resnet34', input_shape=(None, None, 6), encoder_weights=None)
-   
+
 Simple training pipeline
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -185,9 +185,9 @@ PSPNet        FPN
 
 **Backbones**
 
-.. table:: 
+.. table::
 
-    =============  ===== 
+    =============  =====
     Type           Names
     =============  =====
     VGG            ``'vgg16' 'vgg19'``
@@ -196,14 +196,14 @@ PSPNet        FPN
     ResNeXt        ``'resnext50' 'resnext101'``
     SE-ResNeXt     ``'seresnext50' 'seresnext101'``
     SENet154       ``'senet154'``
-    DenseNet       ``'densenet121' 'densenet169' 'densenet201'`` 
+    DenseNet       ``'densenet121' 'densenet169' 'densenet201'``
     Inception      ``'inceptionv3' 'inceptionresnetv2'``
     MobileNet      ``'mobilenet' 'mobilenetv2'``
     EfficientNet   ``'efficientnetb0' 'efficientnetb1' 'efficientnetb2' 'efficientnetb3' 'efficientnetb4' 'efficientnetb5' efficientnetb6' efficientnetb7'``
     =============  =====
 
 .. epigraph::
-    All backbones have weights trained on 2012 ILSVRC ImageNet dataset (``encoder_weights='imagenet'``). 
+    All backbones have weights trained on 2012 ILSVRC ImageNet dataset (``encoder_weights='imagenet'``).
 
 
 Installation
@@ -234,10 +234,10 @@ Installation
 .. code:: bash
 
     $ pip install git+https://github.com/qubvel/segmentation_models
-    
+
 Documentation
 ~~~~~~~~~~~~~
-Latest **documentation** is avaliable on `Read the
+Latest **documentation** is available on `Read the
 Docs <https://segmentation-models.readthedocs.io/en/latest/>`__
 
 Change Log
@@ -256,7 +256,7 @@ Citing
       Publisher = {GitHub},
       Journal = {GitHub repository},
       Howpublished = {\url{https://github.com/qubvel/segmentation_models}}
-    } 
+    }
 
 License
 ~~~~~~~
