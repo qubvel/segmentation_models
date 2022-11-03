@@ -105,29 +105,29 @@ PSPNet        FPN
 .. _PSPNet: https://arxiv.org/abs/1612.01105
 .. _FPN: http://presentations.cocodataset.org/COCO17-Stuff-FAIR.pdf
 
-.. |unet_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/3a873a00c9742dc1fb33105ed846d5b5-full.png
-.. |linknet_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/1a996c4ef05531ff3861d80823c373d9-full.png
-.. |psp_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/aaabb97f89197b40e4879a7299b3c801-full.png
-.. |fpn_image| image:: https://cdn1.imggmi.com/uploads/2019/2/8/af00f11ef6bc8a64efd29ed873fcb0c4-full.png
+.. |unet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/unet.png
+.. |linknet_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/linknet.png
+.. |psp_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/pspnet.png
+.. |fpn_image| image:: https://github.com/qubvel/segmentation_models/blob/master/images/fpn.png
 
 **Backbones**
 
-.. table::
+.. table:: 
 
-    ===========  =====
-    Type         Names
-    ===========  =====
-    VGG          ``'vgg16' 'vgg19'``
-    ResNet       ``'resnet18' 'resnet34' 'resnet50' 'resnet101' 'resnet152'``
-    SE-ResNet    ``'seresnet18' 'seresnet34' 'seresnet50' 'seresnet101' 'seresnet152'``
-    ResNeXt      ``'resnext50' 'resnet101'``
-    SE-ResNeXt   ``'seresnext50' 'seresnet101'``
-    SENet154     ``'senet154'``
-    DenseNet     ``'densenet121' 'densenet169' 'densenet201'``
-    Inception    ``'inceptionv3' 'inceptionresnetv2'``
-    MobileNet    ``'mobilenet' 'mobilenetv2'``
-    EfficientNet ``efficientnetb0`` ``efficientnetb1`` ``efficientnetb2`` ``efficientnetb3`` ``efficientnetb4`` ``efficientnetb5``
-    ===========  =====
+    =============  ===== 
+    Type           Names
+    =============  =====
+    VGG            ``'vgg16' 'vgg19'``
+    ResNet         ``'resnet18' 'resnet34' 'resnet50' 'resnet101' 'resnet152'``
+    SE-ResNet      ``'seresnet18' 'seresnet34' 'seresnet50' 'seresnet101' 'seresnet152'``
+    ResNeXt        ``'resnext50' 'resnext101'``
+    SE-ResNeXt     ``'seresnext50' 'seresnext101'``
+    SENet154       ``'senet154'``
+    DenseNet       ``'densenet121' 'densenet169' 'densenet201'`` 
+    Inception      ``'inceptionv3' 'inceptionresnetv2'``
+    MobileNet      ``'mobilenet' 'mobilenetv2'``
+    EfficientNet   ``'efficientnetb0' 'efficientnetb1' 'efficientnetb2' 'efficientnetb3' 'efficientnetb4' 'efficientnetb5' efficientnetb6' efficientnetb7'``
+    =============  =====
 
 .. epigraph::
     All backbones have weights trained on 2012 ILSVRC ImageNet dataset (``encoder_weights='imagenet'``).
