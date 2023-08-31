@@ -204,7 +204,7 @@ def FPN(
                 Each of these layers will be used to build features pyramid. If ``default`` is used
                 layer names are taken from ``DEFAULT_FEATURE_PYRAMID_LAYERS``.
         pyramid_block_filters: a number of filters in Feature Pyramid Block of FPN_.
-        pyramid_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
+        pyramid_use_batchnorm: if ``True``, ``BatchNormalization`` layer between ``Conv2D`` and ``Activation`` layers
                 is used.
         pyramid_aggregation: one of 'sum' or 'concat'. The way to aggregate pyramid blocks.
         pyramid_dropout: spatial dropout rate for feature pyramid in range (0, 1).

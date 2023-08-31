@@ -196,7 +196,7 @@ def Unet(
             - `transpose`:   ``Transpose2D`` -> ``Conv2D``
 
         decoder_filters: list of numbers of ``Conv2D`` layer filters in decoder blocks
-        decoder_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
+        decoder_use_batchnorm: if ``True``, ``BatchNormalization`` layer between ``Conv2D`` and ``Activation`` layers
             is used.
 
     Returns:
