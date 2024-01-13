@@ -62,6 +62,64 @@ class IOUScore(Metric):
             **self.submodules
         )
 
+class DICEScore(Metric):
+    r""" The `Dice coefficient`_, also known as the Sørensen–Dice coefficient or Dice similarity,
+    is a statistic used for gauging the similarity of two samples. It's often used in the context of
+    binary and multiclass segmentation problems. The Dice coefficient is defined as twice the size
+    of the intersection divided by the sum of the sizes of the two sample sets:
+
+    .. math:: DSC(A, B) = \frac{2 |A \cap B|}{|A| + |B|}
+
+    Args:
+        class_weights: 1. or ``np.array`` of class weights (``len(weights) = num_classes``).
+        class_indexes: Optional integer or list of integers, classes to consider, if ``None`` all classes are used.
+        smooth: Value to avoid division by zero.
+        per_image: If ``True``, metric is calculated as mean over images in batch (B),
+            else over whole batch.
+        threshold: Value to round predictions (use ``>`` comparison), if ``None`` prediction will not be rounded.
+
+    Returns:
+       A callable ``dice_score`` instance. Can be used in the ``model.compile(...)`` function.
+
+    .. _`Dice coefficient`: https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient
+
+    Example:
+
+    .. code:: python
+
+        metric = DICEScore()
+        model.compile('SGD', loss=loss, metrics=[metric])
+    """
+
+    def __init__(
+            self,
+            class_weights=None,
+            class_indexes=None,
+            threshold=None,
+            per_image=False,
+            smooth=SMOOTH,  # SMOOTH should be defined elsewhere in your code
+            name=None,
+    ):
+        name = name or 'dice_score'
+        super().__init__(name=name)
+        self.class_weights = class_weights if class_weights is not None else 1
+        self.class_indexes = class_indexes
+        self.threshold = threshold
+        self.per_image = per_image
+        self.smooth = smooth
+
+    def __call__(self, gt, pr):
+        return F.dice_score(  # Assuming F.dice_score is your implementation of Dice score
+            gt,
+            pr,
+            class_weights=self.class_weights,
+            class_indexes=self.class_indexes,
+            smooth=self.smooth,
+            per_image=self.per_image,
+            threshold=self.threshold,
+            **self.submodules
+        )
+
 
 class FScore(Metric):
     r"""The F-score (Dice coefficient) can be interpreted as a weighted average of the precision and recall,
@@ -256,8 +314,9 @@ class Recall(Metric):
 
 
 # aliases
-iou_score = IOUScore()
-f1_score = FScore(beta=1)
-f2_score = FScore(beta=2)
-precision = Precision()
-recall = Recall()
+iou_score  = IOUScore()
+dice_score = DICEScore()
+f1_score   = FScore(beta=1)
+f2_score   = FScore(beta=2)
+precision  = Precision()
+recall     = Recall()

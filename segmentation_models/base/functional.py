@@ -98,6 +98,37 @@ def iou_score(gt, pr, class_weights=1., class_indexes=None, smooth=SMOOTH, per_i
 
     return score
 
+def dice_score(gt, pr, class_weights=1., class_indexes=None, smooth=SMOOTH, per_image=False, threshold=None, **kwargs):
+    """
+    Calculate the Dice coefficient, a measure of set similarity.
+
+    Args:
+        gt: Ground truth 4D keras tensor (B, H, W, C) or (B, C, H, W).
+        pr: Prediction 4D keras tensor (B, H, W, C) or (B, C, H, W).
+        class_weights: 1. or list of class weights, len(weights) = C.
+        class_indexes: Optional integer or list of integers, classes to consider, if `None` all classes are used.
+        smooth: Value to avoid division by zero.
+        per_image: If `True`, metric is calculated as mean over images in batch (B), else over whole batch.
+        threshold: Value to round predictions (use `>` comparison), if `None` prediction will not be rounded.
+
+    Returns:
+        Dice score in range [0, 1].
+    """
+
+    backend = kwargs['backend']
+
+    gt, pr = gather_channels(gt, pr, indexes=class_indexes, **kwargs)
+    pr = round_if_needed(pr, threshold, **kwargs)
+    axes = get_reduce_axes(per_image, **kwargs)
+
+    # Adjusted score calculation for Dice coefficient
+    intersection = backend.sum(gt * pr, axis=axes)
+    sum_gt_pr = backend.sum(gt, axis=axes) + backend.sum(pr, axis=axes)
+
+    score = (2 * intersection + smooth) / (sum_gt_pr + smooth)
+    score = average(score, per_image, class_weights, **kwargs)
+
+    return score
 
 def f_score(gt, pr, beta=1, class_weights=1, class_indexes=None, smooth=SMOOTH, per_image=False, threshold=None,
             **kwargs):

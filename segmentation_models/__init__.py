@@ -1,9 +1,10 @@
 import os
 import functools
+from tensorflow import keras
 from .__version__ import __version__
 from . import base
 
-_KERAS_FRAMEWORK_NAME = 'keras'
+_KERAS_FRAMEWORK_NAME = 'tf.keras'
 _TF_KERAS_FRAMEWORK_NAME = 'tf.keras'
 
 _DEFAULT_KERAS_FRAMEWORK = _KERAS_FRAMEWORK_NAME
@@ -64,14 +65,12 @@ def set_framework(name):
     name = name.lower()
 
     if name == _KERAS_FRAMEWORK_NAME:
-        import keras
-        import efficientnet.keras  # init custom objects
-    elif name == _TF_KERAS_FRAMEWORK_NAME:
-        from tensorflow import keras
+        from tensorflow.keras import backend as K
+        from tensorflow.keras import layers, models, utils, losses
         import efficientnet.tfkeras  # init custom objects
     else:
-        raise ValueError('Not correct module name `{}`, use `{}` or `{}`'.format(
-            name, _KERAS_FRAMEWORK_NAME, _TF_KERAS_FRAMEWORK_NAME))
+        raise ValueError('Not correct module name `{}`, use `{}`'.format(
+            name, _TF_KERAS_FRAMEWORK_NAME))
 
     global _KERAS_BACKEND, _KERAS_LAYERS, _KERAS_MODELS
     global _KERAS_UTILS, _KERAS_LOSSES, _KERAS_FRAMEWORK

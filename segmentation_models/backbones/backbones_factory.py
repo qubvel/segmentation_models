@@ -71,7 +71,6 @@ class BackbonesFactory(ModelsFactory):
                            'block3a_expand_activation', 'block2a_expand_activation'),
 
     }
-
     _models_update = {
         'inceptionresnetv2': [irv2.InceptionResNetV2, irv2.preprocess_input],
         'inceptionv3': [iv3.InceptionV3, iv3.preprocess_input],
