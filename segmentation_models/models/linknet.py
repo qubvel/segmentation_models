@@ -219,7 +219,7 @@ def Linknet(
         decoder_filters: list of numbers of ``Conv2D`` layer filters in decoder blocks,
             for block with skip connection a number of filters is equal to number of filters in
             corresponding encoder block (estimates automatically and can be passed as ``None`` value).
-        decoder_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
+        decoder_use_batchnorm: if ``True``, ``BatchNormalization`` layer between ``Conv2D`` and ``Activation`` layers
                     is used.
         decoder_block_type: one of
                     - `upsampling`:  use ``UpSampling2D`` keras layer

@@ -184,7 +184,7 @@ def PSPNet(
             to construct PSP module on it.
         psp_conv_filters: number of filters in ``Conv2D`` layer in each PSP block.
         psp_pooling_type: one of 'avg', 'max'. PSP block pooling type (maximum or average).
-        psp_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
+        psp_use_batchnorm: if ``True``, ``BatchNormalization`` layer between ``Conv2D`` and ``Activation`` layers
                 is used.
         psp_dropout: dropout rate between 0 and 1.
 
