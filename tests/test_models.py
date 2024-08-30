@@ -9,6 +9,7 @@ from segmentation_models import Unet
 from segmentation_models import Linknet
 from segmentation_models import PSPNet
 from segmentation_models import FPN
+from segmentation_models import DeepLabV3Plus
 from segmentation_models import get_available_backbone_names
 
 if sm.framework() == sm._TF_KERAS_FRAMEWORK_NAME:
@@ -18,10 +19,14 @@ elif sm.framework() == sm._KERAS_FRAMEWORK_NAME:
 else:
     raise ValueError('Incorrect framework {}'.format(sm.framework()))
 
-def get_backbones():
+
+def get_backbones(is_deeplab=False):
     is_travis = os.environ.get('TRAVIS', False)
     exclude = ['senet154', 'efficientnetb6', 'efficientnetb7']
     backbones = get_available_backbone_names()
+
+    if is_deeplab:
+        backbones = [b for b in backbones if b in ['resnet34', 'resnet50', 'resnet101', 'resnet152']]
 
     if is_travis:
         backbones = [b for b in backbones if b not in exclude]
@@ -29,6 +34,7 @@ def get_backbones():
 
 
 BACKBONES = get_backbones()
+DEEPLAB_BACKBONES = get_backbones(True)
 
 
 def _select_names(names):
@@ -130,6 +136,18 @@ def test_fpn(backbone):
 
     _test_shape(
         FPN, backbone, input_shape=(256, 256, 4), encoder_weights=None)
+
+
+@pytest.mark.parametrize('backbone', _select_names(DEEPLAB_BACKBONES))
+def test_deeplab(backbone):
+    _test_none_shape(
+        DeepLabV3Plus, backbone, input_shape=(32, 32, 3), encoder_weights=None)
+
+    _test_none_shape(
+        DeepLabV3Plus, backbone, input_shape=(32, 32, 3), encoder_weights='imagenet')
+
+    _test_shape(
+        DeepLabV3Plus, backbone, input_shape=(256, 256, 4), encoder_weights=None)
 
 
 if __name__ == '__main__':
