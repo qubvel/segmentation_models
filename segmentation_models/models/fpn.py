@@ -199,7 +199,8 @@ def FPN(
         weights: optional, path to model weights.
         activation: name of one of ``keras.activations`` for last model layer (e.g. ``sigmoid``, ``softmax``, ``linear``).
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
-        encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
+        encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable. If a float, freezes
+                just that fraction of the encoder layers (starting with the earliest layers)
         encoder_features: a list of layer numbers or names starting from top of the model.
                 Each of these layers will be used to build features pyramid. If ``default`` is used
                 layer names are taken from ``DEFAULT_FEATURE_PYRAMID_LAYERS``.
@@ -245,7 +246,8 @@ def FPN(
 
     # lock encoder weights for fine-tuning
     if encoder_freeze:
-        freeze_model(backbone, **kwargs)
+        fraction = encoder_freeze if isinstance(encoder_freeze, float) else 1.0
+        freeze_model(backbone, fraction=fraction, **kwargs)
 
     # loading model weights
     if weights is not None:

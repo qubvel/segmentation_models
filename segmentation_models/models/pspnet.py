@@ -179,7 +179,8 @@ def PSPNet(
                 (e.g. ``sigmoid``, ``softmax``, ``linear``).
         weights: optional, path to model weights.
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
-        encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
+        encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable. If a float, freezes
+            just that fraction of the encoder layers (starting with the earliest layers)
         downsample_factor: one of 4, 8 and 16. Downsampling rate or in other words backbone depth
             to construct PSP module on it.
         psp_conv_filters: number of filters in ``Conv2D`` layer in each PSP block.

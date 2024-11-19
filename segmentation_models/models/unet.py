@@ -57,6 +57,7 @@ def DecoderUpsamplingX2Block(filters, stage, use_batchnorm=False):
         x = layers.UpSampling2D(size=2, name=up_name)(input_tensor)
 
         if skip is not None:
+            #skip = layers.Dropout(0.3)(skip)
             x = layers.Concatenate(axis=concat_axis, name=concat_name)([x, skip])
 
         x = Conv3x3BnReLU(filters, use_batchnorm, name=conv1_name)(x)
@@ -115,6 +116,7 @@ def build_unet(
         classes=1,
         activation='sigmoid',
         use_batchnorm=True,
+        center_dropout=0.0,
 ):
     input_ = backbone.input
     x = backbone.output
@@ -123,7 +125,11 @@ def build_unet(
     skips = ([backbone.get_layer(name=i).output if isinstance(i, str)
               else backbone.get_layer(index=i).output for i in skip_connection_layers])
 
-    # add center block if previous operation was maxpooling (for vgg models)
+    # Dropout between encoder/decoder
+    if center_dropout:
+      x = layers.Dropout(center_dropout)(x)
+    
+    # add center block if last encoder operation was maxpooling (for vgg models)
     if isinstance(backbone.layers[-1], layers.MaxPooling2D):
         x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1')(x)
         x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2')(x)
@@ -171,6 +177,7 @@ def Unet(
         decoder_block_type='upsampling',
         decoder_filters=(256, 128, 64, 32, 16),
         decoder_use_batchnorm=True,
+        center_dropout=0.0,
         **kwargs
 ):
     """ Unet_ is a fully convolution neural network for image semantic segmentation
@@ -186,7 +193,8 @@ def Unet(
             (e.g. ``sigmoid``, ``softmax``, ``linear``).
         weights: optional, path to model weights.
         encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
-        encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable.
+        encoder_freeze: if ``True`` set all layers of encoder (backbone model) as non-trainable. If a float, freezes
+            just that fraction of the encoder layers (starting with the earliest layers)
         encoder_features: a list of layer numbers or names starting from top of the model.
             Each of these layers will be concatenated with corresponding decoder block. If ``default`` is used
             layer names are taken from ``DEFAULT_SKIP_CONNECTIONS``.
@@ -198,6 +206,7 @@ def Unet(
         decoder_filters: list of numbers of ``Conv2D`` layer filters in decoder blocks
         decoder_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation`` layers
             is used.
+        center_dropout: Dropout fraction to apply at the center block, between encoder and decoder. Default is 0.0 (none).
 
     Returns:
         ``keras.models.Model``: **Unet**
@@ -239,11 +248,13 @@ def Unet(
         activation=activation,
         n_upsample_blocks=len(decoder_filters),
         use_batchnorm=decoder_use_batchnorm,
+        center_dropout=center_dropout,
     )
 
     # lock encoder weights for fine-tuning
     if encoder_freeze:
-        freeze_model(backbone, **kwargs)
+        fraction = encoder_freeze if isinstance(encoder_freeze, float) else 1.0
+        freeze_model(backbone, fraction=fraction, **kwargs)
 
     # loading model weights
     if weights is not None:

@@ -107,6 +107,15 @@ Change input shape of the model:
     # if you set input channels not equal to 3, you have to set encoder_weights=None
     # how to handle such case with encoder_weights='imagenet' described in docs
     model = Unet('resnet34', input_shape=(None, None, 6), encoder_weights=None)
+    
+Freeze the backbone (encoder):
+
+.. code:: python
+    
+    # Freezes all encoder layers
+    model = Unet('resnet34', input_shape=(None, None, 6), encoder_freeze=True)
+    # Freezes just the first 80% of encoder layers
+    model = Unet('resnet34', input_shape=(None, None, 6), encoder_freeze=0.8)
    
 Simple training pipeline
 ~~~~~~~~~~~~~~~~~~~~~~~~
