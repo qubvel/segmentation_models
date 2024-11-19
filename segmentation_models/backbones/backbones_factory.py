@@ -4,7 +4,8 @@ from classification_models.models_factory import ModelsFactory
 
 from . import inception_resnet_v2 as irv2
 from . import inception_v3 as iv3
-
+from . import darknet53 as dkn53
+from . import mobilenet_v3 as mbnv3
 
 class BackbonesFactory(ModelsFactory):
     _default_feature_layers = {
@@ -51,6 +52,9 @@ class BackbonesFactory(ModelsFactory):
         'mobilenet': ('conv_pw_11_relu', 'conv_pw_5_relu', 'conv_pw_3_relu', 'conv_pw_1_relu'),
         'mobilenetv2': ('block_13_expand_relu', 'block_6_expand_relu', 'block_3_expand_relu',
                         'block_1_expand_relu'),
+        'mobilenetv3': ('Conv_1', 'activation_29', 'activation_15', 'activation_6'),
+        #'mobilenetv3large': ('Conv_1', 'activation_29', 'activation_15', 'activation_6'),
+        'mobilenetv3small': ('activation_31', 'activation_22', 'activation_7', 'activation_3'),
 
         # EfficientNets
         'efficientnetb0': ('block6a_expand_activation', 'block4a_expand_activation',
@@ -70,7 +74,14 @@ class BackbonesFactory(ModelsFactory):
         'efficientnetb7': ('block6a_expand_activation', 'block4a_expand_activation',
                            'block3a_expand_activation', 'block2a_expand_activation'),
 
+        # DarkNets
+        'darknet53': ('activation_58', 'activation_37', 'activation_16', 'activation_7'),  # 204 equals conv2d_58 (14, 14, 512), 131 equals conv2d_37 (28, 28, 256)
+
+
+        #'darknet53': (204, 131, 'activation_16', 'activation_7'),  # 204 equals conv2d_58 (14, 14, 512), 131 equals conv2d_37 (28, 28, 256)
+
     }
+
 
     _models_update = {
         'inceptionresnetv2': [irv2.InceptionResNetV2, irv2.preprocess_input],
@@ -84,8 +95,12 @@ class BackbonesFactory(ModelsFactory):
         'efficientnetb5': [eff.EfficientNetB5, eff.preprocess_input],
         'efficientnetb6': [eff.EfficientNetB6, eff.preprocess_input],
         'efficientnetb7': [eff.EfficientNetB7, eff.preprocess_input],
-    }
 
+        'darknet53': [dkn53.csp_darknet53, dkn53.preprocess_input],
+
+        'mobilenetv3': [mbnv3.MobileNetV3Large, mbnv3.preprocess_input],
+        'mobilenetv3small': [mbnv3.MobileNetV3Small, mbnv3.preprocess_input],
+    }
     # currently not supported
     _models_delete = ['resnet50v2', 'resnet101v2', 'resnet152v2',
                       'nasnetlarge', 'nasnetmobile', 'xception']
