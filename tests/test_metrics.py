@@ -133,7 +133,7 @@ def test_iou_metric(case):
 
 
 @pytest.mark.parametrize('case', IOU_CASES)
-def test_jaccrad_loss(case):
+def test_jaccard_loss(case):
     gt, pr, res = case
     gt = _to_4d(gt)
     pr = _to_4d(pr)
